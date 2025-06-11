@@ -1,10 +1,11 @@
 use std::ffi::{CStr, CString, NulError};
 use std::marker::PhantomData;
-use std::mem::{ManuallyDrop, MaybeUninit};
+use std::mem::MaybeUninit;
 use std::num::NonZero;
 use std::ops::{Deref, DerefMut};
-use std::os::raw::{c_char, c_int, c_void};
+use std::os::raw::{c_int, c_void};
 use std::ptr::{null, NonNull};
+use std::sync::Once;
 use std::time::Duration;
 
 /// Direct bindings to Raylib C
@@ -1278,9 +1279,23 @@ pub fn get_random_value(
 
 /// An owned slice of data that must be deallocated manually using [`unload_random_sequence()`]
 #[must_use]
-pub struct RandomSequence {
-    data: NonNull<i32>,
-    len: usize,
+pub struct RandomSequence(NonNull<[i32]>);
+
+impl RandomSequence {
+    unsafe fn new(data: *mut i32, len: usize) -> Option<Self> {
+        if !data.is_null() {
+            Some(Self(unsafe {
+                NonNull::new_unchecked(
+                    std::ptr::slice_from_raw_parts_mut(
+                        data,
+                        len,
+                    )
+                )
+            }))
+        } else {
+            None
+        }
+    }
 }
 
 impl Deref for RandomSequence {
@@ -1289,10 +1304,7 @@ impl Deref for RandomSequence {
     #[inline]
     fn deref(&self) -> &Self::Target {
         unsafe {
-            std::slice::from_raw_parts(
-                self.data.as_ptr().cast_const(),
-                self.len,
-            )
+            self.0.as_ref()
         }
     }
 }
@@ -1301,10 +1313,7 @@ impl DerefMut for RandomSequence {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe {
-            std::slice::from_raw_parts_mut(
-                self.data.as_ptr(),
-                self.len,
-            )
+            self.0.as_mut()
         }
     }
 }
@@ -1316,28 +1325,24 @@ pub fn load_random_sequence(
     min: i32,
     max: i32,
 ) -> Option<RandomSequence> {
-    let ptr = unsafe {
-        sys::LoadRandomSequence(
+    unsafe {
+        let data = sys::LoadRandomSequence(
             len.try_into().unwrap(),
             min,
             max,
-        )
-    };
-    NonNull::new(ptr)
-        .map(|data| RandomSequence {
-            data,
-            len,
-        })
+        );
+        RandomSequence::new(data, len)
+    }
 }
 
 /// Unload random values sequence
 #[inline]
 pub fn unload_random_sequence(
-    sequence: RandomSequence,
+    mut sequence: RandomSequence,
 ) {
     unsafe {
         sys::UnloadRandomSequence(
-            sequence.data.as_ptr(),
+            sequence.as_mut_ptr(),
         );
     }
 }
@@ -1627,17 +1632,15 @@ pub fn export_data_as_code(
 }
 
 /// An owned cstring returned by [`load_file_text()`] that must be manually unloaded with [`unload_file_text()`]
-pub struct RaylibCString(NonNull<c_char>);
+pub struct FileText(NonNull<CStr>);
 
-impl Deref for RaylibCString {
+impl Deref for FileText {
     type Target = CStr;
 
     #[inline]
     fn deref(&self) -> &Self::Target {
         unsafe {
-            CStr::from_ptr(
-                self.0.as_ptr(),
-            )
+            self.0.as_ref()
         }
     }
 }
@@ -1646,27 +1649,36 @@ impl Deref for RaylibCString {
 #[inline]
 pub fn load_file_text(
     file_name: &CStr,
-) -> Option<RaylibCString> {
-    NonNull::new(unsafe {
+) -> Option<FileText> {
+    let ptr = unsafe {
         sys::LoadFileText(
             file_name.as_ptr(),
         )
-    }).map(RaylibCString)
+    };
+    if !ptr.is_null() {
+        Some(unsafe {
+            FileText(NonNull::new_unchecked(
+                (CStr::from_ptr(ptr) as *const CStr).cast_mut(),
+            ))
+        })
+    } else {
+        None
+    }
 }
 
 /// Unload file text data allocated by [`load_file_text()`]
 #[inline]
 pub fn unload_file_text(
-    text: RaylibCString,
+    mut text: FileText,
 ) {
     unsafe {
         sys::UnloadFileText(
-            text.0.as_ptr(),
+            text.0.as_mut().as_ptr().cast_mut(),
         );
     }
 }
 
-/// Save text data to file (write), string must be '\0' terminated, returns true on success
+/// Save text data to file (write)
 #[inline]
 pub fn save_file_text(
     file_name: &CStr,
@@ -1781,10 +1793,28 @@ pub fn get_file_name(
     }
 }
 
+macro_rules! define_buffer_handle {
+    ($func:ident() -> $Type:ident) => {
+        pub struct $Type(());
+
+        #[inline]
+        pub fn $func() -> Option<$Type> {
+            static SINGLETON: Once = Once::new();
+
+            let mut result = None;
+            SINGLETON.call_once(|| result = Some($Type(())));
+            result
+        }
+    };
+}
+
+define_buffer_handle!(get_file_name_without_ext_handle() -> GetFileNameWithoutExtHandle);
+
 /// Get filename string without extension
 #[inline]
 pub fn get_file_name_without_ext<'a>(
-    file_path: &CStr, // 'a is NOT the lifetime of the `file_path`
+    _marker: &'a mut GetFileNameWithoutExtHandle,
+    file_path: &CStr,
 ) -> Option<&'a CStr> {
     let ptr = unsafe {
         sys::GetFileNameWithoutExt(
@@ -1802,10 +1832,13 @@ pub fn get_file_name_without_ext<'a>(
     }
 }
 
+define_buffer_handle!(get_directory_path_handle() -> GetDirectoryPathHandle);
+
 /// Get full path for a given fileName with path
 #[inline]
 pub fn get_directory_path<'a>(
-    file_path: &CStr, // 'a is NOT the lifetime of the `file_path`
+    _marker: &'a mut GetDirectoryPathHandle,
+    file_path: &CStr,
 ) -> Option<&'a CStr> {
     let ptr = unsafe {
         sys::GetDirectoryPath(
@@ -1823,10 +1856,13 @@ pub fn get_directory_path<'a>(
     }
 }
 
+define_buffer_handle!(get_prev_directory_path_handle() -> GetPrevDirectoryPathHandle);
+
 /// Get previous directory path for a given path
 #[inline]
 pub fn get_prev_directory_path<'a>(
-    dir_path: &CStr, // 'a is NOT the lifetime of the `file_path`
+    _marker: &'a mut GetPrevDirectoryPathHandle,
+    dir_path: &CStr,
 ) -> Option<&'a CStr> {
     let ptr = unsafe {
         sys::GetPrevDirectoryPath(
@@ -1844,9 +1880,13 @@ pub fn get_prev_directory_path<'a>(
     }
 }
 
-/// Get current working directory (uses static string)
+define_buffer_handle!(get_working_directory_handle() -> GetWorkingDirectoryHandle);
+
+/// Get current working directory
 #[inline]
-pub fn get_working_directory<'a>() -> Option<&'a CStr> {
+pub fn get_working_directory<'a>(
+    _marker: &'a mut GetWorkingDirectoryHandle,
+) -> Option<&'a CStr> {
     let ptr = unsafe {
         sys::GetWorkingDirectory()
     };
@@ -1861,9 +1901,13 @@ pub fn get_working_directory<'a>() -> Option<&'a CStr> {
     }
 }
 
-/// Get the directory of the running application (uses static string)
+define_buffer_handle!(get_application_directory_handle() -> GetApplicationDirectoryHandle);
+
+/// Get the directory of the running application
 #[inline]
-pub fn get_application_directory<'a>() -> Option<&'a CStr> {
+pub fn get_application_directory<'a>(
+    _marker: &'a mut GetApplicationDirectoryHandle,
+) -> Option<&'a CStr> {
     let ptr = unsafe {
         sys::GetApplicationDirectory()
     };
@@ -2013,37 +2057,204 @@ pub fn get_file_mod_time(
     }
 }
 
-// pub fn CompressData(
-//     data: *const ::std::os::raw::c_uchar,
-//     dataSize: ::std::os::raw::c_int,
-//     compDataSize: *mut ::std::os::raw::c_int,
-// ) -> *mut ::std::os::raw::c_uchar;
-// pub fn DecompressData(
-//     compData: *const ::std::os::raw::c_uchar,
-//     compDataSize: ::std::os::raw::c_int,
-//     dataSize: *mut ::std::os::raw::c_int,
-// ) -> *mut ::std::os::raw::c_uchar;
-// pub fn EncodeDataBase64(
-//     data: *const ::std::os::raw::c_uchar,
-//     dataSize: ::std::os::raw::c_int,
-//     outputSize: *mut ::std::os::raw::c_int,
-// ) -> *mut ::std::os::raw::c_char;
-// pub fn DecodeDataBase64(
-//     text: *const ::std::os::raw::c_char,
-//     outputSize: *mut ::std::os::raw::c_int,
-// ) -> *mut ::std::os::raw::c_uchar;
-// pub fn ComputeCRC32(
-//     data: *mut ::std::os::raw::c_uchar,
-//     dataSize: ::std::os::raw::c_int,
-// ) -> ::std::os::raw::c_uint;
-// pub fn ComputeMD5(
-//     data: *mut ::std::os::raw::c_uchar,
-//     dataSize: ::std::os::raw::c_int,
-// ) -> *mut ::std::os::raw::c_uint;
-// pub fn ComputeSHA1(
-//     data: *mut ::std::os::raw::c_uchar,
-//     dataSize: ::std::os::raw::c_int,
-// ) -> *mut ::std::os::raw::c_uint;
+// Compression/Encoding functionality
+
+/// Owned bytes that use Raylib memory functions
+pub struct RlBytes(NonNull<[u8]>);
+
+impl Drop for RlBytes {
+    fn drop(&mut self) {
+        mem_free(self.0.cast());
+    }
+}
+
+impl RlBytes {
+    unsafe fn new(ptr: *mut u8, len: c_int) -> Option<Self> {
+        if !ptr.is_null() {
+            Some(RlBytes(unsafe {
+                NonNull::new_unchecked(
+                    std::slice::from_raw_parts_mut(
+                        ptr,
+                        len.try_into().unwrap(),
+                    )
+                )
+            }))
+        } else {
+            None
+        }
+    }
+}
+
+impl Deref for RlBytes {
+    type Target = [u8];
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        unsafe {
+            self.0.as_ref()
+        }
+    }
+}
+
+impl DerefMut for RlBytes {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe {
+            self.0.as_mut()
+        }
+    }
+}
+
+/// Compress data (DEFLATE algorithm), memory must be MemFree()
+#[inline]
+pub fn compress_data(
+    data: &[u8],
+) -> Option<RlBytes> {
+    let mut len = MaybeUninit::uninit();
+    let ptr = unsafe {
+        sys::CompressData(
+            data.as_ptr(),
+            data.len().try_into().unwrap(),
+            len.as_mut_ptr(),
+        )
+    };
+    unsafe {
+        RlBytes::new(
+            ptr,
+            len.assume_init(),
+        )
+    }
+}
+
+/// Decompress data (DEFLATE algorithm), memory must be MemFree()
+#[inline]
+pub fn decompress_data(
+    comp_data: &[u8],
+) -> Option<RlBytes> {
+    let mut len = MaybeUninit::uninit();
+    let ptr = unsafe {
+        sys::DecompressData(
+            comp_data.as_ptr(),
+            comp_data.len().try_into().unwrap(),
+            len.as_mut_ptr(),
+        )
+    };
+    unsafe {
+        RlBytes::new(
+            ptr,
+            len.assume_init(),
+        )
+    }
+}
+
+pub struct RlCString(NonNull<CStr>);
+
+impl Drop for RlCString {
+    fn drop(&mut self) {
+        mem_free(self.0.cast());
+    }
+}
+
+impl RlCString {
+    unsafe fn new(ptr: *mut u8, len: c_int) -> Option<Self> {
+        if !ptr.is_null() {
+            unsafe {
+                let bytes = std::slice::from_raw_parts_mut(
+                    ptr,
+                    len.try_into().unwrap(),
+                );
+                Some(Self(
+                    NonNull::new_unchecked(
+                        std::ptr::from_ref(CStr::from_bytes_with_nul_unchecked(bytes)).cast_mut()
+                    )
+                ))
+            }
+        } else {
+            None
+        }
+    }
+}
+
+/// Encode data to Base64 string (includes NULL terminator), memory must be MemFree()
+#[inline]
+pub fn encode_data_base64(
+    data: &[u8],
+) -> Option<RlCString> {
+    let mut len = MaybeUninit::uninit();
+    unsafe {
+        let ptr = sys::EncodeDataBase64(
+            data.as_ptr(),
+            data.len().try_into().unwrap(),
+            len.as_mut_ptr(),
+        );
+        RlCString::new(ptr.cast(), len.assume_init())
+    }
+}
+
+/// Decode Base64 string (expected NULL terminated), memory must be MemFree()
+#[inline]
+pub fn decode_data_base64(
+    text: &CStr,
+) -> Option<RlCString> {
+    let mut len = MaybeUninit::uninit();
+    unsafe {
+        let ptr = sys::DecodeDataBase64(
+            text.as_ptr(),
+            len.as_mut_ptr(),
+        );
+        RlCString::new(ptr, len.assume_init())
+    }
+}
+
+/// Compute CRC32 hash code
+#[inline]
+pub fn compute_crc32(
+    data: &mut [u8],
+) -> u32 {
+    unsafe {
+        sys::ComputeCRC32(
+            data.as_mut_ptr(),
+            data.len().try_into().unwrap(),
+        )
+    }
+}
+
+define_buffer_handle!(compute_md5_handle() -> ComputeMD5Handle);
+
+/// Compute MD5 hash code, returns static int[4] (16 bytes)
+#[inline]
+pub fn compute_md5<'a>(
+    _marker: &'a mut ComputeMD5Handle,
+    data: &[u8],
+) -> &'a mut [u32; 4] {
+    unsafe {
+        let ptr = sys::ComputeMD5(
+            data.as_ptr().cast_mut(),
+            data.len().try_into().unwrap(),
+        );
+        assert!(!ptr.is_null(), "ComputeMD5 should always return its static buffer, never null, not even if there is an error");
+        &mut *ptr.cast::<[u32; 4]>()
+    }
+}
+
+define_buffer_handle!(compute_sha1_handle() -> ComputeSHA1Handle);
+
+/// Compute SHA1 hash code, returns static int[5] (20 bytes)
+#[inline]
+pub fn compute_sha1<'a>(
+    _marker: &'a mut ComputeSHA1Handle,
+    data: &[u8],
+) -> &'a mut [u32; 5] {
+    unsafe {
+        let ptr = sys::ComputeSHA1(
+            data.as_ptr().cast_mut(),
+            data.len().try_into().unwrap(),
+        );
+        assert!(!ptr.is_null(), "ComputeSHA1 should always return its static buffer, never null, not even if there is an error");
+        &mut *ptr.cast::<[u32; 5]>()
+    }
+}
+
 // pub fn LoadAutomationEventList(fileName: *const ::std::os::raw::c_char) -> AutomationEventList;
 // pub fn UnloadAutomationEventList(list: AutomationEventList);
 // pub fn ExportAutomationEventList(
