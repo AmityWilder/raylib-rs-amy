@@ -120,21 +120,22 @@ impl PlatformOS {
 }
 
 fn main() {
-    println!("cargo:rerun-if-changed=./binding/binding.h");
+    println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=raylib");
 
     let target = dbg!(std::env::var("TARGET")).unwrap();
     let out = PathBuf::from(std::env::var("OUT_DIR").unwrap());
-
-    let profile = Profile::new();
-    let platform = Platform::new(&target);
-    let platform_os = PlatformOS::new(&target);
-
     let rl_path = out.join("raylib");
-    if !rl_path.exists() {
-        copy_recursive("raylib", rl_path.as_path())
-            .unwrap_or_else(|e| panic!("failed to copy raylib source to `{}`: {e}", out.display()));
-    }
+        let profile = Profile::new();
+        let platform = Platform::new(&target);
+        let platform_os = PlatformOS::new(&target);
+
+    if rl_path.exists() { return; } // temporary
+
+    copy_recursive("raylib", rl_path.as_path())
+        .unwrap_or_else(|e| panic!("failed to copy raylib source to `{}`: {e}", out.display()));
+
+    let bindings_path = out.join("bindings.rs");
 
     let mut conf = cmake::Config::new(rl_path.as_path());
     conf.profile(profile.as_str())
@@ -201,6 +202,7 @@ fn main() {
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
         .bitfield_enum(r".+Flags")
         .constified_enum_module(r".+Index")
+        .translate_enum_integer_types(false)
         .prepend_enum_name(false)
         .array_pointers_in_arguments(true)
         .derive_default(true)
@@ -278,6 +280,6 @@ fn main() {
 
     println!("cargo:rustc-link-lib=static=raylib");
     bindings
-        .write_to_file(out.join("bindings.rs"))
+        .write_to_file(bindings_path)
         .expect("failed to write bindings");
 }
