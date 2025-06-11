@@ -81,8 +81,10 @@ fn copy_recursive<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q) -> std::io::Re
         for entry in fs::read_dir(from)? {
             let entry = entry?;
             let ty = entry.file_type()?;
+            let from = entry.path();
+            let to = to.as_ref().join(entry.file_name());
             if ty.is_dir() {
-                copy_recursive(entry.path(), to.as_ref().join(entry.file_name()));
+                copy_recursive(from, to)?;
             } else {
                 std::fs::copy(from, to)?;
             }
@@ -143,11 +145,11 @@ fn main() {
 
     let rl_path = out.join("raylib");
     if !rl_path.exists() {
-        copy_recursive("raylib", rl_path)
+        copy_recursive("raylib", rl_path.as_path())
             .unwrap_or_else(|e| panic!("failed to copy raylib source to `{}`: {e}", out.display()));
     }
 
-    let mut conf = cmake::Config::new(out.as_path());
+    let mut conf = cmake::Config::new(rl_path.as_path());
     conf.profile(profile.as_str())
         .define("PLATFORM", platform.as_str())
         .define("CMAKE_BUILD_TYPE", profile.as_str())
