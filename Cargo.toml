@@ -7,6 +7,7 @@ build = "build.rs"
 [features]
 custom_frame_control = []
 support_jpeg = []
+wayland = []
 
 [dependencies]
 

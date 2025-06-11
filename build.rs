@@ -1,15 +1,5 @@
 use std::{fs, path::{Path, PathBuf}};
 
-fn uname() -> String {
-    let v = std::process::Command::new("uname")
-        .output()
-        .expect("failed to run uname")
-        .stdout;
-
-    String::from_utf8(v)
-        .expect("uname expected in utf-8")
-}
-
 fn copy_recursive<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q) -> std::io::Result<()> {
     if !to.as_ref().exists() {
         std::fs::create_dir_all(&to)?;
@@ -35,8 +25,12 @@ enum Profile {
 }
 
 impl Profile {
-    const fn new(is_debug: bool) -> Self {
-        if is_debug { Self::Debug } else { Self::Release }
+    const fn new() -> Self {
+        if cfg!(debug_assertions) {
+            Self::Debug
+        } else {
+            Self::Release
+        }
     }
 
     #[inline]
@@ -95,36 +89,22 @@ enum PlatformOS {
 }
 
 impl PlatformOS {
-    fn new(platform: &Platform, target: &str) -> Self {
-        match platform {
-            Platform::Desktop => {
-                if target.contains("windows") || std::env::var("OS").is_ok_and(|os| os.contains("Windows_NT")) {
-                    Self::Windows
-                } else {
-                    let uname = uname();
-                    match uname.as_str() {
-                        "Linux" => Self::Linux,
-                        "Darwin" => Self::OSX,
-                        | "FreeBSD"
-                        | "OpenBSD"
-                        | "NetBSD"
-                        | "DragonFly"
-                            => Self::BSD,
-                        _ => Self::Unknown,
-                    }
-                }
-            }
+    const LOOKUP: [(&[&str], Self); 4] = [
+        (&["windows"], Self::Windows),
+        (&["linux"], Self::Linux),
+        (&["ios", "macos"], Self::OSX),
+        (&["freebsd", "openbsd", "netbsd", "dragonfly"], Self::BSD),
+    ];
 
-            Platform::RaspberryPi => {
-                let uname = uname();
-                match uname.as_str() {
-                    "Linux" => Self::Linux,
-                    _ => Self::Unknown,
-                }
-            }
-
-            Platform::Web => Self::Unknown,
-        }
+    fn new(target: &str) -> Self {
+        Self::LOOKUP
+            .into_iter()
+            .find_map(|(list, os)|
+                list.into_iter()
+                    .any(|s| target.contains(s))
+                    .then_some(os)
+            )
+            .unwrap_or(Self::Unknown)
     }
 
     #[allow(dead_code)]
@@ -143,12 +123,12 @@ fn main() {
     println!("cargo:rerun-if-changed=./binding/binding.h");
     println!("cargo:rerun-if-changed=raylib");
 
-    let target = std::env::var("TARGET").unwrap();
+    let target = dbg!(std::env::var("TARGET")).unwrap();
     let out = PathBuf::from(std::env::var("OUT_DIR").unwrap());
 
-    let profile = Profile::new(cfg!(debug_assertions));
+    let profile = Profile::new();
     let platform = Platform::new(&target);
-    let platform_os = PlatformOS::new(&platform, &target);
+    let platform_os = PlatformOS::new(&target);
 
     let rl_path = out.join("raylib");
     if !rl_path.exists() {
@@ -206,9 +186,36 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", dst_lib.display());
 
     let mut builder = bindgen::Builder::default()
-        .header("binding/binding.h")
+        .headers([
+            "raylib/src/config.h",
+            "raylib/src/raylib.h",
+            "raylib/src/raymath.h",
+            "raylib/src/rcamera.h",
+            "raylib/src/rgestures.h",
+            "raylib/src/rlgl.h",
+            "raylib/src/utils.h",
+        ])
+        .default_macro_constant_type(bindgen::MacroTypeVariation::Signed)
+        .fit_macro_constants(true)
+        .no_convert_floats()
+        .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
+        .bitfield_enum(r".+Flags")
+        .constified_enum_module(r".+Index")
+        .prepend_enum_name(false)
+        .array_pointers_in_arguments(true)
+        .derive_default(true)
+        .derive_copy(true)
+        .derive_eq(true)
+        .derive_hash(true)
+        .generate_comments(true)
+        .enable_function_attribute_detection()
+        .generate_block(true)
+        .generate_cstr(true)
+        .merge_extern_blocks(true)
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .clang_arg("-std=c99")
-        .clang_arg(platform.clang_arg());
+        .clang_arg(platform.clang_arg())
+        .clang_arg("-I../raylib/src");
 
     builder = match (platform, platform_os) {
         (Platform::Desktop, PlatformOS::Windows) => {
@@ -225,10 +232,52 @@ fn main() {
 
     let bindings = builder
         .generate()
-        .expect("Unable to generate bindings");
+        .expect("failed to generate bindings");
+
+    match platform_os {
+        PlatformOS::Windows => {
+            println!("cargo:rustc-link-lib=dylib=winmm");
+            println!("cargo:rustc-link-lib=dylib=gdi32");
+            println!("cargo:rustc-link-lib=dylib=user32");
+            println!("cargo:rustc-link-lib=dylib=shell32");
+        }
+        PlatformOS::Linux => {
+            if cfg!(feature = "wayland") {
+                println!("cargo:rustc-link-search=/usr/local/lib");
+                println!("cargo:rustc-link-lib=wayland-client");
+                println!("cargo:rustc-link-lib=glfw");
+            } else if cfg!(target_os = "android") {
+                println!("cargo:rustc-link-search=/usr/local/lib");
+                println!("cargo:rustc-link-lib=X11");
+            }
+        }
+        PlatformOS::OSX => {
+            println!("cargo:rustc-link-search=native=/usr/local/lib");
+            println!("cargo:rustc-link-lib=framework=OpenGL");
+            println!("cargo:rustc-link-lib=framework=Cocoa");
+            println!("cargo:rustc-link-lib=framework=IOKit");
+            println!("cargo:rustc-link-lib=framework=CoreFoundation");
+            println!("cargo:rustc-link-lib=framework=CoreVideo");
+        }
+        _ => {}
+    }
+
+    match platform {
+        Platform::Web => {
+            println!("cargo:rustc-link-lib=glfw");
+        }
+        Platform::RaspberryPi => {
+            println!("cargo:rustc-link-search=/opt/vc/lib");
+            println!("cargo:rustc-link-lib=bcm_host");
+            println!("cargo:rustc-link-lib=brcmEGL");
+            println!("cargo:rustc-link-lib=brcmGLESv2");
+            println!("cargo:rustc-link-lib=vcos");
+        }
+        _ => {}
+    }
 
     println!("cargo:rustc-link-lib=static=raylib");
     bindings
         .write_to_file(out.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
+        .expect("failed to write bindings");
 }
