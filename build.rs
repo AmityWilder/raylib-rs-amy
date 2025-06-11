@@ -1,5 +1,33 @@
 use std::{fs, path::{Path, PathBuf}};
 
+fn uname() -> String {
+    let v = std::process::Command::new("uname")
+        .output()
+        .expect("failed to run uname")
+        .stdout;
+
+    String::from_utf8(v)
+        .expect("uname expected in utf-8")
+}
+
+fn copy_recursive<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q) -> std::io::Result<()> {
+    if !to.as_ref().exists() {
+        std::fs::create_dir_all(&to)?;
+        for entry in fs::read_dir(from)? {
+            let entry = entry?;
+            let ty = entry.file_type()?;
+            let from = entry.path();
+            let to = to.as_ref().join(entry.file_name());
+            if ty.is_dir() {
+                copy_recursive(from, to)?;
+            } else {
+                std::fs::copy(from, to)?;
+            }
+        }
+    }
+    Ok(())
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum Profile {
     Debug,
@@ -7,6 +35,10 @@ enum Profile {
 }
 
 impl Profile {
+    const fn new(is_debug: bool) -> Self {
+        if is_debug { Self::Debug } else { Self::Release }
+    }
+
     #[inline]
     const fn as_str(&self) -> &'static str {
         match self {
@@ -24,6 +56,16 @@ enum Platform {
 }
 
 impl Platform {
+    fn new(target: &str) -> Self {
+        if target.contains("wasm") {
+            Self::Web
+        } else if target.contains("armv7-unknown-linux") {
+            Self::RaspberryPi
+        } else {
+            Self::Desktop
+        }
+    }
+
     #[inline]
     const fn as_str(&self) -> &'static str {
         match self {
@@ -53,6 +95,38 @@ enum PlatformOS {
 }
 
 impl PlatformOS {
+    fn new(platform: &Platform, target: &str) -> Self {
+        match platform {
+            Platform::Desktop => {
+                if target.contains("windows") || std::env::var("OS").is_ok_and(|os| os.contains("Windows_NT")) {
+                    Self::Windows
+                } else {
+                    let uname = uname();
+                    match uname.as_str() {
+                        "Linux" => Self::Linux,
+                        "Darwin" => Self::OSX,
+                        | "FreeBSD"
+                        | "OpenBSD"
+                        | "NetBSD"
+                        | "DragonFly"
+                            => Self::BSD,
+                        _ => Self::Unknown,
+                    }
+                }
+            }
+
+            Platform::RaspberryPi => {
+                let uname = uname();
+                match uname.as_str() {
+                    "Linux" => Self::Linux,
+                    _ => Self::Unknown,
+                }
+            }
+
+            Platform::Web => Self::Unknown,
+        }
+    }
+
     #[allow(dead_code)]
     const fn as_str(&self) -> &'static str {
         match self {
@@ -65,83 +139,16 @@ impl PlatformOS {
     }
 }
 
-fn uname() -> String {
-    let v = std::process::Command::new("uname")
-        .output()
-        .expect("failed to run uname")
-        .stdout;
-
-    String::from_utf8(v)
-        .expect("uname expected in utf-8")
-}
-
-fn copy_recursive<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q) -> std::io::Result<()> {
-    if !to.as_ref().exists() {
-        std::fs::create_dir_all(&to)?;
-        for entry in fs::read_dir(from)? {
-            let entry = entry?;
-            let ty = entry.file_type()?;
-            let from = entry.path();
-            let to = to.as_ref().join(entry.file_name());
-            if ty.is_dir() {
-                copy_recursive(from, to)?;
-            } else {
-                std::fs::copy(from, to)?;
-            }
-        }
-    }
-    Ok(())
-}
-
 fn main() {
     println!("cargo:rerun-if-changed=./binding/binding.h");
+    println!("cargo:rerun-if-changed=raylib");
 
     let target = std::env::var("TARGET").unwrap();
     let out = PathBuf::from(std::env::var("OUT_DIR").unwrap());
 
-    let profile = if cfg!(debug_assertions) {
-        Profile::Debug
-    } else {
-        Profile::Release
-    };
-
-    let platform = if target.contains("wasm") {
-        Platform::Web
-    } else if target.contains("armv7-unknown-linux") {
-        Platform::RaspberryPi
-    } else {
-        Platform::Desktop
-    };
-
-    let platform_os = match platform {
-        Platform::Desktop => {
-            if target.contains("windows") || std::env::var("OS").is_ok_and(|os| os.contains("Windows_NT")) {
-                PlatformOS::Windows
-            } else {
-                let uname = uname();
-                match uname.as_str() {
-                    "Linux" => PlatformOS::Linux,
-                    "Darwin" => PlatformOS::OSX,
-                    | "FreeBSD"
-                    | "OpenBSD"
-                    | "NetBSD"
-                    | "DragonFly"
-                        => PlatformOS::BSD,
-                    _ => PlatformOS::Unknown,
-                }
-            }
-        }
-
-        Platform::RaspberryPi => {
-            let uname = uname();
-            match uname.as_str() {
-                "Linux" => PlatformOS::Linux,
-                _ => PlatformOS::Unknown,
-            }
-        }
-
-        Platform::Web => PlatformOS::Unknown,
-    };
+    let profile = Profile::new(cfg!(debug_assertions));
+    let platform = Platform::new(&target);
+    let platform_os = PlatformOS::new(&platform, &target);
 
     let rl_path = out.join("raylib");
     if !rl_path.exists() {
