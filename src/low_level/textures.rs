@@ -1395,42 +1395,60 @@ pub fn image_draw_text_ex(
 
 /// Load texture from file into GPU memory (VRAM)
 #[inline]
-pub fn LoadTexture(fileName: *const ::std::os::raw::c_char) -> Texture2D;
+pub fn LoadTexture(
+    fileName: *const ::std::os::raw::c_char,
+) -> Texture2D;
 
 /// Load texture from image data
 #[inline]
-pub fn LoadTextureFromImage(image: Image) -> Texture2D;
+pub fn LoadTextureFromImage(
+    image: Image,
+) -> Texture2D;
 
 /// Load cubemap from image, multiple image cubemap layouts supported
 #[inline]
-pub fn LoadTextureCubemap(image: Image, layout: ::std::os::raw::c_int) -> TextureCubemap;
+pub fn LoadTextureCubemap(
+    image: Image,
+    layout: i32,
+) -> TextureCubemap;
 
 /// Load texture for rendering (framebuffer)
 #[inline]
 pub fn LoadRenderTexture(
-    width: ::std::os::raw::c_int,
-    height: ::std::os::raw::c_int,
+    width: i32,
+    height: i32,
 ) -> RenderTexture2D;
 
 /// Check if a texture is valid (loaded in GPU)
 #[inline]
-pub fn IsTextureValid(texture: Texture2D) -> bool;
+pub fn IsTextureValid(
+    texture: Texture2D,
+) -> bool;
 
 /// Unload texture from GPU memory (VRAM)
 #[inline]
-pub fn UnloadTexture(texture: Texture2D);
+pub fn UnloadTexture(
+    texture: Texture2D,
+);
 
 /// Check if a render texture is valid (loaded in GPU)
 #[inline]
-pub fn IsRenderTextureValid(target: RenderTexture2D) -> bool;
+pub fn IsRenderTextureValid(
+    target: RenderTexture2D,
+) -> bool;
 
 /// Unload render texture from GPU memory (VRAM)
 #[inline]
-pub fn UnloadRenderTexture(target: RenderTexture2D);
+pub fn UnloadRenderTexture(
+    target: RenderTexture2D,
+);
 
 /// Update GPU texture with new data
 #[inline]
-pub fn UpdateTexture(texture: Texture2D, pixels: *const ::std::os::raw::c_void);
+pub fn UpdateTexture(
+    texture: Texture2D,
+    pixels: *const ::std::os::raw::c_void,
+);
 
 /// Update GPU texture rectangle with new data
 #[inline]
@@ -1444,15 +1462,23 @@ pub fn UpdateTextureRec(
 
 /// Generate GPU mipmaps for a texture
 #[inline]
-pub fn GenTextureMipmaps(texture: *mut Texture2D);
+pub fn GenTextureMipmaps(
+    texture: *mut Texture2D,
+);
 
 /// Set texture scaling filter mode
 #[inline]
-pub fn SetTextureFilter(texture: Texture2D, filter: ::std::os::raw::c_int);
+pub fn SetTextureFilter(
+    texture: Texture2D,
+    filter: i32,
+);
 
 /// Set texture wrapping mode
 #[inline]
-pub fn SetTextureWrap(texture: Texture2D, wrap: ::std::os::raw::c_int);
+pub fn SetTextureWrap(
+    texture: Texture2D,
+    wrap: i32,
+);
 
 // Texture drawing functions
 
@@ -1460,28 +1486,37 @@ pub fn SetTextureWrap(texture: Texture2D, wrap: ::std::os::raw::c_int);
 #[inline]
 pub fn DrawTexture(
     texture: Texture2D,
-    posX: ::std::os::raw::c_int,
-    posY: ::std::os::raw::c_int,
+    posX: i32,
+    posY: i32,
     tint: Color,
 );
 
 /// Draw a Texture2D with position defined as Vector2
 #[inline]
-pub fn DrawTextureV(texture: Texture2D, position: Vector2, tint: Color);
+pub fn DrawTextureV(
+    texture: Texture2D,
+    position: Vector2,
+    tint: Color,
+);
 
 /// Draw a Texture2D with extended parameters
 #[inline]
 pub fn DrawTextureEx(
     texture: Texture2D,
     position: Vector2,
-    rotation: ::std::os::raw::c_float,
-    scale: ::std::os::raw::c_float,
+    rotation: f32,
+    scale: f32,
     tint: Color,
 );
 
 /// Draw a part of a texture defined by a rectangle
 #[inline]
-pub fn DrawTextureRec(texture: Texture2D, source: Rectangle, position: Vector2, tint: Color);
+pub fn DrawTextureRec(
+    texture: Texture2D,
+    source: Rectangle,
+    position: Vector2,
+    tint: Color,
+);
 
 /// Draw a part of a texture defined by a rectangle with 'pro' parameters
 #[inline]
@@ -1490,7 +1525,7 @@ pub fn DrawTexturePro(
     source: Rectangle,
     dest: Rectangle,
     origin: Vector2,
-    rotation: ::std::os::raw::c_float,
+    rotation: f32,
     tint: Color,
 );
 
@@ -1501,7 +1536,7 @@ pub fn DrawTextureNPatch(
     nPatchInfo: NPatchInfo,
     dest: Rectangle,
     origin: Vector2,
-    rotation: ::std::os::raw::c_float,
+    rotation: f32,
     tint: Color,
 );
 
@@ -1509,69 +1544,105 @@ pub fn DrawTextureNPatch(
 
 /// Check if two colors are equal
 #[inline]
-pub fn ColorIsEqual(col1: Color, col2: Color) -> bool;
+pub fn ColorIsEqual(
+    col1: Color,
+    col2: Color,
+) -> bool;
 
 /// Get color with alpha applied, alpha goes from 0.0f to 1.0f
 #[inline]
-pub fn Fade(color: Color, alpha: ::std::os::raw::c_float) -> Color;
+pub fn Fade(
+    color: Color,
+    alpha: f32,
+) -> Color;
 
 /// Get hexadecimal value for a Color (0xRRGGBBAA)
 #[inline]
-pub fn ColorToInt(color: Color) -> ::std::os::raw::c_int;
+pub fn ColorToInt(
+    color: Color,
+) -> i32;
 
 /// Get Color normalized as float [0..1]
 #[inline]
-pub fn ColorNormalize(color: Color) -> Vector4;
+pub fn ColorNormalize(
+    color: Color,
+) -> Vector4;
 
 /// Get Color from normalized values [0..1]
 #[inline]
-pub fn ColorFromNormalized(normalized: Vector4) -> Color;
+pub fn ColorFromNormalized(
+    normalized: Vector4,
+) -> Color;
 
 /// Get HSV values for a Color, hue [0..360], saturation/value [0..1]
 #[inline]
-pub fn ColorToHSV(color: Color) -> Vector3;
+pub fn ColorToHSV(
+    color: Color,
+) -> Vector3;
 
 /// Get a Color from HSV values, hue [0..360], saturation/value [0..1]
 #[inline]
 pub fn ColorFromHSV(
-    hue: ::std::os::raw::c_float,
-    saturation: ::std::os::raw::c_float,
-    value: ::std::os::raw::c_float,
+    hue: f32,
+    saturation: f32,
+    value: f32,
 ) -> Color;
 
 /// Get color multiplied with another color
 #[inline]
-pub fn ColorTint(color: Color, tint: Color) -> Color;
+pub fn ColorTint(
+    color: Color,
+    tint: Color,
+) -> Color;
 
 /// Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
 #[inline]
-pub fn ColorBrightness(color: Color, factor: ::std::os::raw::c_float) -> Color;
+pub fn ColorBrightness(
+    color: Color,
+    factor: f32,
+) -> Color;
 
 /// Get color with contrast correction, contrast values between -1.0f and 1.0f
 #[inline]
-pub fn ColorContrast(color: Color, contrast: ::std::os::raw::c_float) -> Color;
+pub fn ColorContrast(
+    color: Color,
+    contrast: f32,
+) -> Color;
 
 /// Get color with alpha applied, alpha goes from 0.0f to 1.0f
 #[inline]
-pub fn ColorAlpha(color: Color, alpha: ::std::os::raw::c_float) -> Color;
+pub fn ColorAlpha(
+    color: Color,
+    alpha: f32,
+) -> Color;
 
 /// Get src alpha-blended into dst color with tint
 #[inline]
-pub fn ColorAlphaBlend(dst: Color, src: Color, tint: Color) -> Color;
+pub fn ColorAlphaBlend(
+    dst: Color,
+    src: Color,
+    tint: Color,
+) -> Color;
 
 /// Get color lerp interpolation between two colors, factor [0.0f..1.0f]
 #[inline]
-pub fn ColorLerp(color1: Color, color2: Color, factor: ::std::os::raw::c_float) -> Color;
+pub fn ColorLerp(
+    color1: Color,
+    color2: Color,
+    factor: f32,
+) -> Color;
 
 /// Get Color structure from hexadecimal value
 #[inline]
-pub fn GetColor(hexValue: ::std::os::raw::c_uint) -> Color;
+pub fn GetColor(
+    hexValue: u32,
+) -> Color;
 
 /// Get Color from a source pixel pointer of certain format
 #[inline]
 pub fn GetPixelColor(
     srcPtr: *mut ::std::os::raw::c_void,
-    format: ::std::os::raw::c_int,
+    format: i32,
 ) -> Color;
 
 /// Set color formatted into destination pixel pointer
@@ -1579,13 +1650,13 @@ pub fn GetPixelColor(
 pub fn SetPixelColor(
     dstPtr: *mut ::std::os::raw::c_void,
     color: Color,
-    format: ::std::os::raw::c_int,
+    format: i32,
 );
 
 /// Get pixel data size in bytes for certain format
 #[inline]
 pub fn GetPixelDataSize(
-    width: ::std::os::raw::c_int,
-    height: ::std::os::raw::c_int,
-    format: ::std::os::raw::c_int,
-) -> ::std::os::raw::c_int;
+    width: i32,
+    height: i32,
+    format: i32,
+) -> i32;

@@ -8,45 +8,53 @@ pub fn GetFontDefault() -> Font;
 
 /// Load font from file into GPU memory (VRAM)
 #[inline]
-pub fn LoadFont(fileName: *const ::std::os::raw::c_char) -> Font;
+pub fn LoadFont(
+    fileName: *const ::std::os::raw::c_char,
+) -> Font;
 
 /// Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character set, font size is provided in pixels height
 #[inline]
 pub fn LoadFontEx(
     fileName: *const ::std::os::raw::c_char,
-    fontSize: ::std::os::raw::c_int,
-    codepoints: *mut ::std::os::raw::c_int,
-    codepointCount: ::std::os::raw::c_int,
+    fontSize: i32,
+    codepoints: *mut i32,
+    codepointCount: i32,
 ) -> Font;
 
 /// Load font from Image (XNA style)
 #[inline]
-pub fn LoadFontFromImage(image: Image, key: Color, firstChar: ::std::os::raw::c_int) -> Font;
+pub fn LoadFontFromImage(
+    image: Image,
+    key: Color,
+    firstChar: i32,
+) -> Font;
 
 /// Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
 #[inline]
 pub fn LoadFontFromMemory(
     fileType: *const ::std::os::raw::c_char,
-    fileData: *const ::std::os::raw::c_uchar,
-    dataSize: ::std::os::raw::c_int,
-    fontSize: ::std::os::raw::c_int,
-    codepoints: *mut ::std::os::raw::c_int,
-    codepointCount: ::std::os::raw::c_int,
+    fileData: *const u8,
+    dataSize: i32,
+    fontSize: i32,
+    codepoints: *mut i32,
+    codepointCount: i32,
 ) -> Font;
 
 /// Check if a font is valid (font data loaded, WARNING: GPU texture not checked)
 #[inline]
-pub fn IsFontValid(font: Font) -> bool;
+pub fn IsFontValid(
+    font: Font,
+) -> bool;
 
 /// Load font data for further use
 #[inline]
 pub fn LoadFontData(
-    fileData: *const ::std::os::raw::c_uchar,
-    dataSize: ::std::os::raw::c_int,
-    fontSize: ::std::os::raw::c_int,
-    codepoints: *mut ::std::os::raw::c_int,
-    codepointCount: ::std::os::raw::c_int,
-    type_: ::std::os::raw::c_int,
+    fileData: *const u8,
+    dataSize: i32,
+    fontSize: i32,
+    codepoints: *mut i32,
+    codepointCount: i32,
+    type_: i32,
 ) -> *mut GlyphInfo;
 
 /// Generate image font atlas using chars info
@@ -54,37 +62,48 @@ pub fn LoadFontData(
 pub fn GenImageFontAtlas(
     glyphs: *const GlyphInfo,
     glyphRecs: *mut *mut Rectangle,
-    glyphCount: ::std::os::raw::c_int,
-    fontSize: ::std::os::raw::c_int,
-    padding: ::std::os::raw::c_int,
-    packMethod: ::std::os::raw::c_int,
+    glyphCount: i32,
+    fontSize: i32,
+    padding: i32,
+    packMethod: i32,
 ) -> Image;
 
 /// Unload font chars info data (RAM)
 #[inline]
-pub fn UnloadFontData(glyphs: *mut GlyphInfo, glyphCount: ::std::os::raw::c_int);
+pub fn UnloadFontData(
+    glyphs: *mut GlyphInfo,
+    glyphCount: i32,
+);
 
 /// Unload font from GPU memory (VRAM)
 #[inline]
-pub fn UnloadFont(font: Font);
+pub fn UnloadFont(
+    font: Font,
+);
 
 /// Export font as code file, returns true on success
 #[inline]
-pub fn ExportFontAsCode(font: Font, fileName: *const ::std::os::raw::c_char) -> bool;
+pub fn ExportFontAsCode(
+    font: Font,
+    fileName: *const ::std::os::raw::c_char,
+) -> bool;
 
 // Text drawing functions
 
 /// Draw current FPS
 #[inline]
-pub fn DrawFPS(posX: ::std::os::raw::c_int, posY: ::std::os::raw::c_int);
+pub fn DrawFPS(
+    posX: i32,
+    posY: i32,
+);
 
 /// Draw text (using default font)
 #[inline]
 pub fn DrawText(
     text: *const ::std::os::raw::c_char,
-    posX: ::std::os::raw::c_int,
-    posY: ::std::os::raw::c_int,
-    fontSize: ::std::os::raw::c_int,
+    posX: i32,
+    posY: i32,
+    fontSize: i32,
     color: Color,
 );
 
@@ -94,8 +113,8 @@ pub fn DrawTextEx(
     font: Font,
     text: *const ::std::os::raw::c_char,
     position: Vector2,
-    fontSize: ::std::os::raw::c_float,
-    spacing: ::std::os::raw::c_float,
+    fontSize: f32,
+    spacing: f32,
     tint: Color,
 );
 
@@ -106,9 +125,9 @@ pub fn DrawTextPro(
     text: *const ::std::os::raw::c_char,
     position: Vector2,
     origin: Vector2,
-    rotation: ::std::os::raw::c_float,
-    fontSize: ::std::os::raw::c_float,
-    spacing: ::std::os::raw::c_float,
+    rotation: f32,
+    fontSize: f32,
+    spacing: f32,
     tint: Color,
 );
 
@@ -116,9 +135,9 @@ pub fn DrawTextPro(
 #[inline]
 pub fn DrawTextCodepoint(
     font: Font,
-    codepoint: ::std::os::raw::c_int,
+    codepoint: i32,
     position: Vector2,
-    fontSize: ::std::os::raw::c_float,
+    fontSize: f32,
     tint: Color,
 );
 
@@ -126,11 +145,11 @@ pub fn DrawTextCodepoint(
 #[inline]
 pub fn DrawTextCodepoints(
     font: Font,
-    codepoints: *const ::std::os::raw::c_int,
-    codepointCount: ::std::os::raw::c_int,
+    codepoints: *const i32,
+    codepointCount: i32,
     position: Vector2,
-    fontSize: ::std::os::raw::c_float,
-    spacing: ::std::os::raw::c_float,
+    fontSize: f32,
+    spacing: f32,
     tint: Color,
 );
 
@@ -138,90 +157,107 @@ pub fn DrawTextCodepoints(
 
 /// Set vertical line spacing when drawing with line-breaks
 #[inline]
-pub fn SetTextLineSpacing(spacing: ::std::os::raw::c_int);
+pub fn SetTextLineSpacing(
+    spacing: i32,
+);
 
 /// Measure string width for default font
 #[inline]
 pub fn MeasureText(
     text: *const ::std::os::raw::c_char,
-    fontSize: ::std::os::raw::c_int,
-) -> ::std::os::raw::c_int;
+    fontSize: i32,
+) -> i32;
 
 /// Measure string size for Font
 #[inline]
 pub fn MeasureTextEx(
     font: Font,
     text: *const ::std::os::raw::c_char,
-    fontSize: ::std::os::raw::c_float,
-    spacing: ::std::os::raw::c_float,
+    fontSize: f32,
+    spacing: f32,
 ) -> Vector2;
 
 /// Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
 #[inline]
-pub fn GetGlyphIndex(font: Font, codepoint: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+pub fn GetGlyphIndex(
+    font: Font,
+    codepoint: i32,
+) -> i32;
 
 /// Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
 #[inline]
-pub fn GetGlyphInfo(font: Font, codepoint: ::std::os::raw::c_int) -> GlyphInfo;
+pub fn GetGlyphInfo(
+    font: Font,
+    codepoint: i32,
+) -> GlyphInfo;
 
 /// Get glyph rectangle in font atlas for a codepoint (unicode character), fallback to '?' if not found
 #[inline]
-pub fn GetGlyphAtlasRec(font: Font, codepoint: ::std::os::raw::c_int) -> Rectangle;
+pub fn GetGlyphAtlasRec(
+    font: Font,
+    codepoint: i32,
+) -> Rectangle;
 
 // Text codepoints management functions (unicode characters)
 
 /// Load UTF-8 text encoded from codepoints array
 #[inline]
 pub fn LoadUTF8(
-    codepoints: *const ::std::os::raw::c_int,
-    length: ::std::os::raw::c_int,
+    codepoints: *const i32,
+    length: i32,
 ) -> *mut ::std::os::raw::c_char;
 
 /// Unload UTF-8 text encoded from codepoints array
 #[inline]
-pub fn UnloadUTF8(text: *mut ::std::os::raw::c_char);
+pub fn UnloadUTF8(
+    text: *mut ::std::os::raw::c_char,
+);
 
 /// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
 #[inline]
 pub fn LoadCodepoints(
     text: *const ::std::os::raw::c_char,
-    count: *mut ::std::os::raw::c_int,
-) -> *mut ::std::os::raw::c_int;
+    count: *mut i32,
+) -> *mut i32;
 
 /// Unload codepoints data from memory
 #[inline]
-pub fn UnloadCodepoints(codepoints: *mut ::std::os::raw::c_int);
+pub fn UnloadCodepoints(
+    codepoints: *mut i32,
+);
 
 /// Get total number of codepoints in a UTF-8 encoded string
 #[inline]
-pub fn GetCodepointCount(text: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+pub fn GetCodepointCount(
+    text: *const ::std::os::raw::c_char,
+) -> i32;
 
 /// Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
 #[inline]
 pub fn GetCodepoint(
     text: *const ::std::os::raw::c_char,
-    codepointSize: *mut ::std::os::raw::c_int,
-) -> ::std::os::raw::c_int;
+    codepointSize: *mut i32,
+) -> i32;
 
 /// Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
 #[inline]
 pub fn GetCodepointNext(
     text: *const ::std::os::raw::c_char,
-    codepointSize: *mut ::std::os::raw::c_int,
-) -> ::std::os::raw::c_int;
+    codepointSize: *mut i32,
+) -> i32;
 
 /// Get previous codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
 #[inline]
 pub fn GetCodepointPrevious(
     text: *const ::std::os::raw::c_char,
-    codepointSize: *mut ::std::os::raw::c_int,
-) -> ::std::os::raw::c_int;
+    codepointSize: *mut i32,
+) -> i32;
 
 /// Encode one codepoint into UTF-8 byte array (array length returned as parameter)
 #[inline]
 pub fn CodepointToUTF8(
-    codepoint: ::std::os::raw::c_int,
-    utf8Size: *mut ::std::os::raw::c_int,
+    codepoint: i32,
+    utf8Size: *mut i32,
 ) -> *const ::std::os::raw::c_char;
 
 // Text strings management functions (no UTF-8 strings, only byte chars)
@@ -233,7 +269,7 @@ pub fn CodepointToUTF8(
 pub fn TextCopy(
     dst: *mut ::std::os::raw::c_char,
     src: *const ::std::os::raw::c_char,
-) -> ::std::os::raw::c_int;
+) -> i32;
 
 /// Check if two text string are equal
 #[inline]
@@ -244,18 +280,22 @@ pub fn TextIsEqual(
 
 /// Get text length, checks for '\0' ending
 #[inline]
-pub fn TextLength(text: *const ::std::os::raw::c_char) -> ::std::os::raw::c_uint;
+pub fn TextLength(
+    text: *const ::std::os::raw::c_char,
+) -> u32;
 
 /// Text formatting with variables (sprintf() style)
 #[inline]
-pub fn TextFormat(text: *const ::std::os::raw::c_char, ...) -> *const ::std::os::raw::c_char;
+pub fn TextFormat(
+    text: *const ::std::os::raw::c_char,
+    ...) -> *const ::std::os::raw::c_char;
 
 /// Get a piece of a text string
 #[inline]
 pub fn TextSubtext(
     text: *const ::std::os::raw::c_char,
-    position: ::std::os::raw::c_int,
-    length: ::std::os::raw::c_int,
+    position: i32,
+    length: i32,
 ) -> *const ::std::os::raw::c_char;
 
 /// Replace text string (WARNING: memory must be freed!)
@@ -271,14 +311,14 @@ pub fn TextReplace(
 pub fn TextInsert(
     text: *const ::std::os::raw::c_char,
     insert: *const ::std::os::raw::c_char,
-    position: ::std::os::raw::c_int,
+    position: i32,
 ) -> *mut ::std::os::raw::c_char;
 
 /// Join text strings with delimiter
 #[inline]
 pub fn TextJoin(
     textList: *mut *mut ::std::os::raw::c_char,
-    count: ::std::os::raw::c_int,
+    count: i32,
     delimiter: *const ::std::os::raw::c_char,
 ) -> *mut ::std::os::raw::c_char;
 
@@ -287,7 +327,7 @@ pub fn TextJoin(
 pub fn TextSplit(
     text: *const ::std::os::raw::c_char,
     delimiter: ::std::os::raw::c_char,
-    count: *mut ::std::os::raw::c_int,
+    count: *mut i32,
 ) -> *mut *mut ::std::os::raw::c_char;
 
 /// Append text at specific position and move cursor!
@@ -295,7 +335,7 @@ pub fn TextSplit(
 pub fn TextAppend(
     text: *mut ::std::os::raw::c_char,
     append: *const ::std::os::raw::c_char,
-    position: *mut ::std::os::raw::c_int,
+    position: *mut i32,
 );
 
 /// Find first text occurrence within a string
@@ -303,33 +343,47 @@ pub fn TextAppend(
 pub fn TextFindIndex(
     text: *const ::std::os::raw::c_char,
     find: *const ::std::os::raw::c_char,
-) -> ::std::os::raw::c_int;
+) -> i32;
 
 /// Get upper case version of provided string
 #[inline]
-pub fn TextToUpper(text: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+pub fn TextToUpper(
+    text: *const ::std::os::raw::c_char,
+) -> *mut ::std::os::raw::c_char;
 
 /// Get lower case version of provided string
 #[inline]
-pub fn TextToLower(text: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+pub fn TextToLower(
+    text: *const ::std::os::raw::c_char,
+) -> *mut ::std::os::raw::c_char;
 
 /// Get Pascal case notation version of provided string
 #[inline]
-pub fn TextToPascal(text: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+pub fn TextToPascal(
+    text: *const ::std::os::raw::c_char,
+) -> *mut ::std::os::raw::c_char;
 
 /// Get Snake case notation version of provided string
 #[inline]
-pub fn TextToSnake(text: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+pub fn TextToSnake(
+    text: *const ::std::os::raw::c_char,
+) -> *mut ::std::os::raw::c_char;
 
 /// Get Camel case notation version of provided string
 #[inline]
-pub fn TextToCamel(text: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
+pub fn TextToCamel(
+    text: *const ::std::os::raw::c_char,
+) -> *mut ::std::os::raw::c_char;
 
 
 /// Get integer value from text
 #[inline]
-pub fn TextToInteger(text: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+pub fn TextToInteger(
+    text: *const ::std::os::raw::c_char,
+) -> i32;
 
 /// Get float value from text
 #[inline]
-pub fn TextToFloat(text: *const ::std::os::raw::c_char) -> ::std::os::raw::c_float;
+pub fn TextToFloat(
+    text: *const ::std::os::raw::c_char,
+) -> f32;

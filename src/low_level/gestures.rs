@@ -1,6 +1,6 @@
-use super::*;
+use super::sys;
 
-/// Enable a set of gestures using flags
+/// Enable only desired gestures to be detected
 #[inline]
 pub fn set_gestures_enabled(
     flags: sys::Gesture,
@@ -33,6 +33,8 @@ pub fn get_gesture_detected() -> sys::Gesture {
 }
 
 /// Get gesture hold time in seconds
+///
+/// NOTE: time is calculated on current gesture HOLD
 #[inline]
 pub fn get_gesture_hold_duration() -> f32 {
     unsafe {
@@ -41,12 +43,16 @@ pub fn get_gesture_hold_duration() -> f32 {
 }
 
 /// Get gesture hold time
+///
+/// NOTE: time is calculated on current gesture HOLD
 #[inline]
 pub fn get_gesture_hold_time() -> Duration {
     Duration::from_secs_f32(get_gesture_hold_duration())
 }
 
-/// Get gesture drag vector
+/// Get gesture drag vector (between initial touch point to current)
+///
+/// NOTE: drag vector is calculated on one touch points `TOUCH_ACTION_MOVE`
 #[inline]
 pub fn get_gesture_drag_vector() -> sys::Vector2 {
     unsafe {
@@ -55,6 +61,10 @@ pub fn get_gesture_drag_vector() -> sys::Vector2 {
 }
 
 /// Get gesture drag angle
+///
+/// NOTE: Angle in degrees, horizontal-right is 0, counterclockwise
+///
+/// NOTE: drag angle is calculated on one touch points `TOUCH_ACTION_UP`
 #[inline]
 pub fn get_gesture_drag_angle() -> f32 {
     unsafe {
@@ -62,7 +72,9 @@ pub fn get_gesture_drag_angle() -> f32 {
     }
 }
 
-/// Get gesture pinch delta
+/// Get gesture pinch delta; distance between two pinch points
+///
+/// NOTE: Pinch distance is calculated on two touch points `TOUCH_ACTION_MOVE`
 #[inline]
 pub fn get_gesture_pinch_vector() -> sys::Vector2 {
     unsafe {
@@ -71,6 +83,10 @@ pub fn get_gesture_pinch_vector() -> sys::Vector2 {
 }
 
 /// Get gesture pinch angle
+///
+/// NOTE: Angle in degrees, horizontal-right is 0, counterclockwise
+///
+/// NOTE: pinch angle is calculated on two touch points `TOUCH_ACTION_MOVE`
 #[inline]
 pub fn get_gesture_pinch_angle() -> f32 {
     unsafe {
@@ -78,5 +94,24 @@ pub fn get_gesture_pinch_angle() -> f32 {
     }
 }
 
-pub fn ProcessGestureEvent(event: GestureEvent);
-pub fn UpdateGestures();
+/// Process gesture event and translate it into gestures
+#[inline]
+pub fn process_gesture_event(
+    event: GestureEvent,
+) {
+    unsafe {
+        sys::ProcessGestureEvent(
+            event,
+        );
+    }
+}
+
+/// Update gestures detected (must be called every frame)
+///
+/// NOTE: Gestures are processed through system callbacks on touch events
+#[inline]
+pub fn update_gestures() {
+    unsafe {
+        sys::UpdateGestures();
+    }
+}
