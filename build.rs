@@ -120,7 +120,6 @@ impl PlatformOS {
 }
 
 fn main() {
-    println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=raylib");
 
     let target = dbg!(std::env::var("TARGET")).unwrap();
