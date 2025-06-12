@@ -1,4 +1,4 @@
-use super::sys;
+use super::*;
 
 /// Enable only desired gestures to be detected
 #[inline]
@@ -7,7 +7,7 @@ pub fn set_gestures_enabled(
 ) {
     unsafe {
         sys::SetGesturesEnabled(
-            i32::cast_unsigned(flags.0),
+            flags.0,
         );
     }
 }
@@ -19,7 +19,7 @@ pub fn is_gesture_detected(
 ) -> bool {
     unsafe {
         sys::IsGestureDetected(
-            i32::cast_unsigned(gesture.0),
+            gesture.0,
         )
     }
 }
@@ -28,7 +28,7 @@ pub fn is_gesture_detected(
 #[inline]
 pub fn get_gesture_detected() -> sys::Gesture {
     unsafe {
-        sys::Gesture(sys::GetGestureDetected())
+        sys::Gesture(sys::GetGestureDetected().cast_unsigned())
     }
 }
 
@@ -97,7 +97,7 @@ pub fn get_gesture_pinch_angle() -> f32 {
 /// Process gesture event and translate it into gestures
 #[inline]
 pub fn process_gesture_event(
-    event: GestureEvent,
+    event: sys::GestureEvent,
 ) {
     unsafe {
         sys::ProcessGestureEvent(

@@ -1,12 +1,27 @@
 use std::ffi::{CStr, CString, NulError};
 use std::marker::PhantomData;
 use std::mem::{MaybeUninit, transmute};
-use std::num::{NonZero, NonZeroI32};
+use std::num::NonZero;
 use std::ops::{Deref, DerefMut};
-use std::os::raw::{c_int, c_void};
+use std::os::raw::{c_int, c_void, c_char};
 use std::ptr::{null, null_mut, NonNull};
 use std::sync::Once;
 use std::time::Duration;
+
+macro_rules! define_buffer_handle {
+    ($func:ident() -> $Type:ident) => {
+        pub struct $Type(());
+
+        #[inline]
+        pub fn $func() -> Option<$Type> {
+            static SINGLETON: Once = Once::new();
+
+            let mut result = None;
+            SINGLETON.call_once(|| result = Some($Type(())));
+            result
+        }
+    };
+}
 
 /// Direct bindings to Raylib C
 pub mod sys;
@@ -108,7 +123,7 @@ pub fn is_window_state(
 ) -> bool {
     unsafe {
         sys::IsWindowState(
-            i32::cast_unsigned(flag.0),
+            flag.0,
         )
     }
 }
@@ -120,7 +135,7 @@ pub fn set_window_state(
 ) {
     unsafe {
         sys::SetWindowState(
-            i32::cast_unsigned(flags.0),
+            flags.0,
         );
     }
 }
@@ -132,7 +147,7 @@ pub fn clear_window_state(
 ) {
     unsafe {
         sys::ClearWindowState(
-            i32::cast_unsigned(flags.0),
+            flags.0,
         );
     }
 }
@@ -1368,7 +1383,7 @@ pub fn set_config_flags(
 ) {
     unsafe {
         sys::SetConfigFlags(
-            i32::cast_unsigned(flags.0),
+            flags.0,
         )
     }
 }
@@ -1493,7 +1508,21 @@ impl Drop for RlCString {
 }
 
 impl RlCString {
-    unsafe fn new(ptr: *mut u8, len: c_int) -> Option<Self> {
+    unsafe fn new(ptr: *mut c_char) -> Option<Self> {
+        if !ptr.is_null() {
+            unsafe {
+                Some(Self(
+                    NonNull::new_unchecked(
+                        std::ptr::from_ref(CStr::from_ptr(ptr)).cast_mut()
+                    )
+                ))
+            }
+        } else {
+            None
+        }
+    }
+
+    unsafe fn with_len(ptr: *mut u8, len: c_int) -> Option<Self> {
         if !ptr.is_null() {
             unsafe {
                 let bytes = std::slice::from_raw_parts_mut(
@@ -1524,7 +1553,7 @@ pub fn encode_data_base64(
             data.len().try_into().unwrap(),
             len.as_mut_ptr(),
         );
-        RlCString::new(ptr.cast(), len.assume_init())
+        RlCString::with_len(ptr.cast(), len.assume_init())
     }
 }
 
@@ -1539,7 +1568,7 @@ pub fn decode_data_base64(
             text.as_ptr(),
             len.as_mut_ptr(),
         );
-        RlCString::new(ptr, len.assume_init())
+        RlCString::with_len(ptr, len.assume_init())
     }
 }
 

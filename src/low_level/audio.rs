@@ -55,7 +55,7 @@ pub fn load_wave(
 ) -> sys::Wave {
     unsafe {
         sys::LoadWave(
-            file_name,
+            file_name.as_ptr(),
         )
     }
 }
@@ -97,7 +97,7 @@ pub fn load_sound(
 ) -> sys::Sound {
     unsafe {
         sys::LoadSound(
-            file_name,
+            file_name.as_ptr(),
         )
     }
 }
@@ -153,7 +153,7 @@ pub fn update_sound(
         sys::UpdateSound(
             sound,
             data.as_ptr().cast(),
-            sample_count.try_into(),
+            sample_count.try_into().unwrap(),
         );
     }
 }
@@ -417,7 +417,7 @@ impl WaveSamples {
 #[inline]
 pub fn load_wave_samples(
     wave: sys::Wave,
-) -> WaveSamples {
+) -> Option<WaveSamples> {
     unsafe {
         WaveSamples::new(
             sys::LoadWaveSamples(
@@ -431,11 +431,11 @@ pub fn load_wave_samples(
 /// Unload samples data loaded with LoadWaveSamples()
 #[inline]
 pub fn unload_wave_samples(
-    samples: WaveSamples,
+    mut samples: WaveSamples,
 ) {
     unsafe {
         sys::UnloadWaveSamples(
-            samples.0.as_ptr(),
+            samples.0.as_mut().as_mut_ptr(),
         )
     }
 }

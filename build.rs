@@ -130,7 +130,7 @@ fn main() {
     let platform = Platform::new(&target);
     let platform_os = PlatformOS::new(&target);
 
-    if rl_path.exists() && bindings_path.exists() { return; } // temporary
+    // if rl_path.exists() && bindings_path.exists() { return; } // temporary
 
     copy_recursive("raylib", rl_path.as_path())
         .unwrap_or_else(|e| panic!("failed to copy raylib source to `{}`: {e}", out.display()));

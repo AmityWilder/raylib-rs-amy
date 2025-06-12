@@ -208,11 +208,11 @@ pub fn camera_roll(
 /// Returns the camera view matrix
 #[inline]
 pub fn get_camera_view_matrix(
-    camera: *mut sys::Camera,
+    camera: &sys::Camera,
 ) -> sys::Matrix {
     unsafe {
         sys::GetCameraViewMatrix(
-            std::ptr::from_mut(camera).cast_mut(),
+            std::ptr::from_ref(camera).cast_mut(),
         )
     }
 }

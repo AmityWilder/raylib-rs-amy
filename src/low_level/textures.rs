@@ -1,3 +1,7 @@
+use std::num::NonZeroI32;
+
+use super::*;
+
 // Image loading functions
 // NOTE: These functions do not require GPU access
 

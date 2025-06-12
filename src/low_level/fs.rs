@@ -101,21 +101,6 @@ pub fn get_file_name(
     }
 }
 
-macro_rules! define_buffer_handle {
-    ($func:ident() -> $Type:ident) => {
-        pub struct $Type(());
-
-        #[inline]
-        pub fn $func() -> Option<$Type> {
-            static SINGLETON: Once = Once::new();
-
-            let mut result = None;
-            SINGLETON.call_once(|| result = Some($Type(())));
-            result
-        }
-    };
-}
-
 define_buffer_handle!(get_file_name_without_ext_handle() -> GetFileNameWithoutExtHandle);
 
 /// Get filename string without extension
