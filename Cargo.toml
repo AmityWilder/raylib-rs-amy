@@ -8,6 +8,7 @@ build = "build.rs"
 custom_frame_control = []
 support_jpeg = []
 wayland = []
+assert_spline_point_count = []
 
 [dependencies]
 

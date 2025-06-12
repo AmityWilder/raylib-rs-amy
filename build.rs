@@ -126,16 +126,16 @@ fn main() {
     let target = dbg!(std::env::var("TARGET")).unwrap();
     let out = PathBuf::from(std::env::var("OUT_DIR").unwrap());
     let rl_path = out.join("raylib");
-        let profile = Profile::new();
-        let platform = Platform::new(&target);
-        let platform_os = PlatformOS::new(&target);
+    let bindings_path = out.join("bindings.rs");
+    let profile = Profile::new();
+    let platform = Platform::new(&target);
+    let platform_os = PlatformOS::new(&target);
 
-    if rl_path.exists() { return; } // temporary
+    if rl_path.exists() && bindings_path.exists() { return; } // temporary
 
     copy_recursive("raylib", rl_path.as_path())
         .unwrap_or_else(|e| panic!("failed to copy raylib source to `{}`: {e}", out.display()));
 
-    let bindings_path = out.join("bindings.rs");
 
     let mut conf = cmake::Config::new(rl_path.as_path());
     conf.profile(profile.as_str())
@@ -200,7 +200,7 @@ fn main() {
         .fit_macro_constants(true)
         .no_convert_floats()
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
-        .bitfield_enum(r".+Flags")
+        .bitfield_enum(r".+Flags|Gesture")
         .constified_enum_module(r".+Index")
         .translate_enum_integer_types(false)
         .prepend_enum_name(false)
