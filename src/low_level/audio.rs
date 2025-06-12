@@ -92,7 +92,7 @@ pub fn is_wave_valid(
 ///
 /// NOTE: The entire file is loaded to memory to be played (no-streaming)
 #[inline]
-pub fn LoadSound(
+pub fn load_sound(
     file_name: &CStr,
 ) -> sys::Sound {
     unsafe {
@@ -317,7 +317,7 @@ pub fn set_sound_pitch(
 
 /// Set pan for a sound (0.5 is center)
 #[inline]
-pub fn SetSoundPan(
+pub fn set_sound_pan(
     sound: sys::Sound,
     pan: f32,
 ) {
@@ -485,7 +485,7 @@ pub fn is_music_valid(
 
 /// Unload music stream
 #[inline]
-pub fn UnloadMusicStream(
+pub fn unload_music_stream(
     music: sys::Music,
 ) {
     unsafe {
