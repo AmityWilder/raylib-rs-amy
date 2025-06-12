@@ -46,7 +46,11 @@ pub fn update_camera_pro(
 #[inline]
 pub fn GetCameraForward(
     camera: *mut Camera,
-) -> Vector3;
+) -> Vector3 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Returns the cameras up vector (normalized)
 ///
@@ -54,13 +58,21 @@ pub fn GetCameraForward(
 #[inline]
 pub fn GetCameraUp(
     camera: *mut Camera,
-) -> Vector3;
+) -> Vector3 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Returns the cameras right vector (normalized)
 #[inline]
 pub fn GetCameraRight(
     camera: *mut Camera,
-) -> Vector3;
+) -> Vector3 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Moves the camera in its forward direction
 #[inline]
@@ -68,14 +80,22 @@ pub fn CameraMoveForward(
     camera: *mut Camera,
     distance: f32,
     moveInWorldPlane: bool,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Moves the camera in its up direction
 #[inline]
 pub fn CameraMoveUp(
     camera: *mut Camera,
     distance: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Moves the camera target in its current right direction
 #[inline]
@@ -83,14 +103,22 @@ pub fn CameraMoveRight(
     camera: *mut Camera,
     distance: f32,
     moveInWorldPlane: bool,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Moves the camera position closer/farther to/from the camera target
 #[inline]
 pub fn CameraMoveToTarget(
     camera: *mut Camera,
     delta: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Rotates the camera around its up vector
 ///
@@ -104,7 +132,11 @@ pub fn CameraYaw(
     camera: *mut Camera,
     angle: f32,
     rotateAroundTarget: bool,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Rotates the camera around its right vector, pitch is "looking up and down"
 ///  - lockView prevents camera overrotation (aka "somersaults")
@@ -119,7 +151,11 @@ pub fn CameraPitch(
     lockView: bool,
     rotateAroundTarget: bool,
     rotateUp: bool,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Rotates the camera around its forward vector
 ///
@@ -130,17 +166,29 @@ pub fn CameraPitch(
 pub fn CameraRoll(
     camera: *mut Camera,
     angle: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Returns the camera view matrix
 #[inline]
 pub fn GetCameraViewMatrix(
     camera: *mut Camera,
-) -> Matrix;
+) -> Matrix {
+    unsafe {
+        sys::
+    }
+}
 
 /// Returns the camera projection matrix
 #[inline]
 pub fn GetCameraProjectionMatrix(
     camera: *mut Camera,
     aspect: f32,
-) -> Matrix;
+) -> Matrix {
+    unsafe {
+        sys::
+    }
+}

@@ -113,19 +113,35 @@ use super::sys;
 #[inline]
 pub fn rlMatrixMode(
     mode: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Push the current matrix to stack
 #[inline]
-pub fn rlPushMatrix();
+pub fn rlPushMatrix() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Pop latest inserted matrix from stack
 #[inline]
-pub fn rlPopMatrix();
+pub fn rlPopMatrix() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Reset current matrix to identity matrix
 #[inline]
-pub fn rlLoadIdentity();
+pub fn rlLoadIdentity() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Multiply the current matrix by a translation matrix
 #[inline]
@@ -133,7 +149,11 @@ pub fn rlTranslatef(
     x: f32,
     y: f32,
     z: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Multiply the current matrix by a rotation matrix
 #[inline]
@@ -142,7 +162,11 @@ pub fn rlRotatef(
     x: f32,
     y: f32,
     z: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Multiply the current matrix by a scaling matrix
 #[inline]
@@ -150,13 +174,21 @@ pub fn rlScalef(
     x: f32,
     y: f32,
     z: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Multiply the current matrix by another matrix
 #[inline]
 pub fn rlMultMatrixf(
     matf: *const f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 #[inline]
 pub fn rlFrustum(
@@ -166,7 +198,11 @@ pub fn rlFrustum(
     top: f64,
     znear: f64,
     zfar: f64,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 #[inline]
 pub fn rlOrtho(
@@ -176,7 +212,11 @@ pub fn rlOrtho(
     top: f64,
     znear: f64,
     zfar: f64,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set the viewport area
 #[inline]
@@ -185,22 +225,38 @@ pub fn rlViewport(
     y: i32,
     width: i32,
     height: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set clip planes distances
 #[inline]
 pub fn rlSetClipPlanes(
     nearPlane: f64,
     farPlane: f64,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get cull plane distance near
 #[inline]
-pub fn rlGetCullDistanceNear() -> f64;
+pub fn rlGetCullDistanceNear() -> f64 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get cull plane distance far
 #[inline]
-pub fn rlGetCullDistanceFar() -> f64;
+pub fn rlGetCullDistanceFar() -> f64 {
+    unsafe {
+        sys::
+    }
+}
 
 //------------------------------------------------------------------------------------
 // Functions Declaration - Vertex level operations
@@ -210,25 +266,41 @@ pub fn rlGetCullDistanceFar() -> f64;
 #[inline]
 pub fn rlBegin(
     mode: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Finish vertex providing
 #[inline]
-pub fn rlEnd();
+pub fn rlEnd() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (position) - 2 int
 #[inline]
 pub fn rlVertex2i(
     x: i32,
     y: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (position) - 2 float
 #[inline]
 pub fn rlVertex2f(
     x: f32,
     y: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (position) - 3 float
 #[inline]
@@ -236,14 +308,22 @@ pub fn rlVertex3f(
     x: f32,
     y: f32,
     z: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (texture coordinate) - 2 float
 #[inline]
 pub fn rlTexCoord2f(
     x: f32,
     y: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (normal) - 3 float
 #[inline]
@@ -251,7 +331,11 @@ pub fn rlNormal3f(
     x: f32,
     y: f32,
     z: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (color) - 4 byte
 #[inline]
@@ -260,7 +344,11 @@ pub fn rlColor4ub(
     g: u8,
     b: u8,
     a: u8,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (color) - 3 float
 #[inline]
@@ -268,7 +356,11 @@ pub fn rlColor3f(
     x: f32,
     y: f32,
     z: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Define one vertex (color) - 4 float
 #[inline]
@@ -277,7 +369,11 @@ pub fn rlColor4f(
     y: f32,
     z: f32,
     w: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 //------------------------------------------------------------------------------------
 // Functions Declaration - OpenGL style functions (common to 1.1, 3.3+, ES2)
@@ -291,43 +387,75 @@ pub fn rlColor4f(
 #[inline]
 pub fn rlEnableVertexArray(
     vaoId: u32,
-) -> bool;
+) -> bool {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable vertex array (VAO, if supported)
 #[inline]
-pub fn rlDisableVertexArray();
+pub fn rlDisableVertexArray() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable vertex buffer (VBO)
 #[inline]
 pub fn rlEnableVertexBuffer(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable vertex buffer (VBO)
 #[inline]
-pub fn rlDisableVertexBuffer();
+pub fn rlDisableVertexBuffer() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable vertex buffer element (VBO element)
 #[inline]
 pub fn rlEnableVertexBufferElement(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable vertex buffer element (VBO element)
 #[inline]
-pub fn rlDisableVertexBufferElement();
+pub fn rlDisableVertexBufferElement() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable vertex attribute index
 #[inline]
 pub fn rlEnableVertexAttribute(
     index: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable vertex attribute index
 #[inline]
 pub fn rlDisableVertexAttribute(
     index: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Textures state
 
@@ -335,27 +463,47 @@ pub fn rlDisableVertexAttribute(
 #[inline]
 pub fn rlActiveTextureSlot(
     slot: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable texture
 #[inline]
 pub fn rlEnableTexture(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable texture
 #[inline]
-pub fn rlDisableTexture();
+pub fn rlDisableTexture() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable texture cubemap
 #[inline]
 pub fn rlEnableTextureCubemap(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable texture cubemap
 #[inline]
-pub fn rlDisableTextureCubemap();
+pub fn rlDisableTextureCubemap() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set texture parameters (filter, wrap)
 #[inline]
@@ -363,7 +511,11 @@ pub fn rlTextureParameters(
     id: u32,
     param: i32,
     value: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set cubemap parameters (filter, wrap)
 #[inline]
@@ -371,7 +523,11 @@ pub fn rlCubemapParameters(
     id: u32,
     param: i32,
     value: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Shader state
 
@@ -379,11 +535,19 @@ pub fn rlCubemapParameters(
 #[inline]
 pub fn rlEnableShader(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable shader program
 #[inline]
-pub fn rlDisableShader();
+pub fn rlDisableShader() {
+    unsafe {
+        sys::
+    }
+}
 
 // Framebuffer state
 
@@ -391,21 +555,37 @@ pub fn rlDisableShader();
 #[inline]
 pub fn rlEnableFramebuffer(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable render texture (fbo), return to default framebuffer
 #[inline]
-pub fn rlDisableFramebuffer();
+pub fn rlDisableFramebuffer() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get the currently active render texture (fbo), 0 for default framebuffer
 #[inline]
-pub fn rlGetActiveFramebuffer() -> u32;
+pub fn rlGetActiveFramebuffer() -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Activate multiple draw color buffers
 #[inline]
 pub fn rlActiveDrawBuffers(
     count: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Blit active framebuffer to main framebuffer
 #[inline]
@@ -419,48 +599,88 @@ pub fn rlBlitFramebuffer(
     dstWidth: i32,
     dstHeight: i32,
     bufferMask: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Bind framebuffer (FBO)
 #[inline]
 pub fn rlBindFramebuffer(
     target: u32,
     framebuffer: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // General render state
 
 /// Enable color blending
 #[inline]
-pub fn rlEnableColorBlend();
+pub fn rlEnableColorBlend() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable color blending
 #[inline]
-pub fn rlDisableColorBlend();
+pub fn rlDisableColorBlend() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable depth test
 #[inline]
-pub fn rlEnableDepthTest();
+pub fn rlEnableDepthTest() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable depth test
 #[inline]
-pub fn rlDisableDepthTest();
+pub fn rlDisableDepthTest() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable depth write
 #[inline]
-pub fn rlEnableDepthMask();
+pub fn rlEnableDepthMask() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable depth write
 #[inline]
-pub fn rlDisableDepthMask();
+pub fn rlDisableDepthMask() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable backface culling
 #[inline]
-pub fn rlEnableBackfaceCulling();
+pub fn rlEnableBackfaceCulling() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable backface culling
 #[inline]
-pub fn rlDisableBackfaceCulling();
+pub fn rlDisableBackfaceCulling() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Color mask control
 #[inline]
@@ -469,21 +689,37 @@ pub fn rlColorMask(
     g: bool,
     b: bool,
     a: bool,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set face culling mode
 #[inline]
 pub fn rlSetCullFace(
     mode: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable scissor test
 #[inline]
-pub fn rlEnableScissorTest();
+pub fn rlEnableScissorTest() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable scissor test
 #[inline]
-pub fn rlDisableScissorTest();
+pub fn rlDisableScissorTest() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Scissor test
 #[inline]
@@ -492,53 +728,101 @@ pub fn rlScissor(
     y: i32,
     width: i32,
     height: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable point mode
 #[inline]
-pub fn rlEnablePointMode();
+pub fn rlEnablePointMode() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable point mode
 #[inline]
-pub fn rlDisablePointMode();
+pub fn rlDisablePointMode() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable wire mode
 #[inline]
-pub fn rlEnableWireMode();
+pub fn rlEnableWireMode() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable wire mode
 #[inline]
-pub fn rlDisableWireMode();
+pub fn rlDisableWireMode() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set the line drawing width
 #[inline]
 pub fn rlSetLineWidth(
     width: f32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get the line drawing width
 #[inline]
-pub fn rlGetLineWidth() -> f32;
+pub fn rlGetLineWidth() -> f32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable line aliasing
 #[inline]
-pub fn rlEnableSmoothLines();
+pub fn rlEnableSmoothLines() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable line aliasing
 #[inline]
-pub fn rlDisableSmoothLines();
+pub fn rlDisableSmoothLines() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Enable stereo rendering
 #[inline]
-pub fn rlEnableStereoRender();
+pub fn rlEnableStereoRender() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Disable stereo rendering
 #[inline]
-pub fn rlDisableStereoRender();
+pub fn rlDisableStereoRender() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Check if stereo render is enabled
 #[inline]
-pub fn rlIsStereoRenderEnabled() -> bool;
+pub fn rlIsStereoRenderEnabled() -> bool {
+    unsafe {
+        sys::
+    }
+}
 
 /// Clear color buffer with color
 #[inline]
@@ -547,21 +831,37 @@ pub fn rlClearColor(
     g: u8,
     b: u8,
     a: u8,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Clear used screen buffers (color and depth)
 #[inline]
-pub fn rlClearScreenBuffers();
+pub fn rlClearScreenBuffers() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Check and log OpenGL error codes
 #[inline]
-pub fn rlCheckErrors();
+pub fn rlCheckErrors() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set blending mode
 #[inline]
 pub fn rlSetBlendMode(
     mode: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set blending mode factor and equation (using OpenGL factors)
 #[inline]
@@ -569,7 +869,11 @@ pub fn rlSetBlendFactors(
     glSrcFactor: i32,
     glDstFactor: i32,
     glEquation: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set blending mode factors and equations separately (using OpenGL factors)
 #[inline]
@@ -580,7 +884,11 @@ pub fn rlSetBlendFactorsSeparate(
     glDstAlpha: i32,
     glEqRGB: i32,
     glEqAlpha: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 //------------------------------------------------------------------------------------
 // Functions Declaration - rlgl functionality
@@ -592,53 +900,97 @@ pub fn rlSetBlendFactorsSeparate(
 pub fn rlglInit(
     width: i32,
     height: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// De-initialize rlgl (buffers, shaders, textures)
 #[inline]
-pub fn rlglClose();
+pub fn rlglClose() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Load OpenGL extensions (loader function required)
 #[inline]
 pub fn rlLoadExtensions(
     loader: *mut ::std::os::raw::c_void,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get current OpenGL version
 #[inline]
-pub fn rlGetVersion() -> i32;
+pub fn rlGetVersion() -> i32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set current framebuffer width
 #[inline]
 pub fn rlSetFramebufferWidth(
     width: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get default framebuffer width
 #[inline]
-pub fn rlGetFramebufferWidth() -> i32;
+pub fn rlGetFramebufferWidth() -> i32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set current framebuffer height
 #[inline]
 pub fn rlSetFramebufferHeight(
     height: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get default framebuffer height
 #[inline]
-pub fn rlGetFramebufferHeight() -> i32;
+pub fn rlGetFramebufferHeight() -> i32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get default texture id
 #[inline]
-pub fn rlGetTextureIdDefault() -> u32;
+pub fn rlGetTextureIdDefault() -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get default shader id
 #[inline]
-pub fn rlGetShaderIdDefault() -> u32;
+pub fn rlGetShaderIdDefault() -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get default shader locations
 #[inline]
-pub fn rlGetShaderLocsDefault() -> *mut i32;
+pub fn rlGetShaderLocsDefault() -> *mut i32 {
+    unsafe {
+        sys::
+    }
+}
 
 // Render batch management
 // NOTE: rlgl provides a default render batch to behave like OpenGL 1.1 immediate mode
@@ -649,41 +1001,69 @@ pub fn rlGetShaderLocsDefault() -> *mut i32;
 pub fn rlLoadRenderBatch(
     numBuffers: i32,
     bufferElements: i32,
-) -> rlRenderBatch;
+) -> rlRenderBatch {
+    unsafe {
+        sys::
+    }
+}
 
 /// Unload render batch system
 #[inline]
 pub fn rlUnloadRenderBatch(
     batch: rlRenderBatch,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Draw render batch data (Update->Draw->Reset)
 #[inline]
 pub fn rlDrawRenderBatch(
     batch: *mut rlRenderBatch,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set the active render batch for rlgl (NULL for default internal)
 #[inline]
 pub fn rlSetRenderBatchActive(
     batch: *mut rlRenderBatch,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Update and draw internal render batch
 #[inline]
-pub fn rlDrawRenderBatchActive();
+pub fn rlDrawRenderBatchActive() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Check internal buffer overflow for a given number of vertex
 #[inline]
 pub fn rlCheckRenderBatchLimit(
     vCount: i32,
-) -> bool;
+) -> bool {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set current texture for render batch and check buffers limits
 #[inline]
 pub fn rlSetTexture(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 //------------------------------------------------------------------------------------------------------------------------
 
@@ -691,7 +1071,11 @@ pub fn rlSetTexture(
 
 /// Load vertex array (vao) if supported
 #[inline]
-pub fn rlLoadVertexArray() -> u32;
+pub fn rlLoadVertexArray() -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Load a vertex buffer object
 #[inline]
@@ -699,7 +1083,11 @@ pub fn rlLoadVertexBuffer(
     buffer: *const ::std::os::raw::c_void,
     size: i32,
     dynamic: bool,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Load vertex buffer elements object
 #[inline]
@@ -707,7 +1095,11 @@ pub fn rlLoadVertexBufferElement(
     buffer: *const ::std::os::raw::c_void,
     size: i32,
     dynamic: bool,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Update vertex buffer object data on GPU buffer
 #[inline]
@@ -716,7 +1108,11 @@ pub fn rlUpdateVertexBuffer(
     data: *const ::std::os::raw::c_void,
     dataSize: i32,
     offset: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Update vertex buffer elements data on GPU buffer
 #[inline]
@@ -725,19 +1121,31 @@ pub fn rlUpdateVertexBufferElements(
     data: *const ::std::os::raw::c_void,
     dataSize: i32,
     offset: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Unload vertex array (vao)
 #[inline]
 pub fn rlUnloadVertexArray(
     vaoId: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Unload vertex buffer object
 #[inline]
 pub fn rlUnloadVertexBuffer(
     vboId: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set vertex attribute data configuration
 #[inline]
@@ -748,14 +1156,22 @@ pub fn rlSetVertexAttribute(
     normalized: bool,
     stride: i32,
     offset: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set vertex attribute data divisor
 #[inline]
 pub fn rlSetVertexAttributeDivisor(
     index: u32,
     divisor: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set vertex attribute default value, when attribute to provided
 #[inline]
@@ -764,14 +1180,22 @@ pub fn rlSetVertexAttributeDefault(
     value: *const ::std::os::raw::c_void,
     attribType: i32,
     count: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Draw vertex array (currently active vao)
 #[inline]
 pub fn rlDrawVertexArray(
     offset: i32,
     count: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Draw vertex array elements
 #[inline]
@@ -779,7 +1203,11 @@ pub fn rlDrawVertexArrayElements(
     offset: i32,
     count: i32,
     buffer: *const ::std::os::raw::c_void,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Draw vertex array (currently active vao) with instancing
 #[inline]
@@ -787,7 +1215,11 @@ pub fn rlDrawVertexArrayInstanced(
     offset: i32,
     count: i32,
     instances: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Draw vertex array elements with instancing
 #[inline]
@@ -796,7 +1228,11 @@ pub fn rlDrawVertexArrayElementsInstanced(
     count: i32,
     buffer: *const ::std::os::raw::c_void,
     instances: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Textures management
 
@@ -808,7 +1244,11 @@ pub fn rlLoadTexture(
     height: i32,
     format: i32,
     mipmapCount: i32,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Load depth texture/renderbuffer (to be attached to fbo)
 #[inline]
@@ -816,7 +1256,11 @@ pub fn rlLoadTextureDepth(
     width: i32,
     height: i32,
     useRenderBuffer: bool,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Load texture cubemap data
 #[inline]
@@ -825,7 +1269,11 @@ pub fn rlLoadTextureCubemap(
     size: i32,
     format: i32,
     mipmapCount: i32,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Update texture with new data on GPU
 #[inline]
@@ -837,7 +1285,11 @@ pub fn rlUpdateTexture(
     height: i32,
     format: i32,
     data: *const ::std::os::raw::c_void,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get OpenGL internal formats
 #[inline]
@@ -846,19 +1298,31 @@ pub fn rlGetGlTextureFormats(
     glInternalFormat: *mut u32,
     glFormat: *mut u32,
     glType: *mut u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get name string for pixel format
 #[inline]
 pub fn rlGetPixelFormatName(
     format: u32,
-) -> *const ::std::os::raw::c_char;
+) -> *const ::std::os::raw::c_char {
+    unsafe {
+        sys::
+    }
+}
 
 /// Unload texture from GPU memory
 #[inline]
 pub fn rlUnloadTexture(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Generate mipmap data for selected texture
 #[inline]
@@ -868,7 +1332,11 @@ pub fn rlGenTextureMipmaps(
     height: i32,
     format: i32,
     mipmaps: *mut i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Read texture pixel data
 #[inline]
@@ -877,20 +1345,32 @@ pub fn rlReadTexturePixels(
     width: i32,
     height: i32,
     format: i32,
-) -> *mut ::std::os::raw::c_void;
+) -> *mut ::std::os::raw::c_void {
+    unsafe {
+        sys::
+    }
+}
 
 /// Read screen pixel data (color buffer)
 #[inline]
 pub fn rlReadScreenPixels(
     width: i32,
     height: i32,
-) -> *mut u8;
+) -> *mut u8 {
+    unsafe {
+        sys::
+    }
+}
 
 // Framebuffer management (fbo)
 
 /// Load an empty framebuffer
 #[inline]
-pub fn rlLoadFramebuffer() -> u32;
+pub fn rlLoadFramebuffer() -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Attach texture/renderbuffer to a framebuffer
 #[inline]
@@ -900,19 +1380,31 @@ pub fn rlFramebufferAttach(
     attachType: i32,
     texType: i32,
     mipLevel: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Verify framebuffer is complete
 #[inline]
 pub fn rlFramebufferComplete(
     id: u32,
-) -> bool;
+) -> bool {
+    unsafe {
+        sys::
+    }
+}
 
 /// Delete framebuffer from GPU
 #[inline]
 pub fn rlUnloadFramebuffer(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Shaders management
 
@@ -921,41 +1413,65 @@ pub fn rlUnloadFramebuffer(
 pub fn rlLoadShaderCode(
     vsCode: *const ::std::os::raw::c_char,
     fsCode: *const ::std::os::raw::c_char,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Compile custom shader and return shader id (type: RL_VERTEX_SHADER, RL_FRAGMENT_SHADER, RL_COMPUTE_SHADER)
 #[inline]
 pub fn rlCompileShader(
     shaderCode: *const ::std::os::raw::c_char,
     type_: i32,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Load custom shader program
 #[inline]
 pub fn rlLoadShaderProgram(
     vShaderId: u32,
     fShaderId: u32,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Unload shader program
 #[inline]
 pub fn rlUnloadShaderProgram(
     id: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get shader location uniform
 #[inline]
 pub fn rlGetLocationUniform(
     shaderId: u32,
     uniformName: *const ::std::os::raw::c_char,
-) -> i32;
+) -> i32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get shader location attribute
 #[inline]
 pub fn rlGetLocationAttrib(
     shaderId: u32,
     attribName: *const ::std::os::raw::c_char,
-) -> i32;
+) -> i32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set shader value uniform
 #[inline]
@@ -964,14 +1480,22 @@ pub fn rlSetUniform(
     value: *const ::std::os::raw::c_void,
     uniformType: i32,
     count: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set shader value matrix
 #[inline]
 pub fn rlSetUniformMatrix(
     locIndex: i32,
     mat: Matrix,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set shader value matrices
 #[inline]
@@ -979,21 +1503,33 @@ pub fn rlSetUniformMatrices(
     locIndex: i32,
     mat: *const Matrix,
     count: i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set shader value sampler
 #[inline]
 pub fn rlSetUniformSampler(
     locIndex: i32,
     textureId: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set shader currently active (id and locations)
 #[inline]
 pub fn rlSetShader(
     id: u32,
     locs: *mut i32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Compute shader management
 
@@ -1001,7 +1537,11 @@ pub fn rlSetShader(
 #[inline]
 pub fn rlLoadComputeShaderProgram(
     shaderId: u32,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Dispatch compute shader (equivalent to *draw* for graphics pipeline)
 #[inline]
@@ -1009,7 +1549,11 @@ pub fn rlComputeShaderDispatch(
     groupX: u32,
     groupY: u32,
     groupZ: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Shader buffer storage object management (ssbo)
 
@@ -1019,13 +1563,21 @@ pub fn rlLoadShaderBuffer(
     size: u32,
     data: *const ::std::os::raw::c_void,
     usageHint: i32,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 /// Unload shader storage buffer object (SSBO)
 #[inline]
 pub fn rlUnloadShaderBuffer(
     ssboId: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Update SSBO buffer data
 #[inline]
@@ -1034,14 +1586,22 @@ pub fn rlUpdateShaderBuffer(
     data: *const ::std::os::raw::c_void,
     dataSize: u32,
     offset: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Bind SSBO buffer
 #[inline]
 pub fn rlBindShaderBuffer(
     id: u32,
     index: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Read SSBO buffer data (GPU->CPU)
 #[inline]
@@ -1050,7 +1610,11 @@ pub fn rlReadShaderBuffer(
     dest: *mut ::std::os::raw::c_void,
     count: u32,
     offset: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Copy SSBO data between buffers
 #[inline]
@@ -1060,13 +1624,21 @@ pub fn rlCopyShaderBuffer(
     destOffset: u32,
     srcOffset: u32,
     count: u32,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get SSBO buffer size
 #[inline]
 pub fn rlGetShaderBufferSize(
     id: u32,
-) -> u32;
+) -> u32 {
+    unsafe {
+        sys::
+    }
+}
 
 // Buffer management
 
@@ -1077,66 +1649,114 @@ pub fn rlBindImageTexture(
     index: u32,
     format: i32,
     readonly: bool,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Matrix state management
 
 /// Get internal modelview matrix
 #[inline]
-pub fn rlGetMatrixModelview() -> Matrix;
+pub fn rlGetMatrixModelview() -> Matrix {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get internal projection matrix
 #[inline]
-pub fn rlGetMatrixProjection() -> Matrix;
+pub fn rlGetMatrixProjection() -> Matrix {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get internal accumulated transform matrix
 #[inline]
-pub fn rlGetMatrixTransform() -> Matrix;
+pub fn rlGetMatrixTransform() -> Matrix {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get internal projection matrix for stereo render (selected eye)
 #[inline]
 pub fn rlGetMatrixProjectionStereo(
     eye: i32,
-) -> Matrix;
+) -> Matrix {
+    unsafe {
+        sys::
+    }
+}
 
 /// Get internal view offset matrix for stereo render (selected eye)
 #[inline]
 pub fn rlGetMatrixViewOffsetStereo(
     eye: i32,
-) -> Matrix;
+) -> Matrix {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set a custom projection matrix (replaces internal projection matrix)
 #[inline]
 pub fn rlSetMatrixProjection(
     proj: Matrix,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set a custom modelview matrix (replaces internal modelview matrix)
 #[inline]
 pub fn rlSetMatrixModelview(
     view: Matrix,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set eyes projection matrices for stereo rendering
 #[inline]
 pub fn rlSetMatrixProjectionStereo(
     right: Matrix,
     left: Matrix,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 /// Set eyes view offsets matrices for stereo rendering
 #[inline]
 pub fn rlSetMatrixViewOffsetStereo(
     right: Matrix,
     left: Matrix,
-);
+) {
+    unsafe {
+        sys::
+    }
+}
 
 // Quick and dirty cube/quad buffers load->draw->unload
 
 /// Load and draw a cube
 #[inline]
-pub fn rlLoadDrawCube();
+pub fn rlLoadDrawCube() {
+    unsafe {
+        sys::
+    }
+}
 
 /// Load and draw a quad
 #[inline]
-pub fn rlLoadDrawQuad();
+pub fn rlLoadDrawQuad() {
+    unsafe {
+        sys::
+    }
+}
