@@ -44,11 +44,13 @@ pub fn update_camera_pro(
 
 /// Returns the cameras forward vector (normalized)
 #[inline]
-pub fn GetCameraForward(
-    camera: *mut Camera,
-) -> Vector3 {
+pub fn get_camera_forward(
+    camera: &sys::Camera,
+) -> sys::Vector3 {
     unsafe {
-        sys::
+        sys::GetCameraForward(
+            std::ptr::from_ref(camera).cast_mut(),
+        )
     }
 }
 
@@ -56,67 +58,85 @@ pub fn GetCameraForward(
 ///
 /// Note: The up vector might not be perpendicular to the forward vector
 #[inline]
-pub fn GetCameraUp(
-    camera: *mut Camera,
-) -> Vector3 {
+pub fn get_camera_up(
+    camera: &sys::Camera,
+) -> sys::Vector3 {
     unsafe {
-        sys::
+        sys::GetCameraUp(
+            std::ptr::from_ref(camera).cast_mut(),
+        )
     }
 }
 
 /// Returns the cameras right vector (normalized)
 #[inline]
-pub fn GetCameraRight(
-    camera: *mut Camera,
-) -> Vector3 {
+pub fn get_camera_right(
+    camera: &sys::Camera,
+) -> sys::Vector3 {
     unsafe {
-        sys::
+        sys::GetCameraRight(
+            std::ptr::from_ref(camera).cast_mut(),
+        )
     }
 }
 
 /// Moves the camera in its forward direction
 #[inline]
-pub fn CameraMoveForward(
-    camera: *mut Camera,
+pub fn camera_move_forward(
+    camera: &mut sys::Camera,
     distance: f32,
-    moveInWorldPlane: bool,
+    move_in_world_plane: bool,
 ) {
     unsafe {
-        sys::
+        sys::CameraMoveForward(
+            camera,
+            distance,
+            move_in_world_plane,
+        );
     }
 }
 
 /// Moves the camera in its up direction
 #[inline]
-pub fn CameraMoveUp(
-    camera: *mut Camera,
+pub fn camera_move_up(
+    camera: &mut sys::Camera,
     distance: f32,
 ) {
     unsafe {
-        sys::
+        sys::CameraMoveUp(
+            camera,
+            distance,
+        );
     }
 }
 
 /// Moves the camera target in its current right direction
 #[inline]
-pub fn CameraMoveRight(
-    camera: *mut Camera,
+pub fn camera_move_right(
+    camera: &mut sys::Camera,
     distance: f32,
-    moveInWorldPlane: bool,
+    move_in_world_plane: bool,
 ) {
     unsafe {
-        sys::
+        sys::CameraMoveRight(
+            camera,
+            distance,
+            move_in_world_plane,
+        );
     }
 }
 
 /// Moves the camera position closer/farther to/from the camera target
 #[inline]
-pub fn CameraMoveToTarget(
-    camera: *mut Camera,
+pub fn camera_move_to_target(
+    camera: &mut sys::Camera,
     delta: f32,
 ) {
     unsafe {
-        sys::
+        sys::CameraMoveToTarget(
+            camera,
+            delta,
+        );
     }
 }
 
@@ -128,13 +148,17 @@ pub fn CameraMoveToTarget(
 ///
 /// Note: angle must be provided in radians
 #[inline]
-pub fn CameraYaw(
-    camera: *mut Camera,
+pub fn camera_yaw(
+    camera: &mut sys::Camera,
     angle: f32,
-    rotateAroundTarget: bool,
+    rotate_around_target: bool,
 ) {
     unsafe {
-        sys::
+        sys::CameraYaw(
+            camera,
+            angle,
+            rotate_around_target,
+        );
     }
 }
 
@@ -145,15 +169,21 @@ pub fn CameraYaw(
 ///
 /// NOTE: angle must be provided in radians
 #[inline]
-pub fn CameraPitch(
-    camera: *mut Camera,
+pub fn camera_pitch(
+    camera: &mut sys::Camera,
     angle: f32,
-    lockView: bool,
-    rotateAroundTarget: bool,
-    rotateUp: bool,
+    lock_view: bool,
+    rotate_around_target: bool,
+    rotate_up: bool,
 ) {
     unsafe {
-        sys::
+        sys::CameraPitch(
+            camera,
+            angle,
+            lock_view,
+            rotate_around_target,
+            rotate_up,
+        )
     }
 }
 
@@ -163,32 +193,40 @@ pub fn CameraPitch(
 ///
 /// Note: angle must be provided in radians
 #[inline]
-pub fn CameraRoll(
-    camera: *mut Camera,
+pub fn camera_roll(
+    camera: &mut sys::Camera,
     angle: f32,
 ) {
     unsafe {
-        sys::
+        sys::CameraRoll(
+            camera,
+            angle,
+        )
     }
 }
 
 /// Returns the camera view matrix
 #[inline]
-pub fn GetCameraViewMatrix(
-    camera: *mut Camera,
-) -> Matrix {
+pub fn get_camera_view_matrix(
+    camera: *mut sys::Camera,
+) -> sys::Matrix {
     unsafe {
-        sys::
+        sys::GetCameraViewMatrix(
+            std::ptr::from_mut(camera).cast_mut(),
+        )
     }
 }
 
 /// Returns the camera projection matrix
 #[inline]
-pub fn GetCameraProjectionMatrix(
-    camera: *mut Camera,
+pub fn get_camera_projection_matrix(
+    camera: &sys::Camera,
     aspect: f32,
-) -> Matrix {
+) -> sys::Matrix {
     unsafe {
-        sys::
+        sys::GetCameraProjectionMatrix(
+            std::ptr::from_ref(camera).cast_mut(),
+            aspect,
+        )
     }
 }
