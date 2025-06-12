@@ -1,7 +1,7 @@
 use std::ffi::{CStr, CString, NulError};
 use std::marker::PhantomData;
 use std::mem::{MaybeUninit, transmute};
-use std::num::NonZero;
+use std::num::{NonZero, NonZeroI32};
 use std::ops::{Deref, DerefMut};
 use std::os::raw::{c_int, c_void};
 use std::ptr::{null, null_mut, NonNull};
@@ -2069,13 +2069,13 @@ impl Drop for RlBytes {
 }
 
 impl RlBytes {
-    unsafe fn new(ptr: *mut u8, len: c_int) -> Option<Self> {
+    unsafe fn new(ptr: *mut u8, len: MaybeUninit<c_int>) -> Option<Self> {
         if !ptr.is_null() {
             Some(RlBytes(unsafe {
                 NonNull::new_unchecked(
                     std::slice::from_raw_parts_mut(
                         ptr,
-                        len.try_into().unwrap(),
+                        len.assume_init().try_into().unwrap(),
                     )
                 )
             }))
@@ -2121,7 +2121,7 @@ pub fn compress_data(
     unsafe {
         RlBytes::new(
             ptr,
-            len.assume_init(),
+            len,
         )
     }
 }
@@ -2142,7 +2142,7 @@ pub fn decompress_data(
     unsafe {
         RlBytes::new(
             ptr,
-            len.assume_init(),
+            len,
         )
     }
 }
@@ -4211,291 +4211,1402 @@ pub fn get_collision_rec(
     }
 }
 
-// pub fn LoadImage(fileName: *const ::std::os::raw::c_char) -> Image;
-// pub fn LoadImageRaw(
-//     fileName: *const ::std::os::raw::c_char,
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     format: ::std::os::raw::c_int,
-//     headerSize: ::std::os::raw::c_int,
-// ) -> Image;
-// pub fn LoadImageAnim(
-//     fileName: *const ::std::os::raw::c_char,
-//     frames: *mut ::std::os::raw::c_int,
-// ) -> Image;
-// pub fn LoadImageAnimFromMemory(
-//     fileType: *const ::std::os::raw::c_char,
-//     fileData: *const ::std::os::raw::c_uchar,
-//     dataSize: ::std::os::raw::c_int,
-//     frames: *mut ::std::os::raw::c_int,
-// ) -> Image;
-// pub fn LoadImageFromMemory(
-//     fileType: *const ::std::os::raw::c_char,
-//     fileData: *const ::std::os::raw::c_uchar,
-//     dataSize: ::std::os::raw::c_int,
-// ) -> Image;
-// pub fn LoadImageFromTexture(texture: Texture2D) -> Image;
-// pub fn LoadImageFromScreen() -> Image;
-// pub fn IsImageValid(image: Image) -> bool;
-// pub fn UnloadImage(image: Image);
-// pub fn ExportImage(image: Image, fileName: *const ::std::os::raw::c_char) -> bool;
-// pub fn ExportImageToMemory(
-//     image: Image,
-//     fileType: *const ::std::os::raw::c_char,
-//     fileSize: *mut ::std::os::raw::c_int,
-// ) -> *mut ::std::os::raw::c_uchar;
-// pub fn ExportImageAsCode(image: Image, fileName: *const ::std::os::raw::c_char) -> bool;
-// pub fn GenImageColor(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     color: Color,
-// ) -> Image;
-// pub fn GenImageGradientLinear(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     direction: ::std::os::raw::c_int,
-//     start: Color,
-//     end: Color,
-// ) -> Image;
-// pub fn GenImageGradientRadial(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     density: ::std::os::raw::c_float,
-//     inner: Color,
-//     outer: Color,
-// ) -> Image;
-// pub fn GenImageGradientSquare(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     density: ::std::os::raw::c_float,
-//     inner: Color,
-//     outer: Color,
-// ) -> Image;
-// pub fn GenImageChecked(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     checksX: ::std::os::raw::c_int,
-//     checksY: ::std::os::raw::c_int,
-//     col1: Color,
-//     col2: Color,
-// ) -> Image;
-// pub fn GenImageWhiteNoise(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     factor: ::std::os::raw::c_float,
-// ) -> Image;
-// pub fn GenImagePerlinNoise(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     offsetX: ::std::os::raw::c_int,
-//     offsetY: ::std::os::raw::c_int,
-//     scale: ::std::os::raw::c_float,
-// ) -> Image;
-// pub fn GenImageCellular(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     tileSize: ::std::os::raw::c_int,
-// ) -> Image;
-// pub fn GenImageText(
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     text: *const ::std::os::raw::c_char,
-// ) -> Image;
-// pub fn ImageCopy(image: Image) -> Image;
-// pub fn ImageFromImage(image: Image, rec: Rectangle) -> Image;
-// pub fn ImageFromChannel(image: Image, selectedChannel: ::std::os::raw::c_int) -> Image;
-// pub fn ImageText(
-//     text: *const ::std::os::raw::c_char,
-//     fontSize: ::std::os::raw::c_int,
-//     color: Color,
-// ) -> Image;
-// pub fn ImageTextEx(
-//     font: Font,
-//     text: *const ::std::os::raw::c_char,
-//     fontSize: ::std::os::raw::c_float,
-//     spacing: ::std::os::raw::c_float,
-//     tint: Color,
-// ) -> Image;
-// pub fn ImageFormat(image: *mut Image, newFormat: ::std::os::raw::c_int);
-// pub fn ImageToPOT(image: *mut Image, fill: Color);
-// pub fn ImageCrop(image: *mut Image, crop: Rectangle);
-// pub fn ImageAlphaCrop(image: *mut Image, threshold: ::std::os::raw::c_float);
-// pub fn ImageAlphaClear(image: *mut Image, color: Color, threshold: ::std::os::raw::c_float);
-// pub fn ImageAlphaMask(image: *mut Image, alphaMask: Image);
-// pub fn ImageAlphaPremultiply(image: *mut Image);
-// pub fn ImageBlurGaussian(image: *mut Image, blurSize: ::std::os::raw::c_int);
-// pub fn ImageKernelConvolution(
-//     image: *mut Image,
-//     kernel: *const ::std::os::raw::c_float,
-//     kernelSize: ::std::os::raw::c_int,
-// );
-// pub fn ImageResize(
-//     image: *mut Image,
-//     newWidth: ::std::os::raw::c_int,
-//     newHeight: ::std::os::raw::c_int,
-// );
-// pub fn ImageResizeNN(
-//     image: *mut Image,
-//     newWidth: ::std::os::raw::c_int,
-//     newHeight: ::std::os::raw::c_int,
-// );
-// pub fn ImageResizeCanvas(
-//     image: *mut Image,
-//     newWidth: ::std::os::raw::c_int,
-//     newHeight: ::std::os::raw::c_int,
-//     offsetX: ::std::os::raw::c_int,
-//     offsetY: ::std::os::raw::c_int,
-//     fill: Color,
-// );
-// pub fn ImageMipmaps(image: *mut Image);
-// pub fn ImageDither(
-//     image: *mut Image,
-//     rBpp: ::std::os::raw::c_int,
-//     gBpp: ::std::os::raw::c_int,
-//     bBpp: ::std::os::raw::c_int,
-//     aBpp: ::std::os::raw::c_int,
-// );
-// pub fn ImageFlipVertical(image: *mut Image);
-// pub fn ImageFlipHorizontal(image: *mut Image);
-// pub fn ImageRotate(image: *mut Image, degrees: ::std::os::raw::c_int);
-// pub fn ImageRotateCW(image: *mut Image);
-// pub fn ImageRotateCCW(image: *mut Image);
-// pub fn ImageColorTint(image: *mut Image, color: Color);
-// pub fn ImageColorInvert(image: *mut Image);
-// pub fn ImageColorGrayscale(image: *mut Image);
-// pub fn ImageColorContrast(image: *mut Image, contrast: ::std::os::raw::c_float);
-// pub fn ImageColorBrightness(image: *mut Image, brightness: ::std::os::raw::c_int);
-// pub fn ImageColorReplace(image: *mut Image, color: Color, replace: Color);
-// pub fn LoadImageColors(image: Image) -> *mut Color;
-// pub fn LoadImagePalette(
-//     image: Image,
-//     maxPaletteSize: ::std::os::raw::c_int,
-//     colorCount: *mut ::std::os::raw::c_int,
-// ) -> *mut Color;
-// pub fn UnloadImageColors(colors: *mut Color);
-// pub fn UnloadImagePalette(colors: *mut Color);
-// pub fn GetImageAlphaBorder(image: Image, threshold: ::std::os::raw::c_float) -> Rectangle;
-// pub fn GetImageColor(image: Image, x: ::std::os::raw::c_int, y: ::std::os::raw::c_int)
-// -> Color;
-// pub fn ImageClearBackground(dst: *mut Image, color: Color);
-// pub fn ImageDrawPixel(
-//     dst: *mut Image,
-//     posX: ::std::os::raw::c_int,
-//     posY: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawPixelV(dst: *mut Image, position: Vector2, color: Color);
-// pub fn ImageDrawLine(
-//     dst: *mut Image,
-//     startPosX: ::std::os::raw::c_int,
-//     startPosY: ::std::os::raw::c_int,
-//     endPosX: ::std::os::raw::c_int,
-//     endPosY: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawLineV(dst: *mut Image, start: Vector2, end: Vector2, color: Color);
-// pub fn ImageDrawLineEx(
-//     dst: *mut Image,
-//     start: Vector2,
-//     end: Vector2,
-//     thick: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawCircle(
-//     dst: *mut Image,
-//     centerX: ::std::os::raw::c_int,
-//     centerY: ::std::os::raw::c_int,
-//     radius: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawCircleV(
-//     dst: *mut Image,
-//     center: Vector2,
-//     radius: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawCircleLines(
-//     dst: *mut Image,
-//     centerX: ::std::os::raw::c_int,
-//     centerY: ::std::os::raw::c_int,
-//     radius: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawCircleLinesV(
-//     dst: *mut Image,
-//     center: Vector2,
-//     radius: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawRectangle(
-//     dst: *mut Image,
-//     posX: ::std::os::raw::c_int,
-//     posY: ::std::os::raw::c_int,
-//     width: ::std::os::raw::c_int,
-//     height: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawRectangleV(dst: *mut Image, position: Vector2, size: Vector2, color: Color);
-// pub fn ImageDrawRectangleRec(dst: *mut Image, rec: Rectangle, color: Color);
-// pub fn ImageDrawRectangleLines(
-//     dst: *mut Image,
-//     rec: Rectangle,
-//     thick: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawTriangle(dst: *mut Image, v1: Vector2, v2: Vector2, v3: Vector2, color: Color);
-// pub fn ImageDrawTriangleEx(
-//     dst: *mut Image,
-//     v1: Vector2,
-//     v2: Vector2,
-//     v3: Vector2,
-//     c1: Color,
-//     c2: Color,
-//     c3: Color,
-// );
-// pub fn ImageDrawTriangleLines(
-//     dst: *mut Image,
-//     v1: Vector2,
-//     v2: Vector2,
-//     v3: Vector2,
-//     color: Color,
-// );
-// pub fn ImageDrawTriangleFan(
-//     dst: *mut Image,
-//     points: *const Vector2,
-//     pointCount: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawTriangleStrip(
-//     dst: *mut Image,
-//     points: *const Vector2,
-//     pointCount: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDraw(
-//     dst: *mut Image,
-//     src: Image,
-//     srcRec: Rectangle,
-//     dstRec: Rectangle,
-//     tint: Color,
-// );
-// pub fn ImageDrawText(
-//     dst: *mut Image,
-//     text: *const ::std::os::raw::c_char,
-//     posX: ::std::os::raw::c_int,
-//     posY: ::std::os::raw::c_int,
-//     fontSize: ::std::os::raw::c_int,
-//     color: Color,
-// );
-// pub fn ImageDrawTextEx(
-//     dst: *mut Image,
-//     font: Font,
-//     text: *const ::std::os::raw::c_char,
-//     position: Vector2,
-//     fontSize: ::std::os::raw::c_float,
-//     spacing: ::std::os::raw::c_float,
-//     tint: Color,
-// );
+//------------------------------------------------------------------------------------
+// Texture Loading and Drawing Functions (Module: textures)
+//------------------------------------------------------------------------------------
+
+// Image loading functions
+// NOTE: These functions do not require GPU access
+
+/// Load image from file into CPU memory (RAM)
+#[inline]
+pub fn load_image(
+    file_name: &CStr,
+) -> sys::Image {
+    unsafe {
+        sys::LoadImage(
+            file_name.as_ptr(),
+        )
+    }
+}
+
+/// Load image from RAW file data
+#[inline]
+pub fn load_image_raw(
+    file_name: &CStr,
+    width: u32,
+    height: u32,
+    format: u32,
+    header_size: u32,
+) -> sys::Image {
+    unsafe {
+        sys::LoadImageRaw(
+            file_name.as_ptr(),
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            format.try_into().unwrap(),
+            header_size.try_into().unwrap(),
+        )
+    }
+}
+
+/// Load image sequence from file (frames appended to image.data)
+///  - Image.data buffer includes all frames: `[image#0][image#1][image#2][...]`
+///  - Number of frames is returned through 'frames' parameter
+///  - All frames are returned in RGBA format
+///  - Frames delay data is discarded
+#[inline]
+pub fn load_image_anim(
+    file_name: &CStr,
+) -> (sys::Image, usize) {
+    let mut frames = MaybeUninit::uninit(); // LoadImageAnim will assign with 0
+    unsafe {
+        let image = sys::LoadImageAnim(
+            file_name.as_ptr(),
+            frames.as_mut_ptr(),
+        );
+        (image, frames.assume_init().try_into().unwrap())
+    }
+}
+
+/// Load image sequence from memory buffer
+//  - Image.data buffer includes all frames: `[image#0][image#1][image#2][...]`
+//  - Number of frames is returned through 'frames' parameter
+//  - All frames are returned in RGBA format
+//  - Frames delay data is discarded
+#[inline]
+pub fn load_image_anim_from_memory(
+    file_type: &CStr,
+    file_data: &[u8],
+) -> (sys::Image, usize) {
+    let mut frames = MaybeUninit::uninit(); // LoadImageAnimFromMemory will assign with 0
+    unsafe {
+        let image = sys::LoadImageAnimFromMemory(
+            file_type.as_ptr(),
+            file_data.as_ptr(),
+            file_data.len().try_into().unwrap(),
+            frames.as_mut_ptr(),
+        );
+        (image, frames.assume_init().try_into().unwrap())
+    }
+}
+
+/// Load image from memory buffer, fileType refers to extension: i.e. '.png'
+/// WARNING: File extension must be provided in lower-case
+#[inline]
+pub fn load_image_from_memory(
+    file_type: &CStr,
+    file_data: &[u8],
+) -> sys::Image {
+    unsafe {
+        sys::LoadImageFromMemory(
+            file_type.as_ptr(),
+            file_data.as_ptr(),
+            file_data.len().try_into().unwrap(),
+        )
+    }
+}
+
+/// Load image from GPU texture data
+/// NOTE: Compressed texture formats not supported
+#[inline]
+pub fn load_image_from_texture(
+    texture: sys::Texture2D,
+) -> sys::Image {
+    unsafe {
+        sys::LoadImageFromTexture(
+            texture,
+        )
+    }
+}
+
+/// Load image from screen buffer and (screenshot)
+#[inline]
+pub fn load_image_from_screen() -> sys::Image {
+    unsafe {
+        sys::LoadImageFromScreen()
+    }
+}
+
+/// Check if an image is valid (data and parameters)
+#[inline]
+pub fn is_image_valid(
+    image: sys::Image,
+) -> bool {
+    unsafe {
+        sys::IsImageValid(
+            image,
+        )
+    }
+}
+
+/// Unload image from CPU memory (RAM)
+#[inline]
+pub fn unload_image(
+    image: sys::Image,
+) {
+    unsafe {
+        sys::UnloadImage(
+            image,
+        );
+    }
+}
+
+/// Export image data to file, returns true on success
+/// NOTE: File format depends on file_name extension
+#[inline]
+pub fn export_image(
+    image: sys::Image,
+    file_name: &CStr,
+) -> bool {
+    unsafe {
+        sys::ExportImage(
+            image,
+            file_name.as_ptr(),
+        )
+    }
+}
+
+/// Export image to memory buffer
+#[inline]
+pub fn export_image_to_memory(
+    image: sys::Image,
+    file_type: &CStr,
+) -> Option<RlBytes> {
+    // TODO: The returned pointer is allocated with `stbi_write_png_to_mem`,
+    // I'm not sure if `MemFree()` is the correct dealloc function or not...
+    let mut file_size = MaybeUninit::uninit();
+    unsafe {
+        let ptr = sys::ExportImageToMemory(
+            image,
+            file_type.as_ptr(),
+            file_size.as_mut_ptr(),
+        );
+        RlBytes::new(
+            ptr,
+            file_size,
+        )
+    }
+}
+
+/// Export image as code file (.h) defining an array of bytes
+#[inline]
+pub fn export_image_as_code(
+    image: sys::Image,
+    file_name: &CStr,
+) -> Result<(), ()> {
+    match unsafe {
+        sys::ExportImageAsCode(
+            image,
+            file_name.as_ptr(),
+        )
+    } {
+        true => Ok(()),
+        false => Err(()),
+    }
+}
+
+// Image generation functions
+
+/// Generate image: plain color
+#[inline]
+pub fn gen_image_color(
+    width: u32,
+    height: u32,
+    color: sys::Color,
+) -> sys::Image {
+    unsafe {
+        sys::GenImageColor(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            color,
+        )
+    }
+}
+
+/// Generate image: linear gradient, direction in degrees [0..360], 0=Vertical gradient
+#[inline]
+pub fn gen_image_gradient_linear(
+    width: u32,
+    height: u32,
+    direction: i32,
+    start: sys::Color,
+    end: sys::Color,
+) -> sys::Image {
+    unsafe {
+        sys::GenImageGradientLinear(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            direction,
+            start,
+            end,
+        )
+    }
+}
+
+/// Generate image: radial gradient
+#[inline]
+pub fn gen_image_gradient_radial(
+    width: u32,
+    height: u32,
+    density: f32,
+    inner: sys::Color,
+    outer: sys::Color,
+) -> sys::Image {
+    unsafe {
+        sys::GenImageGradientRadial(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            density,
+            inner,
+            outer,
+        )
+    }
+}
+
+/// Generate image: square gradient
+#[inline]
+pub fn gen_image_gradient_square(
+    width: u32,
+    height: u32,
+    density: f32,
+    inner: sys::Color,
+    outer: sys::Color,
+) -> sys::Image {
+    unsafe {
+        sys::GenImageGradientSquare(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            density,
+            inner,
+            outer,
+        )
+    }
+}
+
+/// Generate image: checked
+#[inline]
+pub fn gen_image_checked(
+    width: u32,
+    height: u32,
+    checks_x: u32,
+    checks_y: u32,
+    col1: sys::Color,
+    col2: sys::Color,
+) -> sys::Image {
+    unsafe {
+        sys::GenImageChecked(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            checks_x.try_into().unwrap(),
+            checks_y.try_into().unwrap(),
+            col1,
+            col2,
+        )
+    }
+}
+
+/// Generate image: white noise
+#[inline]
+pub fn gen_image_white_noise(
+    width: u32,
+    height: u32,
+    factor: f32,
+) -> sys::Image {
+    unsafe {
+        sys::GenImageWhiteNoise(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            factor,
+        )
+    }
+}
+
+/// Generate image: perlin noise
+#[inline]
+pub fn gen_image_perlin_noise(
+    width: u32,
+    height: u32,
+    offset_x: i32,
+    offset_y: i32,
+    scale: f32,
+) -> sys::Image {
+    unsafe {
+        sys::GenImagePerlinNoise(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            offset_x,
+            offset_y,
+            scale,
+        )
+    }
+}
+
+/// Generate image: cellular algorithm, bigger tile_size means bigger cells
+#[inline]
+pub fn gen_image_cellular(
+    width: u32,
+    height: u32,
+    tile_size: NonZeroI32, // this value is used to divide other numbers
+) -> sys::Image {
+    unsafe {
+        sys::GenImageCellular(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            tile_size.get(),
+        )
+    }
+}
+
+/// Generate image: grayscale image from text data
+#[inline]
+pub fn gen_image_text(
+    width: u32,
+    height: u32,
+    text: &CStr,
+) -> sys::Image {
+    unsafe {
+        sys::GenImageText(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            text.as_ptr(),
+        )
+    }
+}
+
+// Image manipulation functions
+
+/// Create an image duplicate (useful for transformations)
+#[inline]
+pub fn image_copy(
+    image: sys::Image,
+) -> sys::Image {
+    unsafe {
+        sys::ImageCopy(
+            image,
+        )
+    }
+}
+
+/// Create an image from another image piece
+#[inline]
+pub fn image_from_image(
+    image: sys::Image,
+    rec: sys::Rectangle,
+) -> sys::Image {
+    unsafe {
+        sys::ImageFromImage(
+            image,
+            rec,
+        )
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[repr(i32)]
+pub enum ColorChannel {
+    #[default]
+    Red   = 0,
+    Green = 1,
+    Blue  = 2,
+    Alpha = 3,
+}
+
+/// Create an image from a selected channel of another image (GRAYSCALE)
+#[inline]
+pub fn image_from_channel(
+    image: sys::Image,
+    selected_channel: ColorChannel,
+) -> sys::Image {
+    unsafe {
+        sys::ImageFromChannel(
+            image,
+            selected_channel as i32,
+        )
+    }
+}
+
+/// Create an image from text (default font)
+#[inline]
+pub fn image_text(
+    text: &CStr,
+    font_size: u32,
+    color: sys::Color,
+) -> sys::Image {
+    unsafe {
+        sys::ImageText(
+            text.as_ptr(),
+            font_size.try_into().unwrap(),
+            color,
+        )
+    }
+}
+
+/// Create an image from text (custom sprite font)
+#[inline]
+pub fn image_text_ex(
+    font: sys::Font,
+    text: &CStr,
+    font_size: f32,
+    spacing: f32,
+    tint: sys::Color,
+) -> sys::Image {
+    unsafe {
+        sys::ImageTextEx(
+            font,
+            text.as_ptr(),
+            font_size,
+            spacing,
+            tint,
+        )
+    }
+}
+
+/// Convert image data to desired format
+#[inline]
+pub fn image_format(
+    image: &mut sys::Image,
+    new_format: sys::PixelFormat,
+) {
+    unsafe {
+        sys::ImageFormat(
+            image,
+            new_format as i32,
+        );
+    }
+}
+
+/// Convert image to POT (power-of-two)
+#[inline]
+pub fn image_to_pot(
+    image: &mut sys::Image,
+    fill: sys::Color,
+) {
+    unsafe {
+        sys::ImageToPOT(
+            image,
+            fill,
+        );
+    }
+}
+
+/// Crop an image to a defined rectangle
+#[inline]
+pub fn image_crop(
+    image: &mut sys::Image,
+    crop: sys::Rectangle,
+) {
+    unsafe {
+        sys::ImageCrop(
+            image,
+            crop,
+        );
+    }
+}
+
+/// Crop image depending on alpha value
+#[inline]
+pub fn image_alpha_crop(
+    image: &mut sys::Image,
+    threshold: f32,
+) {
+    unsafe {
+        sys::ImageAlphaCrop(
+            image,
+            threshold
+        );
+    }
+}
+
+/// Clear alpha channel to desired color
+#[inline]
+pub fn image_alpha_clear(
+    image: &mut sys::Image,
+    color: sys::Color,
+    threshold: f32,
+) {
+    unsafe {
+        sys::ImageAlphaClear(
+            image,
+            color,
+            threshold,
+        );
+    }
+}
+
+/// Apply alpha mask to image
+#[inline]
+pub fn image_alpha_mask(
+    image: &mut sys::Image,
+    alpha_mask: sys::Image,
+) {
+    unsafe {
+        sys::ImageAlphaMask(
+            image,
+            alpha_mask,
+        )
+    }
+}
+
+/// Premultiply alpha channel
+#[inline]
+pub fn image_alpha_premultiply(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageAlphaPremultiply(
+            image,
+        );
+    }
+}
+
+/// Apply Gaussian blur using a box blur approximation
+#[inline]
+pub fn image_blur_gaussian(
+    image: &mut sys::Image,
+    blur_size: u32,
+) {
+    unsafe {
+        sys::ImageBlurGaussian(
+            image,
+            blur_size.try_into().unwrap(),
+        )
+    }
+}
+
+/// Apply custom square convolution kernel to image
+#[inline]
+pub fn image_kernel_convolution(
+    image: &mut sys::Image,
+    kernel: &[f32],
+) {
+    unsafe {
+        sys::ImageKernelConvolution(
+            image,
+            kernel.as_ptr(),
+            kernel.len().try_into().unwrap(),
+        );
+    }
+}
+
+/// Resize image (Bicubic scaling algorithm)
+#[inline]
+pub fn image_resize(
+    image: &mut sys::Image,
+    new_width: u32,
+    new_height: u32,
+) {
+    unsafe {
+        sys::ImageResize(
+            image,
+            new_width.try_into().unwrap(),
+            new_height.try_into().unwrap(),
+        );
+    }
+}
+
+/// Resize image (Nearest-Neighbor scaling algorithm)
+#[inline]
+pub fn image_resize_nn(
+    image: &mut sys::Image,
+    new_width: u32,
+    new_height: u32,
+) {
+    unsafe {
+        sys::ImageResizeNN(
+            image,
+            new_width.try_into().unwrap(),
+            new_height.try_into().unwrap(),
+        );
+    }
+}
+
+/// Resize canvas and fill with color
+#[inline]
+pub fn image_resize_canvas(
+    image: &mut sys::Image,
+    new_width: u32,
+    new_height: u32,
+    offset_x: i32,
+    offset_y: i32,
+    fill: sys::Color,
+) {
+    unsafe {
+        sys::ImageResizeCanvas(
+            image,
+            new_width.try_into().unwrap(),
+            new_height.try_into().unwrap(),
+            offset_x,
+            offset_y,
+            fill,
+        );
+    }
+}
+
+/// Compute all mipmap levels for a provided image
+#[inline]
+pub fn image_mipmaps(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageMipmaps(
+            image,
+        );
+    }
+}
+
+/// Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
+/// NOTE: In case selected bpp do not represent a known 16bit format,
+/// dithered data is stored in the LSB part of the unsigned short
+#[inline]
+pub fn image_dither(
+    image: &mut sys::Image,
+    r_bpp: u8,
+    g_bpp: u8,
+    b_bpp: u8,
+    a_bpp: u8,
+) {
+    unsafe {
+        sys::ImageDither(
+            image,
+            r_bpp.into(),
+            g_bpp.into(),
+            b_bpp.into(),
+            a_bpp.into(),
+        );
+    }
+}
+
+/// Flip image vertically
+#[inline]
+pub fn image_flip_vertical(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageFlipVertical(
+            image,
+        );
+    }
+}
+
+/// Flip image horizontally
+#[inline]
+pub fn image_flip_horizontal(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageFlipHorizontal(
+            image,
+        );
+    }
+}
+
+/// Rotate image by input angle in degrees (-359 to 359)
+#[inline]
+pub fn image_rotate(
+    image: &mut sys::Image,
+    degrees: i32,
+) {
+    unsafe {
+        sys::ImageRotate(
+            image,
+            degrees,
+        );
+    }
+}
+
+/// Rotate image clockwise 90deg
+#[inline]
+pub fn image_rotate_cw(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageRotateCW(
+            image,
+        );
+    }
+}
+
+/// Rotate image counter-clockwise 90deg
+#[inline]
+pub fn image_rotate_ccw(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageRotateCCW(
+            image,
+        );
+    }
+}
+
+/// Modify image color: tint
+#[inline]
+pub fn image_color_tint(
+    image: &mut sys::Image,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageColorTint(
+            image,
+            color,
+        );
+    }
+}
+
+/// Modify image color: invert
+#[inline]
+pub fn image_color_invert(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageColorInvert(
+            image,
+        );
+    }
+}
+
+/// Modify image color: grayscale
+#[inline]
+pub fn image_color_grayscale(
+    image: &mut sys::Image,
+) {
+    unsafe {
+        sys::ImageColorGrayscale(
+            image,
+        );
+    }
+}
+
+/// Modify image color: contrast (-100 to 100)
+#[inline]
+pub fn image_color_contrast(
+    image: &mut sys::Image,
+    contrast: f32,
+) {
+    unsafe {
+        sys::ImageColorContrast(
+            image,
+            contrast,
+        );
+    }
+}
+
+/// Modify image color: brightness (-255 to 255)
+#[inline]
+pub fn image_color_brightness(
+    image: &mut sys::Image,
+    brightness: i32,
+) {
+    unsafe {
+        sys::ImageColorBrightness(
+            image,
+            brightness,
+        );
+    }
+}
+
+/// Modify image color: replace color
+#[inline]
+pub fn image_color_replace(
+    image: &mut sys::Image,
+    color: sys::Color,
+    replace: sys::Color,
+) {
+    unsafe {
+        sys::ImageColorReplace(
+            image,
+            color,
+            replace,
+        );
+    }
+}
+
+/// An owned slice of colors that must be freed manually with [`unload_image_colors()`]
+pub struct ImageColors(NonNull<[sys::Color]>);
+
+impl Deref for ImageColors {
+    type Target = [sys::Color];
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        unsafe {
+            self.0.as_ref()
+        }
+    }
+}
+
+impl DerefMut for ImageColors {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe {
+            self.0.as_mut()
+        }
+    }
+}
+
+impl ImageColors {
+    unsafe fn new(data: *mut sys::Color, len: usize) -> Option<Self> {
+        if !data.is_null() {
+            Some(Self(unsafe {
+                NonNull::new_unchecked(std::ptr::slice_from_raw_parts_mut(data, len))
+            }))
+        } else {
+            None
+        }
+    }
+}
+
+/// Load color data from image as a Color array (RGBA - 32bit)
+/// NOTE: Memory allocated should be freed using [`unload_image_colors()`];
+#[inline]
+pub fn load_image_colors(
+    image: sys::Image,
+) -> Option<ImageColors> {
+    unsafe {
+        ImageColors::new(
+            sys::LoadImageColors(
+                image,
+            ),
+            (image.width*image.height).try_into().unwrap(),
+        )
+    }
+}
+
+/// An owned slice of colors that must be freed manually with [`unload_image_palette()`]
+pub struct ImagePalette(NonNull<[sys::Color]>);
+
+impl Deref for ImagePalette {
+    type Target = [sys::Color];
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        unsafe {
+            self.0.as_ref()
+        }
+    }
+}
+
+impl DerefMut for ImagePalette {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe {
+            self.0.as_mut()
+        }
+    }
+}
+
+impl ImagePalette {
+    unsafe fn new(data: *mut sys::Color, len: MaybeUninit<c_int>) -> Option<Self> {
+        if !data.is_null() {
+            Some(Self(unsafe {
+                NonNull::new_unchecked(std::ptr::slice_from_raw_parts_mut(data, len.assume_init().try_into().unwrap()))
+            }))
+        } else {
+            None
+        }
+    }
+}
+
+/// Load colors palette from image as a Color array (RGBA - 32bit)
+/// NOTE: Memory allocated should be freed using [`unload_image_palette()`]
+#[inline]
+pub fn load_image_palette(
+    image: sys::Image,
+    max_palette_size: usize,
+) -> Option<ImagePalette> {
+    let mut color_count = MaybeUninit::uninit();
+    unsafe {
+        let ptr = sys::LoadImagePalette(
+            image,
+            max_palette_size.try_into().unwrap(),
+            color_count.as_mut_ptr(),
+        );
+        ImagePalette::new(
+            ptr,
+            color_count,
+        )
+    }
+}
+
+/// Unload color data loaded with [`load_image_colors()`]
+#[inline]
+pub fn unload_image_colors(
+    colors: ImageColors,
+) {
+    unsafe {
+        sys::UnloadImageColors(
+            colors.0.as_ptr().cast(),
+        );
+    }
+}
+
+/// Unload colors palette loaded with [`load_image_palette()`]
+#[inline]
+pub fn unload_image_palette(
+    colors: ImagePalette,
+) {
+    unsafe {
+        sys::UnloadImagePalette(
+            colors.0.as_ptr().cast(),
+        );
+    }
+}
+
+/// Get image alpha border rectangle
+#[inline]
+pub fn get_image_alpha_border(
+    image: sys::Image,
+    threshold: f32,
+) -> sys::Rectangle {
+    unsafe {
+        sys::GetImageAlphaBorder(
+            image,
+            threshold,
+        )
+    }
+}
+
+/// Get image pixel color at (x, y) position
+#[inline]
+pub fn get_image_color(
+    image: sys::Image,
+    x: i32,
+    y: i32,
+) -> sys::Color {
+    unsafe {
+        sys::GetImageColor(
+            image,
+            x,
+            y,
+        )
+    }
+}
+
+// Image drawing functions
+// NOTE: Image software-rendering functions (CPU)
+
+/// Clear image background with given color
+#[inline]
+pub fn image_clear_background(
+    dst: &mut sys::Image,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageClearBackground(
+            dst,
+            color,
+        );
+    }
+}
+
+/// Draw pixel within an image
+#[inline]
+pub fn image_draw_pixel(
+    dst: &mut sys::Image,
+    pos_x: i32,
+    pos_y: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawPixel(
+            dst,
+            pos_x,
+            pos_y,
+            color,
+        );
+    }
+}
+
+/// Draw pixel within an image (Vector version)
+#[inline]
+pub fn image_draw_pixel_v(
+    dst: &mut sys::Image,
+    position: sys::Vector2,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawPixelV(
+            dst,
+            position,
+            color,
+        );
+    }
+}
+
+/// Draw line within an image
+#[inline]
+pub fn image_draw_line(
+    dst: &mut sys::Image,
+    start_pos_x: i32,
+    start_pos_y: i32,
+    end_pos_x: i32,
+    end_pos_y: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawLine(
+            dst,
+            start_pos_x,
+            start_pos_y,
+            end_pos_x,
+            end_pos_y,
+            color,
+        );
+    }
+}
+
+/// Draw line within an image (Vector version)
+#[inline]
+pub fn image_draw_line_v(
+    dst: &mut sys::Image,
+    start: sys::Vector2,
+    end: sys::Vector2,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawLineV(
+            dst,
+            start,
+            end,
+            color,
+        );
+    }
+}
+
+/// Draw a line defining thickness within an image
+#[inline]
+pub fn image_draw_line_ex(
+    dst: &mut sys::Image,
+    start: sys::Vector2,
+    end: sys::Vector2,
+    thick: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawLineEx(
+            dst,
+            start,
+            end,
+            thick,
+            color,
+        );
+    }
+}
+
+/// Draw a filled circle within an image
+#[inline]
+pub fn image_draw_circle(
+    dst: &mut sys::Image,
+    center_x: i32,
+    center_y: i32,
+    radius: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawCircle(
+            dst,
+            center_x,
+            center_y,
+            radius,
+            color,
+        );
+    }
+}
+
+/// Draw a filled circle within an image (Vector version)
+#[inline]
+pub fn image_draw_circle_v(
+    dst: &mut sys::Image,
+    center: sys::Vector2,
+    radius: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawCircleV(
+            dst,
+            center,
+            radius,
+            color,
+        );
+    }
+}
+
+/// Draw circle outline within an image
+#[inline]
+pub fn image_draw_circle_lines(
+    dst: &mut sys::Image,
+    center_x: i32,
+    center_y: i32,
+    radius: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawCircleLines(
+            dst,
+            center_x,
+            center_y,
+            radius,
+            color,
+        );
+    }
+}
+
+/// Draw circle outline within an image (Vector version)
+#[inline]
+pub fn image_draw_circle_lines_v(
+    dst: *mut sys::Image,
+    center: sys::Vector2,
+    radius: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawCircleLinesV(
+            dst,
+            center,
+            radius,
+            color,
+        );
+    }
+}
+
+/// Draw rectangle within an image
+#[inline]
+pub fn image_draw_rectangle(
+    dst: *mut sys::Image,
+    pos_x: i32,
+    pos_y: i32,
+    width: i32,
+    height: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawRectangle(
+            dst,
+            pos_x,
+            pos_y,
+            width,
+            height,
+            color,
+        );
+    }
+}
+
+/// Draw rectangle within an image (Vector version)
+#[inline]
+pub fn image_draw_rectangle_v(
+    dst: &mut sys::Image,
+    position: sys::Vector2,
+    size: sys::Vector2,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawRectangleV(
+            dst,
+            position,
+            size,
+            color,
+        );
+    }
+}
+
+/// Draw rectangle within an image
+#[inline]
+pub fn image_draw_rectangle_rec(
+    dst: &mut sys::Image,
+    rec: sys::Rectangle,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawRectangleRec(
+            dst,
+            rec,
+            color,
+        );
+    }
+}
+
+/// Draw rectangle lines within an image
+#[inline]
+pub fn image_draw_rectangle_lines(
+    dst: &mut sys::Image,
+    rec: sys::Rectangle,
+    thick: i32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawRectangleLines(
+            dst,
+            rec,
+            thick,
+            color,
+        );
+    }
+}
+
+/// Draw triangle within an image
+#[inline]
+pub fn image_draw_triangle(
+    dst: &mut sys::Image,
+    v1: sys::Vector2,
+    v2: sys::Vector2,
+    v3: sys::Vector2,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawTriangle(
+            dst,
+            v1,
+            v2,
+            v3,
+            color,
+        );
+    }
+}
+
+/// Draw triangle with interpolated colors within an image
+#[inline]
+pub fn image_draw_triangle_ex(
+    dst: &mut sys::Image,
+    v1: sys::Vector2,
+    v2: sys::Vector2,
+    v3: sys::Vector2,
+    c1: sys::Color,
+    c2: sys::Color,
+    c3: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawTriangleEx(
+            dst,
+            v1,
+            v2,
+            v3,
+            c1,
+            c2,
+            c3,
+        )
+    }
+}
+
+/// Draw triangle outline within an image
+#[inline]
+pub fn image_draw_triangle_lines(
+    dst: &mut sys::Image,
+    v1: sys::Vector2,
+    v2: sys::Vector2,
+    v3: sys::Vector2,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawTriangleLines(
+            dst,
+            v1,
+            v2,
+            v3,
+            color,
+        );
+    }
+}
+
+/// Draw a triangle fan defined by points within an image (first vertex is the center)
+#[inline]
+pub fn image_draw_triangle_fan(
+    dst: &mut sys::Image,
+    points: &[sys::Vector2],
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawTriangleFan(
+            dst,
+            points.as_ptr(),
+            points.len().try_into().unwrap(),
+            color,
+        );
+    }
+}
+
+/// Draw a triangle strip defined by points within an image
+#[inline]
+pub fn image_draw_triangle_strip(
+    dst: &mut sys::Image,
+    points: &[sys::Vector2],
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawTriangleStrip(
+            dst,
+            points.as_ptr(),
+            points.len().try_into().unwrap(),
+            color,
+        );
+    }
+}
+
+/// Draw a source image within a destination image (tint applied to source)
+#[inline]
+pub fn image_draw(
+    dst: &mut sys::Image,
+    src: sys::Image,
+    src_rec: sys::Rectangle,
+    dst_rec: sys::Rectangle,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::ImageDraw(
+            dst,
+            src,
+            src_rec,
+            dst_rec,
+            tint,
+        );
+    }
+}
+
+/// Draw text (using default font) within an image (destination)
+#[inline]
+pub fn image_draw_text(
+    dst: &mut sys::Image,
+    text: &CStr,
+    pos_x: i32,
+    pos_y: i32,
+    font_size: u32,
+    color: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawText(
+            dst,
+            text.as_ptr(),
+            pos_x,
+            pos_y,
+            font_size.try_into().unwrap(),
+            color,
+        );
+    }
+}
+
+/// Draw text (custom sprite font) within an image (destination)
+#[inline]
+pub fn image_draw_text_ex(
+    dst: &mut sys::Image,
+    font: sys::Font,
+    text: &CStr,
+    position: sys::Vector2,
+    font_size: f32,
+    spacing: f32,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::ImageDrawTextEx(
+            dst,
+            font,
+            text.as_ptr(),
+            position,
+            font_size,
+            spacing,
+            tint,
+        );
+    }
+}
+
 // pub fn LoadTexture(fileName: *const ::std::os::raw::c_char) -> Texture2D;
 // pub fn LoadTextureFromImage(image: Image) -> Texture2D;
 // pub fn LoadTextureCubemap(image: Image, layout: ::std::os::raw::c_int) -> TextureCubemap;
