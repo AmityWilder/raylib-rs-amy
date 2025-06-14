@@ -4,6 +4,137 @@ use crate::{low_level::{self as ll, sys}, safe::into_cstr::IntoCStr};
 
 pub mod into_cstr;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum KeyboardKey {
+    Apostrophe = sys::KeyboardKey::KEY_APOSTROPHE as isize,
+    Comma = sys::KeyboardKey::KEY_COMMA as isize,
+    Minus = sys::KeyboardKey::KEY_MINUS as isize,
+    Period = sys::KeyboardKey::KEY_PERIOD as isize,
+    Slash = sys::KeyboardKey::KEY_SLASH as isize,
+    Zero = sys::KeyboardKey::KEY_ZERO as isize,
+    One = sys::KeyboardKey::KEY_ONE as isize,
+    Two = sys::KeyboardKey::KEY_TWO as isize,
+    Three = sys::KeyboardKey::KEY_THREE as isize,
+    Four = sys::KeyboardKey::KEY_FOUR as isize,
+    Five = sys::KeyboardKey::KEY_FIVE as isize,
+    Six = sys::KeyboardKey::KEY_SIX as isize,
+    Seven = sys::KeyboardKey::KEY_SEVEN as isize,
+    Eight = sys::KeyboardKey::KEY_EIGHT as isize,
+    Nine = sys::KeyboardKey::KEY_NINE as isize,
+    Semicolon = sys::KeyboardKey::KEY_SEMICOLON as isize,
+    Equal = sys::KeyboardKey::KEY_EQUAL as isize,
+    A = sys::KeyboardKey::KEY_A as isize,
+    B = sys::KeyboardKey::KEY_B as isize,
+    C = sys::KeyboardKey::KEY_C as isize,
+    D = sys::KeyboardKey::KEY_D as isize,
+    E = sys::KeyboardKey::KEY_E as isize,
+    F = sys::KeyboardKey::KEY_F as isize,
+    G = sys::KeyboardKey::KEY_G as isize,
+    H = sys::KeyboardKey::KEY_H as isize,
+    I = sys::KeyboardKey::KEY_I as isize,
+    J = sys::KeyboardKey::KEY_J as isize,
+    K = sys::KeyboardKey::KEY_K as isize,
+    L = sys::KeyboardKey::KEY_L as isize,
+    M = sys::KeyboardKey::KEY_M as isize,
+    N = sys::KeyboardKey::KEY_N as isize,
+    O = sys::KeyboardKey::KEY_O as isize,
+    P = sys::KeyboardKey::KEY_P as isize,
+    Q = sys::KeyboardKey::KEY_Q as isize,
+    R = sys::KeyboardKey::KEY_R as isize,
+    S = sys::KeyboardKey::KEY_S as isize,
+    T = sys::KeyboardKey::KEY_T as isize,
+    U = sys::KeyboardKey::KEY_U as isize,
+    V = sys::KeyboardKey::KEY_V as isize,
+    W = sys::KeyboardKey::KEY_W as isize,
+    X = sys::KeyboardKey::KEY_X as isize,
+    Y = sys::KeyboardKey::KEY_Y as isize,
+    Z = sys::KeyboardKey::KEY_Z as isize,
+    LeftBracket = sys::KeyboardKey::KEY_LEFT_BRACKET as isize,
+    Backslash = sys::KeyboardKey::KEY_BACKSLASH as isize,
+    RightBracket = sys::KeyboardKey::KEY_RIGHT_BRACKET as isize,
+    Grave = sys::KeyboardKey::KEY_GRAVE as isize,
+    Space = sys::KeyboardKey::KEY_SPACE as isize,
+    Escape = sys::KeyboardKey::KEY_ESCAPE as isize,
+    Enter = sys::KeyboardKey::KEY_ENTER as isize,
+    Tab = sys::KeyboardKey::KEY_TAB as isize,
+    Backspace = sys::KeyboardKey::KEY_BACKSPACE as isize,
+    Insert = sys::KeyboardKey::KEY_INSERT as isize,
+    Delete = sys::KeyboardKey::KEY_DELETE as isize,
+    Right = sys::KeyboardKey::KEY_RIGHT as isize,
+    Left = sys::KeyboardKey::KEY_LEFT as isize,
+    Down = sys::KeyboardKey::KEY_DOWN as isize,
+    Up = sys::KeyboardKey::KEY_UP as isize,
+    PageUp = sys::KeyboardKey::KEY_PAGE_UP as isize,
+    PageDown = sys::KeyboardKey::KEY_PAGE_DOWN as isize,
+    Home = sys::KeyboardKey::KEY_HOME as isize,
+    End = sys::KeyboardKey::KEY_END as isize,
+    CapsLock = sys::KeyboardKey::KEY_CAPS_LOCK as isize,
+    ScrollLock = sys::KeyboardKey::KEY_SCROLL_LOCK as isize,
+    NumLock = sys::KeyboardKey::KEY_NUM_LOCK as isize,
+    PrintScreen = sys::KeyboardKey::KEY_PRINT_SCREEN as isize,
+    Pause = sys::KeyboardKey::KEY_PAUSE as isize,
+    F1 = sys::KeyboardKey::KEY_F1 as isize,
+    F2 = sys::KeyboardKey::KEY_F2 as isize,
+    F3 = sys::KeyboardKey::KEY_F3 as isize,
+    F4 = sys::KeyboardKey::KEY_F4 as isize,
+    F5 = sys::KeyboardKey::KEY_F5 as isize,
+    F6 = sys::KeyboardKey::KEY_F6 as isize,
+    F7 = sys::KeyboardKey::KEY_F7 as isize,
+    F8 = sys::KeyboardKey::KEY_F8 as isize,
+    F9 = sys::KeyboardKey::KEY_F9 as isize,
+    F10 = sys::KeyboardKey::KEY_F10 as isize,
+    F11 = sys::KeyboardKey::KEY_F11 as isize,
+    F12 = sys::KeyboardKey::KEY_F12 as isize,
+    LeftShift = sys::KeyboardKey::KEY_LEFT_SHIFT as isize,
+    LeftControl = sys::KeyboardKey::KEY_LEFT_CONTROL as isize,
+    LeftAlt = sys::KeyboardKey::KEY_LEFT_ALT as isize,
+    LeftSuper = sys::KeyboardKey::KEY_LEFT_SUPER as isize,
+    RightShift = sys::KeyboardKey::KEY_RIGHT_SHIFT as isize,
+    RightControl = sys::KeyboardKey::KEY_RIGHT_CONTROL as isize,
+    RightAlt = sys::KeyboardKey::KEY_RIGHT_ALT as isize,
+    RightSuper = sys::KeyboardKey::KEY_RIGHT_SUPER as isize,
+    KbMenu = sys::KeyboardKey::KEY_KB_MENU as isize,
+    Kp0 = sys::KeyboardKey::KEY_KP_0 as isize,
+    Kp1 = sys::KeyboardKey::KEY_KP_1 as isize,
+    Kp2 = sys::KeyboardKey::KEY_KP_2 as isize,
+    Kp3 = sys::KeyboardKey::KEY_KP_3 as isize,
+    Kp4 = sys::KeyboardKey::KEY_KP_4 as isize,
+    Kp5 = sys::KeyboardKey::KEY_KP_5 as isize,
+    Kp6 = sys::KeyboardKey::KEY_KP_6 as isize,
+    Kp7 = sys::KeyboardKey::KEY_KP_7 as isize,
+    Kp8 = sys::KeyboardKey::KEY_KP_8 as isize,
+    Kp9 = sys::KeyboardKey::KEY_KP_9 as isize,
+    KpDecimal = sys::KeyboardKey::KEY_KP_DECIMAL as isize,
+    KpDivide = sys::KeyboardKey::KEY_KP_DIVIDE as isize,
+    KpMultiply = sys::KeyboardKey::KEY_KP_MULTIPLY as isize,
+    KpSubtract = sys::KeyboardKey::KEY_KP_SUBTRACT as isize,
+    KpAdd = sys::KeyboardKey::KEY_KP_ADD as isize,
+    KpEnter = sys::KeyboardKey::KEY_KP_ENTER as isize,
+    KpEqual = sys::KeyboardKey::KEY_KP_EQUAL as isize,
+    Back = sys::KeyboardKey::KEY_BACK as isize,
+    Menu = sys::KeyboardKey::KEY_MENU as isize,
+    VolumeUp = sys::KeyboardKey::KEY_VOLUME_UP as isize,
+    VolumeDown = sys::KeyboardKey::KEY_VOLUME_DOWN as isize,
+}
+
+impl From<KeyboardKey> for sys::KeyboardKey {
+    #[inline]
+    fn from(value: KeyboardKey) -> Self {
+        unsafe { std::mem::transmute(value as i32) }
+    }
+}
+
+impl TryFrom<sys::KeyboardKey> for KeyboardKey {
+    type Error = ();
+
+    fn try_from(value: sys::KeyboardKey) -> Result<Self, Self::Error> {
+        match value {
+            sys::KeyboardKey::KEY_NULL => Err(()),
+            _ => Ok(unsafe { std::mem::transmute(value as i16) }),
+        }
+    }
+}
+
 /// Evidence that the window has been initialized
 ///
 /// Closes the window upon exiting scope
@@ -165,6 +296,12 @@ impl Window {
     pub fn measure_text_ex(&self, font: sys::Font, text: impl IntoCStr, font_size: f32, spacing: f32) -> sys::Vector2 {
         let text = text.into_cstr().unwrap();
         ll::text::measure_text_ex(font, text.as_ref(), font_size, spacing)
+    }
+
+    /// Check if a key is being pressed
+    #[inline]
+    pub fn is_key_down(&self, key: KeyboardKey) -> bool {
+        ll::input::is_key_down(key.into())
     }
 }
 
@@ -447,19 +584,80 @@ impl Draw for TextureMode {}
 ///
 /// Conditional draw modes are possible by using [`DrawModeEnum`].
 pub trait DrawMode {
-    /// Begin scissor mode (define screen area for following drawing)
+    type Enum: DrawMode;
+
+    /// Convert the draw mode into a [`DrawModeEnum`]
+    ///
+    /// ## See also
+    /// - [`DrawMode::no_mode()`]
+    fn as_enum(self) -> Self::Enum;
+
+    /// Used as the "`None`" variant of draw modes
+    ///
+    /// All other branches should use [`DrawMode::as_enum()`]
+    ///
+    /// # Example
+    /// ```ignore
+    /// let m = if condition {
+    ///     m.begin_scissor(0, 0, 50, 50).as_enum()
+    /// } else {
+    ///     m.no_mode()
+    /// };
+    /// ```
+    ///
+    /// Necessary to prevent the inner draw mode from popping when you would expect
+    /// one of the other branches to drop, by adding a buffer layer
+    ///
+    /// --------------------------------------------------------------------------------
+    /// ### Aside
+    ///
+    /// No, storing the draw mode in enums is not "zero-cost", it stores a discriminant.
+    /// But genuinely *intended*, well-defined behavior of Raylib shouldn't be outright
+    /// removed for the sake of having EXCLUSIVELY zero-cost abstractions. Sometimes
+    /// runtime conditions need to be done *at runtime* to ensure safety.
+    ///
+    /// Plus, if you want ZERO cost, you always have the option of calling into the
+    /// [`crate::low_level`] module itself, if you trust yourself to call the
+    /// corresponding `end_*_mode` methods in the right order.
     #[inline]
-    fn begin_scissor(&mut self, x: i32, y: i32, width: i32, height: i32) -> ScissorMode<'_, Self> {
-        ll::begin_scissor_mode(x, y, width, height);
-        ScissorMode(PhantomData)
+    fn no_mode(&mut self) -> DrawModeEnum<'_, Self> {
+        DrawModeEnum::Ignore(self)
+    }
+}
+
+pub trait DrawModeExt<'a, M: ?Sized + DrawMode> {
+    /// Convert the draw mode into a [`DrawModeEnum`]
+    ///
+    /// Alias for [`DrawMode::no_mode()`]
+    fn as_enum(self) -> DrawModeEnum<'a, M>;
+}
+
+impl<'a, M: ?Sized + DrawMode> DrawModeExt<'a, M> for &'a mut M {
+    #[inline]
+    fn as_enum(self) -> DrawModeEnum<'a, M> {
+        self.no_mode()
     }
 }
 
 pub enum DrawModeEnum<'a, M: ?Sized + 'a> {
+    Ignore(&'a mut M),
+    Base(BaseDrawMode),
     Scissor(ScissorMode<'a, M>),
 }
 
-impl<M: ?Sized> DrawMode for DrawModeEnum<'_, M> {}
+impl<'a, M: ?Sized + 'a> From<&'a mut M> for DrawModeEnum<'a, M> {
+    #[inline]
+    fn from(value: &'a mut M) -> Self {
+        Self::Ignore(value)
+    }
+}
+
+impl From<BaseDrawMode> for DrawModeEnum<'static, ()> {
+    #[inline]
+    fn from(value: BaseDrawMode) -> Self {
+        Self::Base(value)
+    }
+}
 
 impl<'a, M: ?Sized + 'a> From<ScissorMode<'a, M>> for DrawModeEnum<'a, M> {
     #[inline]
@@ -468,9 +666,25 @@ impl<'a, M: ?Sized + 'a> From<ScissorMode<'a, M>> for DrawModeEnum<'a, M> {
     }
 }
 
+impl<M: ?Sized> DrawMode for DrawModeEnum<'_, M> {
+    type Enum = Self;
+
+    #[inline]
+    fn as_enum(self) -> Self {
+        self
+    }
+}
+
 pub struct BaseDrawMode(());
 
-impl DrawMode for BaseDrawMode {}
+impl DrawMode for BaseDrawMode {
+    type Enum = DrawModeEnum<'static, ()>;
+
+    #[inline]
+    fn as_enum(self) -> DrawModeEnum<'static, ()> {
+        DrawModeEnum::Base(self)
+    }
+}
 
 pub struct ScissorMode<'a, M: ?Sized>(PhantomData<&'a mut M>);
 
@@ -482,5 +696,20 @@ impl<M: ?Sized> Drop for ScissorMode<'_, M> {
     }
 }
 
-impl<'a, M: ?Sized> DrawMode for ScissorMode<'a, M> {}
+impl<'a, M: ?Sized> ScissorMode<'a, M> {
+    /// Begin scissor mode (define screen area for following drawing)
+    #[inline]
+    pub fn begin(_m: &'a mut M, x: i32, y: i32, width: i32, height: i32) -> ScissorMode<'a, M> {
+        ll::begin_scissor_mode(x, y, width, height);
+        Self(PhantomData)
+    }
+}
 
+impl<'a, M: ?Sized> DrawMode for ScissorMode<'a, M> {
+    type Enum = DrawModeEnum<'a, M>;
+
+    #[inline]
+    fn as_enum(self) -> DrawModeEnum<'a, M> {
+        DrawModeEnum::Scissor(self)
+    }
+}

@@ -28,9 +28,22 @@ fn test0() {
                 let s = c"Hello world!";
                 let font_size = 10;
                 let width = rl.measure_text(s, font_size);
-                let mut m = m.begin_scissor(10, 5, 20, 8);
-                d.draw_rectangle(5, 5, width, font_size as i32, Color::GREEN);
-                d.draw_text(s, 5, 5, font_size, Color::BLUE);
+                {
+                    let m = &mut if rl.is_key_down(KeyboardKey::Space) {
+                        ScissorMode::begin(m, 10, 5, 20, 8).as_enum()
+                    } else {
+                        m.as_enum()
+                    };
+                    {
+                        let _m = &mut if rl.is_key_down(KeyboardKey::LeftShift) {
+                            ScissorMode::begin(m, 5, 6, 10, 8).as_enum()
+                        } else {
+                            m.as_enum()
+                        };
+                        d.draw_rectangle(5, 5, width, font_size as i32, Color::GREEN);
+                    }
+                    d.draw_text(s, 5, 5, font_size, Color::BLUE);
+                }
             });
         }
     }
