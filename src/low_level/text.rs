@@ -12,7 +12,7 @@ pub fn get_font_default() -> sys::Font {
 
 /// Load font from file into GPU memory (VRAM)
 #[inline]
-pub fn LoadFont(
+pub fn load_font(
     file_name: &CStr,
 ) -> sys::Font {
     unsafe {
@@ -472,7 +472,7 @@ impl RlAllocator<[char]> for LoadCodepointsAllocator {
     }
 }
 
-pub type RlCodepoints<A: RlAllocator<[char]>> = RlBuffer<[char], A>;
+pub type RlCodepoints<A> = RlBuffer<[char], A>;
 
 /// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
 ///

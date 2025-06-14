@@ -101,7 +101,7 @@ impl<T> RlAllocator<[T]> for MemAllocator {
     }
 }
 
-pub type RlCString<A: RlAllocator<CStr> = MemAllocator> = RlBuffer<CStr, A>;
+pub type RlCString<A = MemAllocator> = RlBuffer<CStr, A>;
 
 impl<A: RlAllocator<CStr>> RlCString<A> {
     pub(crate) unsafe fn new(data: *mut c_char, dealloc: A) -> Option<Self> {
@@ -132,7 +132,7 @@ impl RlAllocator<CStr> for MemAllocator {
     }
 }
 
-pub type RlString<A: RlAllocator<str> = MemAllocator> = RlBuffer<str, A>;
+pub type RlString<A = MemAllocator> = RlBuffer<str, A>;
 
 impl<A: RlAllocator<str>> RlString<A> {
     pub(crate) unsafe fn new(data: *mut c_char, len: impl FnOnce() -> usize, dealloc: A) -> Option<Self> {
