@@ -1501,37 +1501,41 @@ pub fn compute_crc32(
 
 define_buffer_handle!(ComputeMD5Handle);
 
-/// Compute MD5 hash code, returns static int[4] (16 bytes)
-#[inline]
-pub fn compute_md5<'a>(
-    _marker: &'a mut ComputeMD5Handle,
-    data: &[u8],
-) -> &'a mut [u32; 4] {
-    unsafe {
-        let ptr = sys::ComputeMD5(
-            data.as_ptr().cast_mut(),
-            data.len().try_into().unwrap(),
-        );
-        assert!(!ptr.is_null(), "ComputeMD5 should always return its static buffer, never null, not even if there is an error");
-        &mut *ptr.cast::<[u32; 4]>()
+impl ComputeMD5Handle {
+    /// Compute MD5 hash code, returns static int[4] (16 bytes)
+    #[inline]
+    pub fn compute_md5<'a>(
+        &'a mut self,
+        data: &[u8],
+    ) -> &'a mut [u32; 4] {
+        unsafe {
+            let ptr = sys::ComputeMD5(
+                data.as_ptr().cast_mut(),
+                data.len().try_into().unwrap(),
+            );
+            assert!(!ptr.is_null(), "ComputeMD5 should always return its static buffer, never null, not even if there is an error");
+            &mut *ptr.cast::<[u32; 4]>()
+        }
     }
 }
 
 define_buffer_handle!(ComputeSHA1Handle);
 
-/// Compute SHA1 hash code, returns static int[5] (20 bytes)
-#[inline]
-pub fn compute_sha1<'a>(
-    _marker: &'a mut ComputeSHA1Handle,
-    data: &[u8],
-) -> &'a mut [u32; 5] {
-    unsafe {
-        let ptr = sys::ComputeSHA1(
-            data.as_ptr().cast_mut(),
-            data.len().try_into().unwrap(),
-        );
-        assert!(!ptr.is_null(), "ComputeSHA1 should always return its static buffer, never null, not even if there is an error");
-        &mut *ptr.cast::<[u32; 5]>()
+impl ComputeSHA1Handle {
+    /// Compute SHA1 hash code, returns static int[5] (20 bytes)
+    #[inline]
+    pub fn compute_sha1<'a>(
+        &'a mut self,
+        data: &[u8],
+    ) -> &'a mut [u32; 5] {
+        unsafe {
+            let ptr = sys::ComputeSHA1(
+                data.as_ptr().cast_mut(),
+                data.len().try_into().unwrap(),
+            );
+            assert!(!ptr.is_null(), "ComputeSHA1 should always return its static buffer, never null, not even if there is an error");
+            &mut *ptr.cast::<[u32; 5]>()
+        }
     }
 }
 

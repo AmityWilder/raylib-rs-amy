@@ -10,3 +10,12 @@ pub mod low_level;
 ///
 /// Adds ergonomics and a safety net against carelessness
 pub mod safe;
+
+pub mod prelude {
+    pub use crate::safe::{
+        into_cstr::*,
+        *,
+    };
+}
+
+mod tests;

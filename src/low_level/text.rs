@@ -472,8 +472,6 @@ impl RlAllocator<[char]> for LoadCodepointsAllocator {
     }
 }
 
-pub type RlCodepoints<A> = RlBuffer<[char], A>;
-
 /// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
 ///
 /// NOTE: Despite being a Rust `&str`, the `text` parameter must be nul-terminated
@@ -639,20 +637,22 @@ pub fn text_length(
 
 define_buffer_handle!(TextSubtextHandle);
 
-/// Get a piece of a text string
-#[inline]
-pub fn text_subtext<'a>(
-    _marker: &'a mut TextSubtextHandle,
-    text: &CStr,
-    position: usize,
-    length: usize,
-) -> &'a CStr {
-    unsafe {
-        CStr::from_ptr(sys::TextSubtext(
-            text.as_ptr(),
-            position.try_into().unwrap(),
-            length.try_into().unwrap(),
-        ))
+impl TextSubtextHandle {
+    /// Get a piece of a text string
+    #[inline]
+    pub fn text_subtext<'a>(
+        &'a mut self,
+        text: &CStr,
+        position: usize,
+        length: usize,
+    ) -> &'a CStr {
+        unsafe {
+            CStr::from_ptr(sys::TextSubtext(
+                text.as_ptr(),
+                position.try_into().unwrap(),
+                length.try_into().unwrap(),
+            ))
+        }
     }
 }
 
@@ -696,46 +696,50 @@ pub fn text_insert(
 
 define_buffer_handle!(TextJoinHandle);
 
-/// Join text strings with delimiter
-#[inline]
-pub fn text_join<'a>(
-    _marker: &'a mut TextJoinHandle,
-    text_list: &[&c_char],
-    count: i32,
-    delimiter: &CStr,
-) -> &'a CStr {
-    unsafe {
-        CStr::from_ptr(sys::TextJoin(
-            text_list.as_ptr().cast_mut().cast(),
-            count,
-            delimiter.as_ptr(),
-        ))
+impl TextJoinHandle {
+    /// Join text strings with delimiter
+    #[inline]
+    pub fn text_join<'a>(
+        &'a mut self,
+        text_list: &[&c_char],
+        count: i32,
+        delimiter: &CStr,
+    ) -> &'a CStr {
+        unsafe {
+            CStr::from_ptr(sys::TextJoin(
+                text_list.as_ptr().cast_mut().cast(),
+                count,
+                delimiter.as_ptr(),
+            ))
+        }
     }
 }
 
 define_buffer_handle!(TextSplitHandle);
 
-/// Split text into multiple strings
-///
-/// NOTE: Current implementation returns a copy of the provided string with '\0' (string end delimiter)
-/// inserted between strings defined by "delimiter" parameter. No memory is dynamically allocated,
-/// all used memory is static... it has some limitations:
-///      1. Maximum number of possible split strings is set by MAX_TEXTSPLIT_COUNT
-///      2. Maximum size of text to split is MAX_TEXT_BUFFER_LENGTH
-#[inline]
-pub fn text_split<'a>(
-    _marker: &'a mut TextSplitHandle,
-    text: &CStr,
-    delimiter: c_char,
-) -> &'a [*mut c_char] {
-    let mut count = MaybeUninit::uninit();
-    unsafe {
-        let ptr = sys::TextSplit(
-            text.as_ptr(),
-            delimiter,
-            count.as_mut_ptr(),
-        );
-        std::slice::from_raw_parts(ptr, count.assume_init().try_into().unwrap())
+impl TextSplitHandle {
+    /// Split text into multiple strings
+    ///
+    /// NOTE: Current implementation returns a copy of the provided string with '\0' (string end delimiter)
+    /// inserted between strings defined by "delimiter" parameter. No memory is dynamically allocated,
+    /// all used memory is static... it has some limitations:
+    ///      1. Maximum number of possible split strings is set by MAX_TEXTSPLIT_COUNT
+    ///      2. Maximum size of text to split is MAX_TEXT_BUFFER_LENGTH
+    #[inline]
+    pub fn text_split<'a>(
+        &'a mut self,
+        text: &CStr,
+        delimiter: c_char,
+    ) -> &'a [*mut c_char] {
+        let mut count = MaybeUninit::uninit();
+        unsafe {
+            let ptr = sys::TextSplit(
+                text.as_ptr(),
+                delimiter,
+                count.as_mut_ptr(),
+            );
+            std::slice::from_raw_parts(ptr, count.assume_init().try_into().unwrap())
+        }
     }
 }
 
@@ -797,90 +801,99 @@ pub fn text_find_index(
 
 define_buffer_handle!(TextToUpperHandle);
 
-/// Get upper case version of provided string
-///
-/// WARNING: Limited functionality, only basic characters set
-/// TODO: Support UTF-8 diacritics to upper-case, check codepoints
-#[inline]
-pub fn text_to_upper<'a>(
-    _marker: &'a mut TextToUpperHandle,
-    text: &CStr,
-) -> &'a CStr {
-    unsafe {
-        CStr::from_ptr(sys::TextToUpper(
-            text.as_ptr(),
-        ))
+impl TextToUpperHandle {
+    /// Get upper case version of provided string
+    ///
+    /// WARNING: Limited functionality, only basic characters set
+    /// TODO: Support UTF-8 diacritics to upper-case, check codepoints
+    #[inline]
+    pub fn text_to_upper<'a>(
+        &'a mut self,
+        text: &CStr,
+    ) -> &'a CStr {
+        unsafe {
+            CStr::from_ptr(sys::TextToUpper(
+                text.as_ptr(),
+            ))
+        }
     }
 }
 
 define_buffer_handle!(TextToLowerHandle);
 
-/// Get lower case version of provided string
-///
-/// WARNING: Limited functionality, only basic characters set
-#[inline]
-pub fn text_to_lower<'a>(
-    _marker: &'a mut TextToLowerHandle,
-    text: &CStr,
-) -> &'a CStr {
-    unsafe {
-        CStr::from_ptr(sys::TextToLower(
-            text.as_ptr(),
-        ))
+impl TextToLowerHandle {
+    /// Get lower case version of provided string
+    ///
+    /// WARNING: Limited functionality, only basic characters set
+    #[inline]
+    pub fn text_to_lower<'a>(
+        &'a mut self,
+        text: &CStr,
+    ) -> &'a CStr {
+        unsafe {
+            CStr::from_ptr(sys::TextToLower(
+                text.as_ptr(),
+            ))
+        }
     }
 }
 
 define_buffer_handle!(TextToPascalHandle);
 
-/// Get Pascal case notation version of provided string
-///
-/// WARNING: Limited functionality, only basic characters set
-#[inline]
-pub fn text_to_pascal<'a>(
-    _marker: &'a mut TextToPascalHandle,
-    text: &CStr,
-) -> &'a CStr {
-    unsafe {
-        CStr::from_ptr(sys::TextToPascal(
-            text.as_ptr(),
-        ))
+impl TextToPascalHandle {
+    /// Get Pascal case notation version of provided string
+    ///
+    /// WARNING: Limited functionality, only basic characters set
+    #[inline]
+    pub fn text_to_pascal<'a>(
+        &'a mut self,
+        text: &CStr,
+    ) -> &'a CStr {
+        unsafe {
+            CStr::from_ptr(sys::TextToPascal(
+                text.as_ptr(),
+            ))
+        }
     }
 }
 
 define_buffer_handle!(TextToSnakeHandle);
 
-/// Get Snake case notation version of provided string
-///
-/// WARNING: Limited functionality, only basic characters set
-#[inline]
-pub fn text_to_snake<'a>(
-    _marker: &'a mut TextToSnakeHandle,
-    text: &CStr,
-) -> &'a CStr {
-    unsafe {
-        CStr::from_ptr(sys::TextToSnake(
-            text.as_ptr(),
-        ))
+impl TextToSnakeHandle {
+    /// Get Snake case notation version of provided string
+    ///
+    /// WARNING: Limited functionality, only basic characters set
+    #[inline]
+    pub fn text_to_snake<'a>(
+        &'a mut self,
+        text: &CStr,
+    ) -> &'a CStr {
+        unsafe {
+            CStr::from_ptr(sys::TextToSnake(
+                text.as_ptr(),
+            ))
+        }
     }
 }
 
 define_buffer_handle!(TextToCamelHandle);
 
-/// Get Camel case notation version of provided string
-///
-/// WARNING: Limited functionality, only basic characters set
-#[inline]
-pub fn text_to_camel<'a>(
-    _marker: &'a mut TextToCamelHandle,
-    text: &CStr,
-) -> &'a CStr {
-    unsafe {
-        CStr::from_ptr(sys::TextToCamel(
-            text.as_ptr(),
-        ))
+impl TextToCamelHandle {
+    /// Get Camel case notation version of provided string
+    ///
+    /// WARNING: Limited functionality, only basic characters set
+    #[inline]
+    pub fn text_to_camel<'a>(
+        &'a mut self,
+        text: &CStr,
+    ) -> &'a CStr {
+        unsafe {
+            CStr::from_ptr(sys::TextToCamel(
+                text.as_ptr(),
+            ))
+        }
     }
 }
-
 
 /// Get integer value from text
 #[inline]

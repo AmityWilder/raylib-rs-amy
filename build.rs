@@ -123,21 +123,21 @@ fn main() {
     println!("cargo:rerun-if-changed=raylib");
 
     let target = dbg!(std::env::var("TARGET")).unwrap();
-    let out = PathBuf::from(std::env::var("OUT_DIR").unwrap());
-    let rl_path = out.join("raylib");
-    let bindings_path = out.join("bindings.rs");
+    let out = PathBuf::from(dbg!(std::env::var("OUT_DIR")).unwrap());
+    let rl_path = dbg!(out.join("raylib"));
+    let bindings_path = dbg!(out.join("bindings.rs"));
     let profile = Profile::new();
-    let platform = Platform::new(&target);
-    let platform_os = PlatformOS::new(&target);
+    let platform = dbg!(Platform::new(&target));
+    let platform_os = dbg!(PlatformOS::new(&target));
 
-    // if rl_path.exists() && bindings_path.exists() { return; } // temporary
-
-    copy_recursive("raylib", rl_path.as_path())
+    // Copy Raylib to output
+    copy_recursive("raylib", &rl_path)
         .unwrap_or_else(|e| panic!("failed to copy raylib source to `{}`: {e}", out.display()));
 
-    let mut conf = cmake::Config::new(rl_path.as_path());
+    // Build with cmake
+    let mut conf = cmake::Config::new(&rl_path);
+
     conf.profile(profile.as_str())
-        .define("PLATFORM", platform.as_str())
         .define("CMAKE_BUILD_TYPE", profile.as_str())
         .define("BUILD_EXAMPLES", "OFF")
         .define("SUPPORT_BUSY_WAIT_LOOP", "OFF")
@@ -148,11 +148,48 @@ fn main() {
         conf.define("SUPPORT_CUSTOM_FRAME_CONTROL", "ON");
     }
 
+    // Enable wayland cmake flag if feature is specified
+    if cfg!(feature = "wayland") {
+        conf.define("USE_WAYLAND", "ON");
+        conf.define("USE_EXTERNAL_GLFW", "ON");
+    } else {
+        conf.define("USE_WAYLAND", "OFF");
+    }
+
+    if cfg!(feature = "opengl_33") {
+        conf.define("OPENGL_VERSION", "3.3");
+    } else if cfg!(feature = "opengl_21") {
+        conf.define("OPENGL_VERSION", "2.1");
+    } else if /*cfg!(feature = "opengl_11")*/ false {
+        conf.define("OPENGL_VERSION", "1.1");
+    } else if cfg!(feature = "opengl_es_20") {
+        conf.define("OPENGL_VERSION", "ES 2.0");
+        println!("cargo:rustc-link-lib=GLESv2");
+        println!("cargo:rustc-link-lib=GLdispatch");
+    } else if cfg!(feature = "opengl_es_30") {
+        conf.define("OPENGL_VERSION", "ES 3.0");
+        println!("cargo:rustc-link-lib=GLESv2");
+        println!("cargo:rustc-link-lib=GLdispatch");
+    } else {
+        conf.define("OPENGL_VERSION", "OFF");
+    }
+
+    conf.define("PLATFORM", match platform {
+        Platform::Desktop if cfg!(feature = "sdl") => {
+            println!("cargo:rustc-link-lib=SDL2");
+            "SDL"
+        }
+        _ => platform.as_str(),
+    });
+
     let dst = conf.build();
+    // cmake lib directory
     let dst_lib = ["lib", "lib64", "lib32"]
         .into_iter()
-        .map(|lib_dir| dst.join(lib_dir))
-        .find(|path| path.exists())
+        .find_map(|lib_dir| {
+            let path = dst.join(lib_dir);
+            path.exists().then_some(path)
+        })
         .unwrap_or(dst);
 
     if matches!(platform_os, PlatformOS::Windows) {
@@ -173,7 +210,6 @@ fn main() {
                 .expect("failed to create windows library");
         }
     }
-
     if matches!(platform, Platform::Web) {
         let lib = dst_lib.join("libraylib.a");
         if !lib.exists() {
@@ -184,6 +220,7 @@ fn main() {
 
     println!("cargo:rustc-link-search=native={}", dst_lib.display());
 
+    // Generate bindings
     let mut builder = bindgen::Builder::default()
         .headers([
             "raylib/src/config.h",
@@ -195,6 +232,7 @@ fn main() {
             "raylib/src/utils.h",
         ])
         .default_macro_constant_type(bindgen::MacroTypeVariation::Signed)
+        .blocklist_item("FP_(?:INFINITE|NAN|NORMAL|SUBNORMAL|ZERO)|IPPORT_RESERVED")
         .fit_macro_constants(true)
         .no_convert_floats()
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
@@ -234,6 +272,9 @@ fn main() {
         .generate()
         .expect("failed to generate bindings");
 
+    println!("cargo:rustc-link-lib=static=raylib");
+
+    // Link
     match platform_os {
         PlatformOS::Windows => {
             println!("cargo:rustc-link-lib=dylib=winmm");
@@ -276,7 +317,6 @@ fn main() {
         _ => {}
     }
 
-    println!("cargo:rustc-link-lib=static=raylib");
     bindings
         .write_to_file(bindings_path)
         .expect("failed to write bindings");

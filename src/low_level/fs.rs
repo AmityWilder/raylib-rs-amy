@@ -103,115 +103,125 @@ pub fn get_file_name(
 
 define_buffer_handle!(GetFileNameWithoutExtHandle);
 
-/// Get filename string without extension
-#[inline]
-pub fn get_file_name_without_ext<'a>(
-    _marker: &'a mut GetFileNameWithoutExtHandle,
-    file_path: &CStr,
-) -> Option<&'a CStr> {
-    let ptr = unsafe {
-        sys::GetFileNameWithoutExt(
-            file_path.as_ptr(),
-        )
-    };
-    if !ptr.is_null() {
-        Some(unsafe {
-            // returns a reference to a static buffer that gets
-            // overwritten when this function is called
-            CStr::from_ptr(ptr)
-        })
-    } else {
-        None
+impl GetFileNameWithoutExtHandle {
+    /// Get filename string without extension
+    #[inline]
+    pub fn get_file_name_without_ext<'a>(
+        &'a mut self,
+        file_path: &CStr,
+    ) -> Option<&'a CStr> {
+        let ptr = unsafe {
+            sys::GetFileNameWithoutExt(
+                file_path.as_ptr(),
+            )
+        };
+        if !ptr.is_null() {
+            Some(unsafe {
+                // returns a reference to a static buffer that gets
+                // overwritten when this function is called
+                CStr::from_ptr(ptr)
+            })
+        } else {
+            None
+        }
     }
 }
 
 define_buffer_handle!(GetDirectoryPathHandle);
 
-/// Get full path for a given fileName with path
-#[inline]
-pub fn get_directory_path<'a>(
-    _marker: &'a mut GetDirectoryPathHandle,
-    file_path: &CStr,
-) -> Option<&'a CStr> {
-    let ptr = unsafe {
-        sys::GetDirectoryPath(
-            file_path.as_ptr(),
-        )
-    };
-    if !ptr.is_null() {
-        Some(unsafe {
-            // returns a reference to a static buffer that gets
-            // overwritten when this function is called
-            CStr::from_ptr(ptr)
-        })
-    } else {
-        None
+impl GetDirectoryPathHandle {
+    /// Get full path for a given fileName with path
+    #[inline]
+    pub fn get_directory_path<'a>(
+        &'a mut self,
+        file_path: &CStr,
+    ) -> Option<&'a CStr> {
+        let ptr = unsafe {
+            sys::GetDirectoryPath(
+                file_path.as_ptr(),
+            )
+        };
+        if !ptr.is_null() {
+            Some(unsafe {
+                // returns a reference to a static buffer that gets
+                // overwritten when this function is called
+                CStr::from_ptr(ptr)
+            })
+        } else {
+            None
+        }
     }
 }
 
 define_buffer_handle!(GetPrevDirectoryPathHandle);
 
-/// Get previous directory path for a given path
-#[inline]
-pub fn get_prev_directory_path<'a>(
-    _marker: &'a mut GetPrevDirectoryPathHandle,
-    dir_path: &CStr,
-) -> Option<&'a CStr> {
-    let ptr = unsafe {
-        sys::GetPrevDirectoryPath(
-            dir_path.as_ptr(),
-        )
-    };
-    if !ptr.is_null() {
-        Some(unsafe {
-            // returns a reference to a static buffer that gets
-            // overwritten when this function is called
-            CStr::from_ptr(ptr)
-        })
-    } else {
-        None
+impl GetPrevDirectoryPathHandle {
+    /// Get previous directory path for a given path
+    #[inline]
+    pub fn get_prev_directory_path<'a>(
+        &'a self,
+        dir_path: &CStr,
+    ) -> Option<&'a CStr> {
+        let ptr = unsafe {
+            sys::GetPrevDirectoryPath(
+                dir_path.as_ptr(),
+            )
+        };
+        if !ptr.is_null() {
+            Some(unsafe {
+                // returns a reference to a static buffer that gets
+                // overwritten when this function is called
+                CStr::from_ptr(ptr)
+            })
+        } else {
+            None
+        }
     }
 }
 
 define_buffer_handle!(GetWorkingDirectoryHandle);
 
-/// Get current working directory
-#[inline]
-pub fn get_working_directory<'a>(
-    _marker: &'a mut GetWorkingDirectoryHandle,
-) -> Option<&'a CStr> {
-    let ptr = unsafe {
-        sys::GetWorkingDirectory()
-    };
-    if !ptr.is_null() {
-        Some(unsafe {
-            // returns a reference to a static buffer that gets
-            // overwritten when this function is called
-            CStr::from_ptr(ptr)
-        })
-    } else {
-        None
+impl GetWorkingDirectoryHandle {
+    /// Get current working directory
+    #[inline]
+    pub fn get_working_directory<'a>(
+        &'a mut self,
+    ) -> Option<&'a CStr> {
+        let ptr = unsafe {
+            sys::GetWorkingDirectory()
+        };
+        if !ptr.is_null() {
+            Some(unsafe {
+                // returns a reference to a static buffer that gets
+                // overwritten when this function is called
+                CStr::from_ptr(ptr)
+            })
+        } else {
+            None
+        }
     }
 }
 
 define_buffer_handle!(GetApplicationDirectoryHandle);
 
-/// Get the directory of the running application
-#[inline]
-pub fn get_application_directory<'a>(
-    _marker: &'a mut GetApplicationDirectoryHandle,
-) -> Option<&'a CStr> {
-    let ptr = unsafe {
-        sys::GetApplicationDirectory()
-    };
-    if !ptr.is_null() {
-        Some(unsafe {
-            // returns a reference to a static buffer that gets
-            // overwritten when this function is called
-            CStr::from_ptr(ptr)
-        })
-    } else {
-        None
+impl GetApplicationDirectoryHandle {
+    /// Get the directory of the running application
+    #[inline]
+    pub fn get_application_directory<'a>(
+        &'a mut self,
+    ) -> Option<&'a CStr> {
+        let ptr = unsafe {
+            sys::GetApplicationDirectory()
+        };
+        if !ptr.is_null() {
+            Some(unsafe {
+                // returns a reference to a static buffer that gets
+                // overwritten when this function is called
+                CStr::from_ptr(ptr)
+            })
+        } else {
+            None
+        }
     }
 }
 

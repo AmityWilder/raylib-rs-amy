@@ -39,6 +39,12 @@ pub fn set_trace_log_level(
 }
 
 /// Internal memory allocator
+///
+/// Pointer returned must be freed manually with [`mem_free`].
+///
+/// # See also:
+/// - [`mem_realloc`]
+/// - [`mem_free`]
 #[inline]
 pub fn mem_alloc(
     size: usize,
@@ -51,22 +57,48 @@ pub fn mem_alloc(
 }
 
 /// Internal memory reallocator
+///
+/// # Safety
+///
+/// - `ptr` must be a memory block allocated by [`mem_alloc`].
+///
+/// Per `RL_REALLOC`'s default implementation ([`stdlib.h::realloc`](https://en.cppreference.com/w/c/memory/realloc)),
+/// `ptr` is not freed on failure. For this reason, `ptr` is returned on error.
+///
+/// This may be untrue if `RL_REALLOC` has been overridden with another implementation.
+///
+/// # Returns
+///
+/// On success, returns a pointer to the new memory block. On failure, returns `ptr`.
+///
+/// # See also:
+/// - [`mem_alloc`]
+/// - [`mem_free`]
 #[inline]
-pub fn mem_realloc(
+pub unsafe fn mem_realloc(
     ptr: NonNull<c_void>,
     size: usize,
-) -> Option<NonNull<c_void>> {
+) -> Result<NonNull<c_void>, NonNull<c_void>> {
     NonNull::new(unsafe {
         sys::MemRealloc(
             ptr.as_ptr(),
             size.try_into().unwrap(),
         )
     })
+    .ok_or(ptr)
 }
 
 /// Internal memory free
+///
+/// # Safety
+///
+/// - `ptr` must be a memory block allocated with [`mem_alloc`].
+///
+/// # See also:
+/// - [`mem_alloc`]
+/// - [`mem_realloc`]
 #[inline]
-pub fn mem_free(
+pub unsafe fn mem_free(
     ptr: NonNull<c_void>,
 ) {
     unsafe {

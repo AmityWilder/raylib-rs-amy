@@ -8,8 +8,7 @@ pub fn update_camera(
 ) {
     unsafe {
         sys::UpdateCamera(
-            std::ptr::from_mut(
-    camera),
+            std::ptr::from_mut(camera),
             mode as i32,
         );
     }

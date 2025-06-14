@@ -5,13 +5,19 @@ edition = "2024"
 build = "build.rs"
 
 [features]
+default = []
 custom_frame_control = []
 support_jpeg = []
 wayland = []
 assert_spline_point_count = []
+opengl_33 = []
+opengl_21 = []
+opengl_es_20 = []
+opengl_es_30 = []
+sdl = []
 
 [dependencies]
 
 [build-dependencies]
 bindgen = "0.72.0"
-cmake = "0.1.54"
+cmake = "0.1.51"

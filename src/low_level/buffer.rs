@@ -19,10 +19,16 @@ use super::*;
 /// }
 /// ```
 macro_rules! define_buffer_handle {
-    ($Handle:ident) => {
+    ($(#[$m:meta])* $Handle:ident) => {
+        /// A handle for ensuring a static buffer does not get overwritten while references to it are still in use
+        ///
+        $(#[$m])*
         pub struct $Handle(());
 
         impl $Handle {
+            /// Try to obtain the singleton handle for calling the related methods
+            ///
+            /// Returns [`None`] if the handle has already been obtained
             #[inline]
             pub fn get() -> Option<Self> {
                 static SINGLETON: Once = Once::new();
@@ -37,17 +43,16 @@ macro_rules! define_buffer_handle {
 
 pub(crate) use define_buffer_handle;
 
+/// Able to unload allocated memory
 pub trait RlAllocator<T: ?Sized>: Sized {
-    #[inline]
-    unsafe fn unload(&mut self, data: NonNull<T>) {
-        _ = data;
-        unimplemented!("this type cannot be automatically unloaded");
-    }
+    /// Close and release memory allocated with a corresponding `load` method
+    unsafe fn unload(&mut self, data: NonNull<T>);
 }
 
 /// Unload using [`utils::mem_free`]
 pub struct MemAllocator;
 
+/// An owned buffer of memory managed by Raylib
 pub struct RlBuffer<T: ?Sized, A: RlAllocator<T> = MemAllocator> {
     data: NonNull<T>,
     dealloc: A,
@@ -62,13 +67,27 @@ impl<T: ?Sized, A: RlAllocator<T>> Drop for RlBuffer<T, A> {
     }
 }
 
+impl<T: ?Sized, A: RlAllocator<T>> AsRef<T> for RlBuffer<T, A> {
+    #[inline]
+    fn as_ref(&self) -> &T {
+        self.deref()
+    }
+}
+
+impl<T: ?Sized, A: RlAllocator<T>> AsMut<T> for RlBuffer<T, A> {
+    #[inline]
+    fn as_mut(&mut self) -> &mut T {
+        self.deref_mut()
+    }
+}
+
 impl<T: ?Sized, A: RlAllocator<T>> Deref for RlBuffer<T, A> {
     type Target = T;
 
     #[inline]
     fn deref(&self) -> &Self::Target {
         unsafe {
-            self.data.as_ref()
+            NonNull::as_ref(&self.data)
         }
     }
 }
@@ -77,7 +96,7 @@ impl<T: ?Sized, A: RlAllocator<T>> DerefMut for RlBuffer<T, A> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe {
-            self.data.as_mut()
+            NonNull::as_mut(&mut self.data)
         }
     }
 }
@@ -97,10 +116,13 @@ impl<T, A: RlAllocator<[T]>> RlBuffer<[T], A> {
 impl<T> RlAllocator<[T]> for MemAllocator {
     #[inline]
     unsafe fn unload(&mut self, data: NonNull<[T]>) {
-        utils::mem_free(data.cast::<c_void>());
+        unsafe {
+            utils::mem_free(data.cast::<c_void>());
+        }
     }
 }
 
+/// An owned, ascii-encoded, nul-terminated C-string whose memory is managed by Raylib
 pub type RlCString<A = MemAllocator> = RlBuffer<CStr, A>;
 
 impl<A: RlAllocator<CStr>> RlCString<A> {
@@ -128,10 +150,13 @@ impl<A: RlAllocator<CStr>> RlCString<A> {
 impl RlAllocator<CStr> for MemAllocator {
     #[inline]
     unsafe fn unload(&mut self, mut data: NonNull<CStr>) {
-        utils::mem_free(unsafe { NonNull::new_unchecked(data.as_mut().as_ptr().cast_mut()) }.cast::<c_void>());
+        unsafe {
+            utils::mem_free(NonNull::new_unchecked(data.as_mut().as_ptr().cast_mut()).cast::<c_void>());
+        }
     }
 }
 
+/// An owned, unicode-encoded, **possibly** nul-terminated string whose memory is managed by Raylib
 pub type RlString<A = MemAllocator> = RlBuffer<str, A>;
 
 impl<A: RlAllocator<str>> RlString<A> {
@@ -144,11 +169,24 @@ impl<A: RlAllocator<str>> RlString<A> {
                 dealloc,
             })
     }
+
+    #[inline]
+    pub const fn is_nul_terminated(&self) -> bool {
+        matches!(unsafe { self.data.as_ref() }.as_bytes(), [.., b'\0'])
+    }
 }
 
 impl RlAllocator<str> for MemAllocator {
     #[inline]
     unsafe fn unload(&mut self, mut data: NonNull<str>) {
-        utils::mem_free(unsafe { NonNull::new_unchecked(data.as_mut().as_mut_ptr()) }.cast::<c_void>());
+        unsafe {
+            utils::mem_free(NonNull::new_unchecked(data.as_mut().as_mut_ptr()).cast::<c_void>());
+        }
     }
 }
+
+/// An owned buffer of UTF8 characters whose memory is managed by Raylib
+pub type RlCodepoints<A> = RlBuffer<[char], A>;
+
+/// An owned, byte array whose memory is managed by Raylib
+pub type RlBytes<A> = RlBuffer<[u8], A>;
