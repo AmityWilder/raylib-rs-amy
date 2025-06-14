@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use crate::{low_level::{self as ll, sys}, safe::into_cstr::IntoCStr};
 
 pub mod into_cstr;
@@ -8,6 +10,7 @@ pub mod into_cstr;
 pub struct Window(());
 
 impl Drop for Window {
+    /// Close window and unload OpenGL context
     #[inline]
     fn drop(&mut self) {
         ll::close_window();
@@ -20,7 +23,7 @@ impl Window {
     pub fn init(width: u32, height: u32, title: impl IntoCStr) -> Option<Self> {
         if !ll::is_window_ready() {
             let title = title.into_cstr().unwrap();
-            ll::init_window(width, height, &*title);
+            ll::init_window(width, height, title.as_ref());
             if ll::is_window_ready() {
                 return Some(Self(()));
             }
@@ -32,12 +35,6 @@ impl Window {
     #[inline]
     pub fn should_close(&self) -> bool {
         ll::window_should_close()
-    }
-
-    /// Close window and unload OpenGL context
-    #[inline]
-    pub fn close(self) {
-        drop(self);
     }
 
     /// Check if window is currently fullscreen
@@ -134,7 +131,7 @@ impl Window {
     #[inline]
     pub fn set_window_title(&mut self, title: impl IntoCStr) {
         let title = title.into_cstr().unwrap();
-        ll::set_window_title(&*title)
+        ll::set_window_title(title.as_ref())
     }
 
     /// Set window position on screen
@@ -145,8 +142,29 @@ impl Window {
 
     /// Setup canvas (framebuffer) to start drawing
     #[inline]
-    pub fn begin_drawing(&mut self) -> Drawing {
-        Drawing::begin(self)
+    pub fn draw(&mut self, f: impl for<'d> FnOnce(&mut Self, &'d mut Drawing, &'d mut BaseDrawMode)) {
+        ll::begin_drawing();
+        f(self, &mut Drawing(()), &mut BaseDrawMode(()));
+    }
+
+    #[inline]
+    pub fn texture_mode(&mut self, target: &mut sys::RenderTexture2D, f: impl for<'d> FnOnce(&mut Self, &'d mut TextureMode, &'d mut BaseDrawMode)) {
+        ll::begin_texture_mode(*target);
+        f(self, &mut TextureMode(()), &mut BaseDrawMode(()))
+    }
+
+    /// Measure string width for default font
+    #[inline]
+    pub fn measure_text(&self, text: impl IntoCStr, font_size: u32) -> i32 {
+        let text = text.into_cstr().unwrap();
+        ll::text::measure_text(text.as_ref(), font_size)
+    }
+
+    /// Measure string size for Font
+    #[inline]
+    pub fn measure_text_ex(&self, font: sys::Font, text: impl IntoCStr, font_size: f32, spacing: f32) -> sys::Vector2 {
+        let text = text.into_cstr().unwrap();
+        ll::text::measure_text_ex(font, text.as_ref(), font_size, spacing)
     }
 }
 
@@ -375,29 +393,94 @@ impl CSSPalette for Color {}
 pub struct Drawing(());
 
 impl Drop for Drawing {
+    /// End canvas drawing and swap buffers (double buffering)
     #[inline]
     fn drop(&mut self) {
         ll::end_drawing();
     }
 }
 
-impl Drawing {
-    /// Setup canvas (framebuffer) to start drawing
-    #[inline]
-    pub fn begin(_window: &mut Window) -> Self {
-        ll::begin_drawing();
-        Self(())
-    }
+pub struct TextureMode(());
 
-    /// End canvas drawing and swap buffers (double buffering)
+impl Drop for TextureMode {
+    /// Ends drawing to render texture
     #[inline]
-    pub fn end(self) {
-        drop(self);
-    }
-
-    /// Set background color (framebuffer clear color)
-    #[inline]
-    pub fn clear_background(&mut self, color: Color) {
-        ll::clear_background(color.into());
+    fn drop(&mut self) {
+        ll::end_texture_mode();
     }
 }
+
+mod internal {
+    pub trait Sealed {}
+    impl Sealed for super::Drawing {}
+    impl Sealed for super::TextureMode {}
+}
+
+pub trait Draw: internal::Sealed {
+    /// Set background color (framebuffer clear color)
+    #[inline]
+    fn clear_background(&mut self, color: Color) {
+        ll::clear_background(color.into());
+    }
+
+    /// Draw text (using default font)
+    #[inline]
+    fn draw_text(&mut self, text: impl IntoCStr, pos_x: i32, pos_y: i32, font_size: u32, color: Color) {
+        let text = text.into_cstr().unwrap();
+        ll::text::draw_text(text.as_ref(), pos_x, pos_y, font_size, color.into());
+    }
+
+    /// Draw a color-filled rectangle
+    #[inline]
+    fn draw_rectangle(&mut self, pos_x: i32, pos_y: i32, width: i32, height: i32, color: Color) {
+        ll::shapes::draw_rectangle(pos_x, pos_y, width, height, color.into());
+    }
+}
+
+impl Draw for Drawing {}
+impl Draw for TextureMode {}
+
+/// Change the draw mode
+///
+/// This trait is intentionally separate from the [`Drawing`] handle.
+/// It is, on its own, zero-cost if the draw mode stack is statically known.
+///
+/// Conditional draw modes are possible by using [`DrawModeEnum`].
+pub trait DrawMode {
+    /// Begin scissor mode (define screen area for following drawing)
+    #[inline]
+    fn begin_scissor(&mut self, x: i32, y: i32, width: i32, height: i32) -> ScissorMode<'_, Self> {
+        ll::begin_scissor_mode(x, y, width, height);
+        ScissorMode(PhantomData)
+    }
+}
+
+pub enum DrawModeEnum<'a, M: ?Sized + 'a> {
+    Scissor(ScissorMode<'a, M>),
+}
+
+impl<M: ?Sized> DrawMode for DrawModeEnum<'_, M> {}
+
+impl<'a, M: ?Sized + 'a> From<ScissorMode<'a, M>> for DrawModeEnum<'a, M> {
+    #[inline]
+    fn from(value: ScissorMode<'a, M>) -> Self {
+        Self::Scissor(value)
+    }
+}
+
+pub struct BaseDrawMode(());
+
+impl DrawMode for BaseDrawMode {}
+
+pub struct ScissorMode<'a, M: ?Sized>(PhantomData<&'a mut M>);
+
+impl<M: ?Sized> Drop for ScissorMode<'_, M> {
+    /// End scissor mode
+    #[inline]
+    fn drop(&mut self) {
+        ll::end_scissor_mode();
+    }
+}
+
+impl<'a, M: ?Sized> DrawMode for ScissorMode<'a, M> {}
+

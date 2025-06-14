@@ -4,20 +4,6 @@ use super::*;
 ///
 /// Returning a static buffer reference is discouraged and causes a warning in Rust, but use used frequently in Raylib.
 /// Requiring a singleton handle unique to the buffer ensures the buffer isn't overwritten while references to it are still in use.
-///
-/// # Example
-/// ```no_run
-/// # use crate::define_buffer_handle;
-/// define_buffer_handle!(Foo);
-///
-/// pub fn foo<'a>(_marker: &'a mut Foo, add: i32) -> &'a i32 {
-///     static mut BUFFER: i32 = 0;
-///     unsafe {
-///         BUFFER += add;
-///     }
-///     return &BUFFER;
-/// }
-/// ```
 macro_rules! define_buffer_handle {
     ($(#[$m:meta])* $Handle:ident) => {
         /// A handle for ensuring a static buffer does not get overwritten while references to it are still in use

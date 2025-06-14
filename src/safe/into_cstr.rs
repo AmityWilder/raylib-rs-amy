@@ -47,7 +47,7 @@ impl std::error::Error for IntoCStrNulError {}
 /// consider making it a [`CStr`] literal by placing a `c` before the open quote.
 ///
 /// e.g.
-/// ```no_run
+/// ```ignore
 /// d.draw_text( "Hello World!", ...) // before
 /// d.draw_text(c"Hello World!", ...) // after
 /// ```
@@ -61,7 +61,7 @@ impl std::error::Error for IntoCStrNulError {}
 /// one to append nul into.
 ///
 /// e.g.
-/// ```no_run
+/// ```ignore
 /// d.draw_text(&format!("I have {} bananas", n), ...) // before
 /// d.draw_text( format!("I have {} bananas", n), ...) // after
 /// ```
@@ -86,19 +86,17 @@ pub trait IntoCStr: Sized {
     /// # Example
     ///
     /// ```
-    /// # use crate::core::util::ToCStr;
-    /// # use std::ffi::c_char;
+    /// # use raylib_rs_amy::prelude::IntoCStr;
+    /// # use std::ffi::CStr;
     ///
-    /// unsafe fn cstr_fn(c_str: *const c_char) {
+    /// fn cstr_fn(c_str: &CStr) {
     ///     // ...
     /// }
     ///
-    /// fn wrapper_fn(text: impl ToCStr) {
+    /// fn wrapper_fn(text: impl IntoCStr) {
     ///     // into_cstr must be called outside of cstr_fn's mouth
-    ///     let c_text = text.into_cstr();
-    ///     unsafe {
-    ///         cstr_fn(c_text.as_ptr())
-    ///     }
+    ///     let c_text = text.into_cstr().unwrap();
+    ///     cstr_fn(c_text.as_ref())
     /// }
     /// ```
     #[must_use]
@@ -110,7 +108,7 @@ pub trait IntoCStr: Sized {
 ///
 /// Types that implement this trait are guaranteed to return `self` when `into_cstr`
 /// is called, and can therefore be converted to `const char*` without conversion.
-pub trait IntoCStrNoOp: std::ops::Deref<Target = CStr> {
+pub trait IntoCStrNoOp: std::ops::Deref<Target = CStr> + AsRef<CStr> {
     #[inline]
     fn as_ptr(&self) -> *const std::ffi::c_char {
         CStr::as_ptr(self)
