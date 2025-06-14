@@ -101,7 +101,7 @@ pub fn get_file_name(
     }
 }
 
-define_buffer_handle!(get_file_name_without_ext_handle() -> GetFileNameWithoutExtHandle);
+define_buffer_handle!(GetFileNameWithoutExtHandle);
 
 /// Get filename string without extension
 #[inline]
@@ -125,7 +125,7 @@ pub fn get_file_name_without_ext<'a>(
     }
 }
 
-define_buffer_handle!(get_directory_path_handle() -> GetDirectoryPathHandle);
+define_buffer_handle!(GetDirectoryPathHandle);
 
 /// Get full path for a given fileName with path
 #[inline]
@@ -149,7 +149,7 @@ pub fn get_directory_path<'a>(
     }
 }
 
-define_buffer_handle!(get_prev_directory_path_handle() -> GetPrevDirectoryPathHandle);
+define_buffer_handle!(GetPrevDirectoryPathHandle);
 
 /// Get previous directory path for a given path
 #[inline]
@@ -173,7 +173,7 @@ pub fn get_prev_directory_path<'a>(
     }
 }
 
-define_buffer_handle!(get_working_directory_handle() -> GetWorkingDirectoryHandle);
+define_buffer_handle!(GetWorkingDirectoryHandle);
 
 /// Get current working directory
 #[inline]
@@ -194,7 +194,7 @@ pub fn get_working_directory<'a>(
     }
 }
 
-define_buffer_handle!(get_application_directory_handle() -> GetApplicationDirectoryHandle);
+define_buffer_handle!(GetApplicationDirectoryHandle);
 
 /// Get the directory of the running application
 #[inline]

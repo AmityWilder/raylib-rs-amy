@@ -7,7 +7,8 @@ pub fn set_gestures_enabled(
 ) {
     unsafe {
         sys::SetGesturesEnabled(
-            flags.0,
+            #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
+            { flags.0 as u32 },
         );
     }
 }
@@ -19,7 +20,8 @@ pub fn is_gesture_detected(
 ) -> bool {
     unsafe {
         sys::IsGestureDetected(
-            gesture.0,
+            #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
+            { gesture.0 as u32 },
         )
     }
 }
@@ -28,7 +30,10 @@ pub fn is_gesture_detected(
 #[inline]
 pub fn get_gesture_detected() -> sys::Gesture {
     unsafe {
-        sys::Gesture(sys::GetGestureDetected().cast_unsigned())
+        sys::Gesture(
+            #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
+            { sys::GetGestureDetected() as i32 },
+        )
     }
 }
 

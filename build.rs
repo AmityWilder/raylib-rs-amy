@@ -135,7 +135,6 @@ fn main() {
     copy_recursive("raylib", rl_path.as_path())
         .unwrap_or_else(|e| panic!("failed to copy raylib source to `{}`: {e}", out.display()));
 
-
     let mut conf = cmake::Config::new(rl_path.as_path());
     conf.profile(profile.as_str())
         .define("PLATFORM", platform.as_str())
@@ -201,7 +200,7 @@ fn main() {
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
         .bitfield_enum(r".+Flags|Gesture")
         .constified_enum_module(r".+Index")
-        .translate_enum_integer_types(false)
+        .translate_enum_integer_types(true)
         .prepend_enum_name(false)
         .array_pointers_in_arguments(true)
         .derive_default(true)

@@ -52,7 +52,7 @@
 //!       #define RL_DEFAULT_BATCH_DRAWCALLS          256    // Default number of batch draw calls (by state changes: mode, texture)
 //!       #define RL_DEFAULT_BATCH_MAX_TEXTURE_UNITS    4    // Maximum number of textures units that can be activated on batch drawing (SetShaderValueTexture())
 //!
-//!       #define RL_MAX_MATRIX_STACK_SIZE             32    // Maximum size of internal Matrix stack
+//!       #define RL_MAX_MATRIX_STACK_SIZE             32    // Maximum size of internal sys::Matrix stack
 //!       #define RL_MAX_SHADER_LOCATIONS              32    // Maximum number of shader locations supported
 //!       #define RL_CULL_DISTANCE_NEAR              0.05    // Default projection matrix near cull distance
 //!       #define RL_CULL_DISTANCE_FAR             4000.0    // Default projection matrix far cull distance
@@ -106,7 +106,7 @@
 use super::sys;
 
 //------------------------------------------------------------------------------------
-// Functions Declaration - Matrix operations
+// Functions Declaration - sys::Matrix operations
 //------------------------------------------------------------------------------------
 
 /// Choose the current matrix to be transformed
@@ -1001,7 +1001,7 @@ pub fn rlGetShaderLocsDefault() -> *mut i32 {
 pub fn rlLoadRenderBatch(
     numBuffers: i32,
     bufferElements: i32,
-) -> rlRenderBatch {
+) -> sys::rlRenderBatch {
     unsafe {
         sys::
     }
@@ -1010,7 +1010,7 @@ pub fn rlLoadRenderBatch(
 /// Unload render batch system
 #[inline]
 pub fn rlUnloadRenderBatch(
-    batch: rlRenderBatch,
+    batch: sys::rlRenderBatch,
 ) {
     unsafe {
         sys::
@@ -1020,7 +1020,7 @@ pub fn rlUnloadRenderBatch(
 /// Draw render batch data (Update->Draw->Reset)
 #[inline]
 pub fn rlDrawRenderBatch(
-    batch: *mut rlRenderBatch,
+    batch: *mut sys::rlRenderBatch,
 ) {
     unsafe {
         sys::
@@ -1030,7 +1030,7 @@ pub fn rlDrawRenderBatch(
 /// Set the active render batch for rlgl (NULL for default internal)
 #[inline]
 pub fn rlSetRenderBatchActive(
-    batch: *mut rlRenderBatch,
+    batch: *mut sys::rlRenderBatch,
 ) {
     unsafe {
         sys::
@@ -1490,7 +1490,7 @@ pub fn rlSetUniform(
 #[inline]
 pub fn rlSetUniformMatrix(
     locIndex: i32,
-    mat: Matrix,
+    mat: sys::Matrix,
 ) {
     unsafe {
         sys::
@@ -1501,7 +1501,7 @@ pub fn rlSetUniformMatrix(
 #[inline]
 pub fn rlSetUniformMatrices(
     locIndex: i32,
-    mat: *const Matrix,
+    mat: *const sys::Matrix,
     count: i32,
 ) {
     unsafe {
@@ -1659,7 +1659,7 @@ pub fn rlBindImageTexture(
 
 /// Get internal modelview matrix
 #[inline]
-pub fn rlGetMatrixModelview() -> Matrix {
+pub fn rlGetMatrixModelview() -> sys::Matrix {
     unsafe {
         sys::
     }
@@ -1667,7 +1667,7 @@ pub fn rlGetMatrixModelview() -> Matrix {
 
 /// Get internal projection matrix
 #[inline]
-pub fn rlGetMatrixProjection() -> Matrix {
+pub fn rlGetMatrixProjection() -> sys::Matrix {
     unsafe {
         sys::
     }
@@ -1675,7 +1675,7 @@ pub fn rlGetMatrixProjection() -> Matrix {
 
 /// Get internal accumulated transform matrix
 #[inline]
-pub fn rlGetMatrixTransform() -> Matrix {
+pub fn rlGetMatrixTransform() -> sys::Matrix {
     unsafe {
         sys::
     }
@@ -1685,7 +1685,7 @@ pub fn rlGetMatrixTransform() -> Matrix {
 #[inline]
 pub fn rlGetMatrixProjectionStereo(
     eye: i32,
-) -> Matrix {
+) -> sys::Matrix {
     unsafe {
         sys::
     }
@@ -1695,7 +1695,7 @@ pub fn rlGetMatrixProjectionStereo(
 #[inline]
 pub fn rlGetMatrixViewOffsetStereo(
     eye: i32,
-) -> Matrix {
+) -> sys::Matrix {
     unsafe {
         sys::
     }
@@ -1704,7 +1704,7 @@ pub fn rlGetMatrixViewOffsetStereo(
 /// Set a custom projection matrix (replaces internal projection matrix)
 #[inline]
 pub fn rlSetMatrixProjection(
-    proj: Matrix,
+    proj: sys::Matrix,
 ) {
     unsafe {
         sys::
@@ -1714,7 +1714,7 @@ pub fn rlSetMatrixProjection(
 /// Set a custom modelview matrix (replaces internal modelview matrix)
 #[inline]
 pub fn rlSetMatrixModelview(
-    view: Matrix,
+    view: sys::Matrix,
 ) {
     unsafe {
         sys::
@@ -1724,8 +1724,8 @@ pub fn rlSetMatrixModelview(
 /// Set eyes projection matrices for stereo rendering
 #[inline]
 pub fn rlSetMatrixProjectionStereo(
-    right: Matrix,
-    left: Matrix,
+    right: sys::Matrix,
+    left: sys::Matrix,
 ) {
     unsafe {
         sys::
@@ -1735,8 +1735,8 @@ pub fn rlSetMatrixProjectionStereo(
 /// Set eyes view offsets matrices for stereo rendering
 #[inline]
 pub fn rlSetMatrixViewOffsetStereo(
-    right: Matrix,
-    left: Matrix,
+    right: sys::Matrix,
+    left: sys::Matrix,
 ) {
     unsafe {
         sys::

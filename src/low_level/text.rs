@@ -417,72 +417,70 @@ pub fn get_glyph_atlas_rec(
     }
 }
 
+pub struct LoadUTF8Allocator;
+
+impl RlAllocator<str> for LoadUTF8Allocator {
+    unsafe fn unload(&mut self, mut data: NonNull<str>) {
+        unsafe {
+            sys::UnloadUTF8(
+                data.as_mut().as_bytes_mut().as_mut_ptr().cast(),
+            )
+        }
+    }
+}
+
 // Text codepoints management functions (unicode characters)
 
-pub struct RlString(NonNull<str>);
-
-impl Deref for RlString {
-    type Target = str;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        unsafe {
-            self.0.as_ref()
-        }
-    }
-}
-
-impl DerefMut for RlString {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe {
-            self.0.as_mut()
-        }
-    }
-}
-
 /// Load UTF-8 text encoded from codepoints array
-///
-/// REQUIRES: memcpy()
 ///
 /// WARNING: Allocated memory must be manually freed
 #[inline]
 pub fn load_utf8(
     codepoints: &[char],
-) -> Option<RlString> {
+) -> Option<RlString<LoadUTF8Allocator>> {
     unsafe {
         let ptr = sys::LoadUTF8(
             codepoints.as_ptr().cast::<i32>(),
             codepoints.len().try_into().unwrap(),
         );
-        if !ptr.is_null() {
-            Some(RlString(
-                NonNull::new_unchecked(std::str::from_utf8_mut(std::slice::from_raw_parts_mut(ptr.cast(), codepoints.len())).unwrap())
-            ))
-        } else {
-            None
-        }
+        let len = CStr::from_ptr(ptr).count_bytes();
+        RlString::new(
+            ptr,
+            move || len,
+            LoadUTF8Allocator,
+        )
     }
 }
 
 /// Unload UTF-8 text encoded from codepoints array
 #[inline]
 pub fn unload_utf8(
-    mut text: RlString,
+    text: RlString<LoadUTF8Allocator>,
 ) {
-    unsafe {
-        sys::UnloadUTF8(
-            text.0.as_mut().as_bytes_mut().as_mut_ptr().cast(),
-        )
+    drop(text);
+}
+
+pub struct LoadCodepointsAllocator;
+
+impl RlAllocator<[char]> for LoadCodepointsAllocator {
+    unsafe fn unload(&mut self, mut data: NonNull<[char]>) {
+        unsafe {
+            sys::UnloadCodepoints(
+                data.as_mut().as_mut_ptr().cast::<i32>(),
+            );
+        }
     }
 }
 
-pub struct RlCodepoints(NonNull<[char]>);
+pub type RlCodepoints<A: RlAllocator<[char]>> = RlBuffer<[char], A>;
 
 /// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
+///
+/// NOTE: Despite being a Rust `&str`, the `text` parameter must be nul-terminated
 #[inline]
 pub fn load_codepoints(
     text: &str,
-) -> Option<RlCodepoints> {
+) -> Option<RlCodepoints<LoadCodepointsAllocator>> {
     assert!(text.ends_with('\0'), "must be nul-terminated");
     let mut count = MaybeUninit::uninit();
     unsafe {
@@ -490,24 +488,20 @@ pub fn load_codepoints(
             text.as_ptr().cast::<c_char>(),
             count.as_mut_ptr(),
         );
-        if !ptr.is_null() {
-            Some(RlCodepoints(NonNull::new_unchecked(std::ptr::slice_from_raw_parts_mut(ptr.cast::<char>(), count.assume_init().try_into().unwrap()))))
-        } else {
-            None
-        }
+        RlCodepoints::new(
+            ptr.cast::<char>(),
+            move || count.assume_init().try_into().unwrap(),
+            LoadCodepointsAllocator,
+        )
     }
 }
 
 /// Unload codepoints data from memory
 #[inline]
 pub fn unload_codepoints(
-    mut codepoints: RlCodepoints,
+    codepoints: RlCodepoints<LoadCodepointsAllocator>,
 ) {
-    unsafe {
-        sys::UnloadCodepoints(
-            codepoints.0.as_mut().as_mut_ptr().cast::<i32>(),
-        );
-    }
+    drop(codepoints);
 }
 
 /// Get total number of codepoints in a UTF-8 encoded string
@@ -643,7 +637,7 @@ pub fn text_length(
 //     ...
 // ) -> *const ::std::os::raw::c_char;
 
-define_buffer_handle!(text_subtext_handle() -> TextSubtextHandle);
+define_buffer_handle!(TextSubtextHandle);
 
 /// Get a piece of a text string
 #[inline]
@@ -670,11 +664,14 @@ pub fn text_replace(
     by: &CStr,
 ) -> Option<RlCString> {
     unsafe {
-        RlCString::new(sys::TextReplace(
-            text.as_ptr(),
-            replace.as_ptr(),
-            by.as_ptr(),
-        ))
+        RlCString::new(
+            sys::TextReplace(
+                text.as_ptr(),
+                replace.as_ptr(),
+                by.as_ptr(),
+            ),
+            MemAllocator,
+        )
     }
 }
 
@@ -686,135 +683,227 @@ pub fn text_insert(
     position: usize,
 ) -> Option<RlCString> {
     unsafe {
-        RlCString::new(sys::TextInsert(
-            text.as_ptr(),
-            insert.as_ptr(),
-            position.try_into().unwrap(),
-        ))
-    }
-}
-
-define_buffer_handle!(text_join_handle() -> TextJoinHandle);
-
-/// Join text strings with delimiter
-#[inline]
-pub fn text_join<'a, 'b>(
-    _marker: &'a mut TextJoinHandle,
-    text_list: &[&CStr],
-    count: i32,
-    delimiter: &CStr,
-) -> &'a mut CStr {
-    unsafe {
-        sys::TextJoin(
-            text_list,
-            count,
-            delimiter,
+        RlCString::new(
+            sys::TextInsert(
+                text.as_ptr(),
+                insert.as_ptr(),
+                position.try_into().unwrap(),
+            ),
+            MemAllocator,
         )
     }
 }
 
-/// Split text into multiple strings
+define_buffer_handle!(TextJoinHandle);
+
+/// Join text strings with delimiter
 #[inline]
-pub fn TextSplit(
-    text: *const ::std::os::raw::c_char,
-    delimiter: ::std::os::raw::c_char,
-    count: *mut i32,
-) -> *mut *mut ::std::os::raw::c_char {
+pub fn text_join<'a>(
+    _marker: &'a mut TextJoinHandle,
+    text_list: &[&c_char],
+    count: i32,
+    delimiter: &CStr,
+) -> &'a CStr {
     unsafe {
-        sys::
+        CStr::from_ptr(sys::TextJoin(
+            text_list.as_ptr().cast_mut().cast(),
+            count,
+            delimiter.as_ptr(),
+        ))
     }
 }
 
-/// Append text at specific position and move cursor!
+define_buffer_handle!(TextSplitHandle);
+
+/// Split text into multiple strings
+///
+/// NOTE: Current implementation returns a copy of the provided string with '\0' (string end delimiter)
+/// inserted between strings defined by "delimiter" parameter. No memory is dynamically allocated,
+/// all used memory is static... it has some limitations:
+///      1. Maximum number of possible split strings is set by MAX_TEXTSPLIT_COUNT
+///      2. Maximum size of text to split is MAX_TEXT_BUFFER_LENGTH
 #[inline]
-pub fn TextAppend(
-    text: *mut ::std::os::raw::c_char,
-    append: *const ::std::os::raw::c_char,
-    position: *mut i32,
-) {
+pub fn text_split<'a>(
+    _marker: &'a mut TextSplitHandle,
+    text: &CStr,
+    delimiter: c_char,
+) -> &'a [*mut c_char] {
+    let mut count = MaybeUninit::uninit();
     unsafe {
-        sys::
+        let ptr = sys::TextSplit(
+            text.as_ptr(),
+            delimiter,
+            count.as_mut_ptr(),
+        );
+        std::slice::from_raw_parts(ptr, count.assume_init().try_into().unwrap())
     }
+}
+
+/// Append text at specific position and move cursor
+///
+/// WARNING: It's up to the user to make sure appended text does not overflow the buffer!
+#[inline]
+pub fn text_append<'a>(
+    text: &'a mut [c_char],
+    append: &CStr,
+    position: &mut usize,
+) -> Result<&'a CStr, std::ffi::FromBytesUntilNulError> {
+    assert!(text.len() >= append.count_bytes() + *position);
+    let mut temp = (*position).try_into().unwrap();
+    unsafe {
+        sys::TextAppend(
+            text.as_ptr().cast_mut(),
+            append.as_ptr(),
+            &mut temp,
+        );
+    }
+    *position = temp.try_into().unwrap();
+    CStr::from_bytes_until_nul(unsafe {
+        transmute::<&'a mut [c_char], &'a [u8]>(text)
+    })
 }
 
 /// Find first text occurrence within a string
 #[inline]
-pub fn TextFindIndex(
-    text: *const ::std::os::raw::c_char,
-    find: *const ::std::os::raw::c_char,
-) -> i32 {
-    unsafe {
-        sys::
+pub fn text_find_index(
+    text: &CStr,
+    find: &CStr,
+) -> Result<usize, ()> {
+    const _: () = assert!(std::mem::size_of::<*const c_char>() <= std::mem::size_of::<usize>(),
+        "cannot reliably confirm CStr will not overflow by testing its length",
+    );
+
+    if std::mem::size_of::<usize>() > std::mem::size_of::<c_int>() {
+        const INT_MAX: usize = c_int::MAX as usize;
+
+        assert!(text.count_bytes() <= INT_MAX,
+            "`text` exceeds {INT_MAX} bytes. \
+            it is possible for the first instance of `find` to be at a position that can be stored in a pointer difference, but would overflow when cast to int. \
+            it is also possible that the value might be large enough to wrap all the way back into the positives, making the output of TextFindIndex unreliable.");
+    }
+
+    let pos = unsafe {
+        sys::TextFindIndex(
+            text.as_ptr(),
+            find.as_ptr(),
+        )
+    };
+    match pos {
+        0.. => Ok((pos as u32).try_into().unwrap()), // safe to assume positive i32 is compatible with u32
+        -1 => Err(()),
+        _ => unreachable!(),
     }
 }
+
+define_buffer_handle!(TextToUpperHandle);
 
 /// Get upper case version of provided string
+///
+/// WARNING: Limited functionality, only basic characters set
+/// TODO: Support UTF-8 diacritics to upper-case, check codepoints
 #[inline]
-pub fn TextToUpper(
-    text: *const ::std::os::raw::c_char,
-) -> *mut ::std::os::raw::c_char {
+pub fn text_to_upper<'a>(
+    _marker: &'a mut TextToUpperHandle,
+    text: &CStr,
+) -> &'a CStr {
     unsafe {
-        sys::
+        CStr::from_ptr(sys::TextToUpper(
+            text.as_ptr(),
+        ))
     }
 }
+
+define_buffer_handle!(TextToLowerHandle);
 
 /// Get lower case version of provided string
+///
+/// WARNING: Limited functionality, only basic characters set
 #[inline]
-pub fn TextToLower(
-    text: *const ::std::os::raw::c_char,
-) -> *mut ::std::os::raw::c_char {
+pub fn text_to_lower<'a>(
+    _marker: &'a mut TextToLowerHandle,
+    text: &CStr,
+) -> &'a CStr {
     unsafe {
-        sys::
+        CStr::from_ptr(sys::TextToLower(
+            text.as_ptr(),
+        ))
     }
 }
+
+define_buffer_handle!(TextToPascalHandle);
 
 /// Get Pascal case notation version of provided string
+///
+/// WARNING: Limited functionality, only basic characters set
 #[inline]
-pub fn TextToPascal(
-    text: *const ::std::os::raw::c_char,
-) -> *mut ::std::os::raw::c_char {
+pub fn text_to_pascal<'a>(
+    _marker: &'a mut TextToPascalHandle,
+    text: &CStr,
+) -> &'a CStr {
     unsafe {
-        sys::
+        CStr::from_ptr(sys::TextToPascal(
+            text.as_ptr(),
+        ))
     }
 }
+
+define_buffer_handle!(TextToSnakeHandle);
 
 /// Get Snake case notation version of provided string
+///
+/// WARNING: Limited functionality, only basic characters set
 #[inline]
-pub fn TextToSnake(
-    text: *const ::std::os::raw::c_char,
-) -> *mut ::std::os::raw::c_char {
+pub fn text_to_snake<'a>(
+    _marker: &'a mut TextToSnakeHandle,
+    text: &CStr,
+) -> &'a CStr {
     unsafe {
-        sys::
+        CStr::from_ptr(sys::TextToSnake(
+            text.as_ptr(),
+        ))
     }
 }
 
+define_buffer_handle!(TextToCamelHandle);
+
 /// Get Camel case notation version of provided string
+///
+/// WARNING: Limited functionality, only basic characters set
 #[inline]
-pub fn TextToCamel(
-    text: *const ::std::os::raw::c_char,
-) -> *mut ::std::os::raw::c_char {
+pub fn text_to_camel<'a>(
+    _marker: &'a mut TextToCamelHandle,
+    text: &CStr,
+) -> &'a CStr {
     unsafe {
-        sys::
+        CStr::from_ptr(sys::TextToCamel(
+            text.as_ptr(),
+        ))
     }
 }
 
 
 /// Get integer value from text
 #[inline]
-pub fn TextToInteger(
-    text: *const ::std::os::raw::c_char,
+pub fn text_to_integer(
+    text: &CStr,
 ) -> i32 {
     unsafe {
-        sys::
+        sys::TextToInteger(
+            text.as_ptr(),
+        )
     }
 }
 
 /// Get float value from text
+///
+/// WARNING: Only '.' character is understood as decimal point
 #[inline]
-pub fn TextToFloat(
-    text: *const ::std::os::raw::c_char,
+pub fn text_to_float(
+    text: &CStr,
 ) -> f32 {
     unsafe {
-        sys::
+        sys::TextToFloat(
+            text.as_ptr(),
+        )
     }
 }

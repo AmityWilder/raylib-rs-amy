@@ -8,20 +8,8 @@ use std::ptr::{null, null_mut, NonNull};
 use std::sync::Once;
 use std::time::Duration;
 
-macro_rules! define_buffer_handle {
-    ($func:ident() -> $Type:ident) => {
-        pub struct $Type(());
-
-        #[inline]
-        pub fn $func() -> Option<$Type> {
-            static SINGLETON: Once = Once::new();
-
-            let mut result = None;
-            SINGLETON.call_once(|| result = Some($Type(())));
-            result
-        }
-    };
-}
+pub mod buffer;
+pub(crate) use buffer::*;
 
 /// Direct bindings to Raylib C
 pub mod sys;
@@ -123,7 +111,8 @@ pub fn is_window_state(
 ) -> bool {
     unsafe {
         sys::IsWindowState(
-            flag.0,
+            #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
+            { flag.0 as u32 },
         )
     }
 }
@@ -135,7 +124,8 @@ pub fn set_window_state(
 ) {
     unsafe {
         sys::SetWindowState(
-            flags.0,
+            #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
+            { flags.0 as u32 },
         );
     }
 }
@@ -147,7 +137,8 @@ pub fn clear_window_state(
 ) {
     unsafe {
         sys::ClearWindowState(
-            flags.0,
+            #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
+            { flags.0 as u32 },
         );
     }
 }
@@ -1383,7 +1374,8 @@ pub fn set_config_flags(
 ) {
     unsafe {
         sys::SetConfigFlags(
-            flags.0,
+            #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
+            { flags.0 as u32 },
         )
     }
 }
@@ -1411,57 +1403,11 @@ pub mod fs;
 
 // Compression/Encoding functionality
 
-/// Owned bytes that use Raylib memory functions
-pub struct RlBytes(NonNull<[u8]>);
-
-impl Drop for RlBytes {
-    fn drop(&mut self) {
-        utils::mem_free(self.0.cast());
-    }
-}
-
-impl RlBytes {
-    unsafe fn new(ptr: *mut u8, len: MaybeUninit<c_int>) -> Option<Self> {
-        if !ptr.is_null() {
-            Some(RlBytes(unsafe {
-                NonNull::new_unchecked(
-                    std::slice::from_raw_parts_mut(
-                        ptr,
-                        len.assume_init().try_into().unwrap(),
-                    )
-                )
-            }))
-        } else {
-            None
-        }
-    }
-}
-
-impl Deref for RlBytes {
-    type Target = [u8];
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        unsafe {
-            self.0.as_ref()
-        }
-    }
-}
-
-impl DerefMut for RlBytes {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe {
-            self.0.as_mut()
-        }
-    }
-}
-
 /// Compress data (DEFLATE algorithm), memory must be MemFree()
 #[inline]
 pub fn compress_data(
     data: &[u8],
-) -> Option<RlBytes> {
+) -> Option<RlBuffer<[u8], MemAllocator>> {
     let mut len = MaybeUninit::uninit();
     let ptr = unsafe {
         sys::CompressData(
@@ -1471,9 +1417,10 @@ pub fn compress_data(
         )
     };
     unsafe {
-        RlBytes::new(
+        RlBuffer::<[u8]>::new(
             ptr,
-            len,
+            || len.assume_init().try_into().unwrap(),
+            MemAllocator,
         )
     }
 }
@@ -1482,7 +1429,7 @@ pub fn compress_data(
 #[inline]
 pub fn decompress_data(
     comp_data: &[u8],
-) -> Option<RlBytes> {
+) -> Option<RlBuffer<[u8], MemAllocator>> {
     let mut len = MaybeUninit::uninit();
     let ptr = unsafe {
         sys::DecompressData(
@@ -1492,52 +1439,11 @@ pub fn decompress_data(
         )
     };
     unsafe {
-        RlBytes::new(
+        RlBuffer::<[u8]>::new(
             ptr,
-            len,
+            || len.assume_init().try_into().unwrap(),
+            MemAllocator,
         )
-    }
-}
-
-pub struct RlCString(NonNull<CStr>);
-
-impl Drop for RlCString {
-    fn drop(&mut self) {
-        utils::mem_free(self.0.cast());
-    }
-}
-
-impl RlCString {
-    unsafe fn new(ptr: *mut c_char) -> Option<Self> {
-        if !ptr.is_null() {
-            unsafe {
-                Some(Self(
-                    NonNull::new_unchecked(
-                        std::ptr::from_ref(CStr::from_ptr(ptr)).cast_mut()
-                    )
-                ))
-            }
-        } else {
-            None
-        }
-    }
-
-    unsafe fn with_len(ptr: *mut u8, len: c_int) -> Option<Self> {
-        if !ptr.is_null() {
-            unsafe {
-                let bytes = std::slice::from_raw_parts_mut(
-                    ptr,
-                    len.try_into().unwrap(),
-                );
-                Some(Self(
-                    NonNull::new_unchecked(
-                        std::ptr::from_ref(CStr::from_bytes_with_nul_unchecked(bytes)).cast_mut()
-                    )
-                ))
-            }
-        } else {
-            None
-        }
     }
 }
 
@@ -1553,7 +1459,11 @@ pub fn encode_data_base64(
             data.len().try_into().unwrap(),
             len.as_mut_ptr(),
         );
-        RlCString::with_len(ptr.cast(), len.assume_init())
+        RlCString::with_len(
+            ptr.cast(),
+            || len.assume_init().try_into().unwrap(),
+            MemAllocator,
+        )
     }
 }
 
@@ -1568,7 +1478,11 @@ pub fn decode_data_base64(
             text.as_ptr(),
             len.as_mut_ptr(),
         );
-        RlCString::with_len(ptr, len.assume_init())
+        RlCString::with_len(
+            ptr.cast(),
+            || len.assume_init().try_into().unwrap(),
+            MemAllocator,
+        )
     }
 }
 
@@ -1585,7 +1499,7 @@ pub fn compute_crc32(
     }
 }
 
-define_buffer_handle!(compute_md5_handle() -> ComputeMD5Handle);
+define_buffer_handle!(ComputeMD5Handle);
 
 /// Compute MD5 hash code, returns static int[4] (16 bytes)
 #[inline]
@@ -1603,7 +1517,7 @@ pub fn compute_md5<'a>(
     }
 }
 
-define_buffer_handle!(compute_sha1_handle() -> ComputeSHA1Handle);
+define_buffer_handle!(ComputeSHA1Handle);
 
 /// Compute SHA1 hash code, returns static int[5] (20 bytes)
 #[inline]
