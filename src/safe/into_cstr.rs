@@ -99,7 +99,6 @@ pub trait IntoCStr: Sized {
     ///     cstr_fn(c_text.as_ref())
     /// }
     /// ```
-    #[must_use]
     fn into_cstr(self) -> Result<Self::Output, IntoCStrNulError>;
 }
 

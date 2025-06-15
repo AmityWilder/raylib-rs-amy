@@ -242,6 +242,7 @@ pub fn make_directory(
 }
 
 /// Change working directory, return true on success
+#[allow(clippy::result_unit_err, reason = "cope")]
 #[inline]
 pub fn change_directory(
     dir: &CStr,

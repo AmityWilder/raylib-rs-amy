@@ -1,5 +1,5 @@
 [package]
-name = "raylib-rs-amy"
+name = "raylib-amy"
 version = "0.1.0"
 edition = "2024"
 build = "build.rs"
@@ -20,4 +20,4 @@ sdl = []
 
 [build-dependencies]
 bindgen = "0.72.0"
-cmake = "0.1.51"
+cmake = "0.1.54"

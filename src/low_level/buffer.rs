@@ -32,6 +32,10 @@ pub(crate) use define_buffer_handle;
 /// Able to unload allocated memory
 pub trait RlAllocator<T: ?Sized>: Sized {
     /// Close and release memory allocated with a corresponding `load` method
+    ///
+    /// # Safety
+    ///
+    /// - `data` must have been loaded with the `load` function corresponding with this allocator
     unsafe fn unload(&mut self, data: NonNull<T>);
 }
 

@@ -176,6 +176,7 @@ pub fn export_image_to_memory(
 }
 
 /// Export image as code file (.h) defining an array of bytes
+#[allow(clippy::result_unit_err, reason = "returns true on success")]
 #[inline]
 pub fn export_image_as_code(
     image: sys::Image,
@@ -1140,7 +1141,7 @@ pub fn image_draw_circle_lines(
 /// Draw circle outline within an image (Vector version)
 #[inline]
 pub fn image_draw_circle_lines_v(
-    dst: *mut sys::Image,
+    dst: &mut sys::Image,
     center: sys::Vector2,
     radius: i32,
     color: sys::Color,
@@ -1158,7 +1159,7 @@ pub fn image_draw_circle_lines_v(
 /// Draw rectangle within an image
 #[inline]
 pub fn image_draw_rectangle(
-    dst: *mut sys::Image,
+    dst: &mut sys::Image,
     pos_x: i32,
     pos_y: i32,
     width: i32,
@@ -1796,14 +1797,18 @@ pub fn image_draw_text_ex(
 //     }
 // }
 
-// /// Get pixel data size in bytes for certain format
-// #[inline]
-// pub fn GetPixelDataSize(
-//     width: i32,
-//     height: i32,
-//     format: i32,
-// ) -> i32 {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get pixel data size in bytes for certain format
+#[inline]
+pub fn get_pixel_data_size(
+    width: usize,
+    height: usize,
+    format: sys::PixelFormat,
+) -> usize {
+    unsafe {
+        sys::GetPixelDataSize(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+            format as i32,
+        ).try_into().unwrap()
+    }
+}

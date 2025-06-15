@@ -79,6 +79,7 @@ impl Platform {
     }
 }
 
+#[allow(clippy::upper_case_acronyms, reason = "shut up")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum PlatformOS {
     Windows,
@@ -100,7 +101,7 @@ impl PlatformOS {
         Self::LOOKUP
             .into_iter()
             .find_map(|(list, os)|
-                list.into_iter()
+                list.iter()
                     .any(|s| target.contains(s))
                     .then_some(os)
             )
@@ -142,7 +143,7 @@ fn main() {
         .define("BUILD_EXAMPLES", "OFF")
         .define("SUPPORT_BUSY_WAIT_LOOP", "OFF")
         .define("SUPPORT_FILEFORMAT_JPG", if cfg!(feature = "support_jpeg") { "ON" } else { "OFF" })
-        .define("RAYMATH_STATIC_INLINE", "ON");
+        .define("RAYMATH_STATIC_INLINE", "OFF");
 
     if cfg!(feature = "custom_frame_control") {
         conf.define("SUPPORT_CUSTOM_FRAME_CONTROL", "ON");
@@ -192,23 +193,21 @@ fn main() {
         })
         .unwrap_or(dst);
 
-    if matches!(platform_os, PlatformOS::Windows) {
-        if let (from, Some(to)) = [
-            ("raylib.lib", None),
-            ("raylib_static.lib", Some("raylib.lib")),
-            ("libraylib_static.a", Some("libraylib.a")),
-            ("libraylib.a", None),
-        ]
-            .into_iter()
-            .find_map(|(from, to)| {
-                let from = dst_lib.join(from);
-                from.exists().then_some((from, to))
-            })
-            .expect("failed to locate windows library")
-        {
-            std::fs::copy(from, dst_lib.join(to))
-                .expect("failed to create windows library");
-        }
+    if matches!(platform_os, PlatformOS::Windows) && let (from, Some(to)) = [
+        ("raylib.lib", None),
+        ("raylib_static.lib", Some("raylib.lib")),
+        ("libraylib_static.a", Some("libraylib.a")),
+        ("libraylib.a", None),
+    ]
+        .into_iter()
+        .find_map(|(from, to)| {
+            let from = dst_lib.join(from);
+            from.exists().then_some((from, to))
+        })
+        .expect("failed to locate windows library")
+    {
+        std::fs::copy(from, dst_lib.join(to))
+            .expect("failed to create windows library");
     }
     if matches!(platform, Platform::Web) {
         let lib = dst_lib.join("libraylib.a");

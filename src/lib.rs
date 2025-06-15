@@ -1,3 +1,5 @@
+#![warn(clippy::missing_safety_doc)]
+
 /// Safe-ish wrappers for ffi functions
 ///
 /// This is the bare minimum to prevent UB

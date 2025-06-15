@@ -1,6 +1,7 @@
 use super::*;
 
 /// Set texture and rectangle to be used on shapes drawing
+///
 /// NOTE: It can be useful when using basic shapes and one single font,
 /// defining a font char white rectangle would allow drawing everything in a single draw call
 #[inline]
@@ -17,16 +18,24 @@ pub fn set_shapes_texture(
 }
 
 /// Get texture that is used for shapes drawing
+///
+/// # Safety
+///
+/// Shapes texture needs to have been initialized
 #[inline]
-pub fn get_shapes_texture() -> sys::Texture2D {
+pub unsafe fn get_shapes_texture() -> sys::Texture2D {
     unsafe {
         sys::GetShapesTexture()
     }
 }
 
 /// Get texture source rectangle that is used for shapes drawing
+///
+/// # Safety
+///
+/// Shapes texture rectangle needs to have been initialized
 #[inline]
-pub fn get_shapes_texture_rectangle() -> sys::Rectangle {
+pub unsafe fn get_shapes_texture_rectangle() -> sys::Rectangle {
     unsafe {
         sys::GetShapesTextureRectangle()
     }
@@ -35,8 +44,13 @@ pub fn get_shapes_texture_rectangle() -> sys::Rectangle {
 // Basic shapes drawing functions
 
 /// Draw a pixel using geometry [Can be slow, use with care]
+///
+/// # Safety
+///
+/// - Window needs to have been initialized
+/// - Must be during drawing
 #[inline]
-pub fn draw_pixel(
+pub unsafe fn draw_pixel(
     pos_x: i32,
     pos_y: i32,
     color: sys::Color,
@@ -51,8 +65,13 @@ pub fn draw_pixel(
 }
 
 /// Draw a pixel using geometry (Vector version) [Can be slow, use with care]
+///
+/// # Safety
+///
+/// - Window needs to have been initialized
+/// - Must be during drawing
 #[inline]
-pub fn draw_pixel_v(
+pub unsafe fn draw_pixel_v(
     position: sys::Vector2,
     color: sys::Color,
 ) {
@@ -65,8 +84,13 @@ pub fn draw_pixel_v(
 }
 
 /// Draw a line
+///
+/// # Safety
+///
+/// - Window needs to have been initialized
+/// - Must be during drawing
 #[inline]
-pub fn draw_line(
+pub unsafe fn draw_line(
     start_pos_x: i32,
     start_pos_y: i32,
     end_pos_x: i32,
@@ -85,8 +109,13 @@ pub fn draw_line(
 }
 
 /// Draw a line (using gl lines)
+///
+/// # Safety
+///
+/// - Window needs to have been initialized
+/// - Must be during drawing
 #[inline]
-pub fn draw_line_v(
+pub unsafe fn draw_line_v(
     start_pos: sys::Vector2,
     end_pos: sys::Vector2,
     color: sys::Color,

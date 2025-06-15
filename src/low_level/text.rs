@@ -261,6 +261,7 @@ pub fn draw_text_ex(
 }
 
 /// Draw text using Font and pro parameters (rotation)
+#[allow(clippy::too_many_arguments, reason = "dont care")]
 #[inline]
 pub fn draw_text_pro(
     font: sys::Font,
@@ -767,12 +768,15 @@ pub fn text_append<'a>(
     })
 }
 
+#[derive(Debug)]
+pub struct TextNotFoundError(());
+
 /// Find first text occurrence within a string
 #[inline]
 pub fn text_find_index(
     text: &CStr,
     find: &CStr,
-) -> Result<usize, ()> {
+) -> Result<usize, TextNotFoundError> {
     const _: () = assert!(std::mem::size_of::<*const c_char>() <= std::mem::size_of::<usize>(),
         "cannot reliably confirm CStr will not overflow by testing its length",
     );
@@ -794,7 +798,7 @@ pub fn text_find_index(
     };
     match pos {
         0.. => Ok((pos as u32).try_into().unwrap()), // safe to assume positive i32 is compatible with u32
-        -1 => Err(()),
+        -1 => Err(TextNotFoundError(())),
         _ => unreachable!(),
     }
 }
