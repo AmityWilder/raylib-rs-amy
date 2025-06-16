@@ -1798,17 +1798,55 @@ pub fn image_draw_text_ex(
 // }
 
 /// Get pixel data size in bytes for certain format
-#[inline]
-pub fn get_pixel_data_size(
-    width: usize,
-    height: usize,
+/// NOTE: Size can be requested for `Image` or `Texture` data
+pub const fn get_pixel_data_size(
+    width: u32,
+    height: u32,
     format: sys::PixelFormat,
 ) -> usize {
-    unsafe {
-        sys::GetPixelDataSize(
-            width.try_into().unwrap(),
-            height.try_into().unwrap(),
-            format as i32,
-        ).try_into().unwrap()
+    // Allows definition to be const.
+    // PLEASE keep this up to date with `sys::GetPixelDataSize` definition.
+    use sys::PixelFormat::*;
+
+    let mut data_size;          // Size in bytes
+    let bpp;                    // Bits per pixel
+
+    match format {
+        PIXELFORMAT_UNCOMPRESSED_GRAYSCALE => bpp = 8,
+        PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA |
+        PIXELFORMAT_UNCOMPRESSED_R5G6B5 |
+        PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 |
+        PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 => bpp = 16,
+        PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 => bpp = 32,
+        PIXELFORMAT_UNCOMPRESSED_R8G8B8 => bpp = 24,
+        PIXELFORMAT_UNCOMPRESSED_R32 => bpp = 32,
+        PIXELFORMAT_UNCOMPRESSED_R32G32B32 => bpp = 32*3,
+        PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 => bpp = 32*4,
+        PIXELFORMAT_UNCOMPRESSED_R16 => bpp = 16,
+        PIXELFORMAT_UNCOMPRESSED_R16G16B16 => bpp = 16*3,
+        PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 => bpp = 16*4,
+        PIXELFORMAT_COMPRESSED_DXT1_RGB |
+        PIXELFORMAT_COMPRESSED_DXT1_RGBA |
+        PIXELFORMAT_COMPRESSED_ETC1_RGB |
+        PIXELFORMAT_COMPRESSED_ETC2_RGB |
+        PIXELFORMAT_COMPRESSED_PVRT_RGB |
+        PIXELFORMAT_COMPRESSED_PVRT_RGBA => bpp = 4,
+        PIXELFORMAT_COMPRESSED_DXT3_RGBA |
+        PIXELFORMAT_COMPRESSED_DXT5_RGBA |
+        PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA |
+        PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA => bpp = 8,
+        PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA => bpp = 2,
     }
+
+    let bytes_per_pixel = bpp as f64/8.0;
+    data_size = (bytes_per_pixel*width as f64*height as f64) as usize; // Total data size in bytes
+
+    // Most compressed formats works on 4x4 blocks,
+    // if texture is smaller, minimum data_size is 8 or 16
+    if (width < 4) && (height < 4) {
+        if (format as i32 >= PIXELFORMAT_COMPRESSED_DXT1_RGB as i32) && ((format as i32) < PIXELFORMAT_COMPRESSED_DXT3_RGBA as i32) { data_size = 8; }
+        else if (format as i32 >= PIXELFORMAT_COMPRESSED_DXT3_RGBA as i32) && ((format as i32) < PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA as i32) { data_size = 16; }
+    }
+
+    data_size
 }

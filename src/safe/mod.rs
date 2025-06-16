@@ -1,432 +1,781 @@
-use std::{marker::PhantomData, time::Duration};
-use crate::low_level as low;
+#![warn(missing_docs)]
+
+#[cfg(target_endian = "little")]
+use std::mem::MaybeUninit;
+use std::{marker::PhantomData, os::raw::{c_int, c_void}, ptr::NonNull, time::Duration};
+use crate::low;
 use into_cstr::IntoCStr;
+
+mod sys {
+    #[allow(unused_imports, reason = "to be used later")]
+    pub use crate::low::{
+        sys::Vector2,
+        sys::Vector3,
+        sys::Vector4,
+        sys::Quaternion,
+        sys::Matrix,
+        sys::Color,
+        sys::Rectangle,
+        sys::Image,
+        sys::Texture,
+        sys::Texture2D,
+        sys::TextureCubemap,
+        sys::RenderTexture,
+        sys::RenderTexture2D,
+        sys::NPatchInfo,
+        sys::GlyphInfo,
+        sys::Font,
+        sys::Camera3D,
+        sys::Camera,
+        sys::Camera2D,
+        sys::Mesh,
+        sys::Shader,
+        sys::MaterialMap,
+        sys::Material,
+        sys::Transform,
+        sys::BoneInfo,
+        sys::Model,
+        sys::ModelAnimation,
+        sys::Ray,
+        sys::RayCollision,
+        sys::BoundingBox,
+        sys::Wave,
+        sys::rAudioBuffer,
+        sys::rAudioProcessor,
+        sys::AudioStream,
+        sys::Sound,
+        sys::Music,
+        sys::VrDeviceInfo,
+        sys::VrStereoConfig,
+        sys::FilePathList,
+        sys::AutomationEvent,
+        sys::AutomationEventList,
+        sys::ConfigFlags,
+        sys::TraceLogLevel,
+        sys::KeyboardKey,
+        sys::MouseButton,
+        sys::MouseCursor,
+        sys::GamepadButton,
+        sys::GamepadAxis,
+        sys::ShaderUniformDataType,
+        sys::ShaderAttributeDataType,
+        sys::PixelFormat,
+        sys::TextureFilter,
+        sys::TextureWrap,
+        sys::CubemapLayout,
+        sys::FontType,
+        sys::BlendMode,
+        sys::Gesture,
+        sys::CameraMode,
+        sys::CameraProjection,
+        sys::NPatchLayout,
+        sys::TraceLogCallback,
+        sys::LoadFileDataCallback,
+        sys::SaveFileDataCallback,
+        sys::LoadFileTextCallback,
+        sys::SaveFileTextCallback,
+        sys::AudioCallback,
+        sys::float3,
+        sys::float16,
+        sys::TouchAction,
+        sys::GestureEvent,
+        sys::rlVertexBuffer,
+        sys::rlDrawCall,
+        sys::rlRenderBatch,
+        sys::rlGlVersion,
+        sys::rlTraceLogLevel,
+        sys::rlPixelFormat,
+        sys::rlTextureFilter,
+        sys::rlBlendMode,
+        sys::rlShaderUniformDataType,
+        sys::rlShaderAttributeDataType,
+        sys::rlFramebufferAttachType,
+        sys::rlFramebufferAttachTextureType,
+        sys::rlCullMode,
+    };
+}
 
 pub mod into_cstr;
 
+/// Vector2, 2 components
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector2 {
+    /// Vector x component
     pub x: f32,
+    /// Vector y component
     pub y: f32,
 }
 
-impl From<low::sys::Vector2> for Vector2 {
-    fn from(value: low::sys::Vector2) -> Self {
+impl Vector2 {
+    #[inline]
+    const fn into_sys(self) -> sys::Vector2 {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    #[inline]
+    const fn from_sys(value: sys::Vector2) -> Self {
         unsafe { std::mem::transmute(value) }
+    }
+
+    #[inline]
+    const fn as_sys(&self) -> &sys::Vector2 {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
-impl From<Vector2> for low::sys::Vector2 {
+impl From<sys::Vector2> for Vector2 {
+    #[inline]
+    fn from(value: sys::Vector2) -> Self {
+        Self::from_sys(value)
+    }
+}
+
+impl From<Vector2> for sys::Vector2 {
+    #[inline]
     fn from(value: Vector2) -> Self {
-        unsafe { std::mem::transmute(value) }
+        value.into_sys()
     }
 }
 
+impl<'a> From<&'a Vector2> for &'a sys::Vector2 {
+    #[inline]
+    fn from(value: &'a Vector2) -> Self {
+        value.as_sys()
+    }
+}
+
+/// Vector3, 3 components
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector3 {
+    /// Vector x component
     pub x: f32,
+    /// Vector y component
     pub y: f32,
+    /// Vector z component
     pub z: f32,
 }
 
-impl From<low::sys::Vector3> for Vector3 {
-    fn from(value: low::sys::Vector3) -> Self {
+impl Vector3 {
+    #[inline]
+    const fn into_sys(self) -> sys::Vector3 {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    #[inline]
+    const fn from_sys(value: sys::Vector3) -> Self {
         unsafe { std::mem::transmute(value) }
+    }
+
+    #[inline]
+    const fn as_sys(&self) -> &sys::Vector3 {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
-impl From<Vector3> for low::sys::Vector3 {
+impl From<sys::Vector3> for Vector3 {
+    #[inline]
+    fn from(value: sys::Vector3) -> Self {
+        Self::from_sys(value)
+    }
+}
+
+impl From<Vector3> for sys::Vector3 {
+    #[inline]
     fn from(value: Vector3) -> Self {
-        unsafe { std::mem::transmute(value) }
+        value.into_sys()
     }
 }
 
+impl<'a> From<&'a Vector3> for &'a sys::Vector3 {
+    #[inline]
+    fn from(value: &'a Vector3) -> Self {
+        value.as_sys()
+    }
+}
+
+/// Vector4, 4 components
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector4 {
+    /// Vector x component
     pub x: f32,
+    /// Vector y component
     pub y: f32,
+    /// Vector z component
     pub z: f32,
+    /// Vector w component
     pub w: f32,
 }
 
-impl From<low::sys::Vector4> for Vector4 {
-    fn from(value: low::sys::Vector4) -> Self {
+impl Vector4 {
+    #[inline]
+    const fn into_sys(self) -> sys::Vector4 {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    #[inline]
+    const fn from_sys(value: sys::Vector4) -> Self {
         unsafe { std::mem::transmute(value) }
+    }
+
+    #[inline]
+    const fn as_sys(&self) -> &sys::Vector4 {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
-impl From<Vector4> for low::sys::Vector4 {
+impl From<sys::Vector4> for Vector4 {
+    #[inline]
+    fn from(value: sys::Vector4) -> Self {
+        Self::from_sys(value)
+    }
+}
+
+impl From<Vector4> for sys::Vector4 {
+    #[inline]
     fn from(value: Vector4) -> Self {
-        unsafe { std::mem::transmute(value) }
+        value.into_sys()
     }
 }
 
+impl<'a> From<&'a Vector4> for &'a sys::Vector4 {
+    #[inline]
+    fn from(value: &'a Vector4) -> Self {
+        value.as_sys()
+    }
+}
+
+/// Quaternion, 4 components (Vector4 alias)
+pub type Quaternion = Vector4;
+
+/// Keyboard keys (US keyboard layout)
+///
+/// NOTE: Use [`WindowInner::get_key_pressed()`] to allow redefining
+/// required keys for alternative layouts
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum KeyboardKey {
-    Apostrophe = low::sys::KeyboardKey::KEY_APOSTROPHE as isize,
-    Comma = low::sys::KeyboardKey::KEY_COMMA as isize,
-    Minus = low::sys::KeyboardKey::KEY_MINUS as isize,
-    Period = low::sys::KeyboardKey::KEY_PERIOD as isize,
-    Slash = low::sys::KeyboardKey::KEY_SLASH as isize,
-    Zero = low::sys::KeyboardKey::KEY_ZERO as isize,
-    One = low::sys::KeyboardKey::KEY_ONE as isize,
-    Two = low::sys::KeyboardKey::KEY_TWO as isize,
-    Three = low::sys::KeyboardKey::KEY_THREE as isize,
-    Four = low::sys::KeyboardKey::KEY_FOUR as isize,
-    Five = low::sys::KeyboardKey::KEY_FIVE as isize,
-    Six = low::sys::KeyboardKey::KEY_SIX as isize,
-    Seven = low::sys::KeyboardKey::KEY_SEVEN as isize,
-    Eight = low::sys::KeyboardKey::KEY_EIGHT as isize,
-    Nine = low::sys::KeyboardKey::KEY_NINE as isize,
-    Semicolon = low::sys::KeyboardKey::KEY_SEMICOLON as isize,
-    Equal = low::sys::KeyboardKey::KEY_EQUAL as isize,
-    A = low::sys::KeyboardKey::KEY_A as isize,
-    B = low::sys::KeyboardKey::KEY_B as isize,
-    C = low::sys::KeyboardKey::KEY_C as isize,
-    D = low::sys::KeyboardKey::KEY_D as isize,
-    E = low::sys::KeyboardKey::KEY_E as isize,
-    F = low::sys::KeyboardKey::KEY_F as isize,
-    G = low::sys::KeyboardKey::KEY_G as isize,
-    H = low::sys::KeyboardKey::KEY_H as isize,
-    I = low::sys::KeyboardKey::KEY_I as isize,
-    J = low::sys::KeyboardKey::KEY_J as isize,
-    K = low::sys::KeyboardKey::KEY_K as isize,
-    L = low::sys::KeyboardKey::KEY_L as isize,
-    M = low::sys::KeyboardKey::KEY_M as isize,
-    N = low::sys::KeyboardKey::KEY_N as isize,
-    O = low::sys::KeyboardKey::KEY_O as isize,
-    P = low::sys::KeyboardKey::KEY_P as isize,
-    Q = low::sys::KeyboardKey::KEY_Q as isize,
-    R = low::sys::KeyboardKey::KEY_R as isize,
-    S = low::sys::KeyboardKey::KEY_S as isize,
-    T = low::sys::KeyboardKey::KEY_T as isize,
-    U = low::sys::KeyboardKey::KEY_U as isize,
-    V = low::sys::KeyboardKey::KEY_V as isize,
-    W = low::sys::KeyboardKey::KEY_W as isize,
-    X = low::sys::KeyboardKey::KEY_X as isize,
-    Y = low::sys::KeyboardKey::KEY_Y as isize,
-    Z = low::sys::KeyboardKey::KEY_Z as isize,
-    LeftBracket = low::sys::KeyboardKey::KEY_LEFT_BRACKET as isize,
-    Backslash = low::sys::KeyboardKey::KEY_BACKSLASH as isize,
-    RightBracket = low::sys::KeyboardKey::KEY_RIGHT_BRACKET as isize,
-    Grave = low::sys::KeyboardKey::KEY_GRAVE as isize,
-    Space = low::sys::KeyboardKey::KEY_SPACE as isize,
-    Escape = low::sys::KeyboardKey::KEY_ESCAPE as isize,
-    Enter = low::sys::KeyboardKey::KEY_ENTER as isize,
-    Tab = low::sys::KeyboardKey::KEY_TAB as isize,
-    Backspace = low::sys::KeyboardKey::KEY_BACKSPACE as isize,
-    Insert = low::sys::KeyboardKey::KEY_INSERT as isize,
-    Delete = low::sys::KeyboardKey::KEY_DELETE as isize,
-    Right = low::sys::KeyboardKey::KEY_RIGHT as isize,
-    Left = low::sys::KeyboardKey::KEY_LEFT as isize,
-    Down = low::sys::KeyboardKey::KEY_DOWN as isize,
-    Up = low::sys::KeyboardKey::KEY_UP as isize,
-    PageUp = low::sys::KeyboardKey::KEY_PAGE_UP as isize,
-    PageDown = low::sys::KeyboardKey::KEY_PAGE_DOWN as isize,
-    Home = low::sys::KeyboardKey::KEY_HOME as isize,
-    End = low::sys::KeyboardKey::KEY_END as isize,
-    CapsLock = low::sys::KeyboardKey::KEY_CAPS_LOCK as isize,
-    ScrollLock = low::sys::KeyboardKey::KEY_SCROLL_LOCK as isize,
-    NumLock = low::sys::KeyboardKey::KEY_NUM_LOCK as isize,
-    PrintScreen = low::sys::KeyboardKey::KEY_PRINT_SCREEN as isize,
-    Pause = low::sys::KeyboardKey::KEY_PAUSE as isize,
-    F1 = low::sys::KeyboardKey::KEY_F1 as isize,
-    F2 = low::sys::KeyboardKey::KEY_F2 as isize,
-    F3 = low::sys::KeyboardKey::KEY_F3 as isize,
-    F4 = low::sys::KeyboardKey::KEY_F4 as isize,
-    F5 = low::sys::KeyboardKey::KEY_F5 as isize,
-    F6 = low::sys::KeyboardKey::KEY_F6 as isize,
-    F7 = low::sys::KeyboardKey::KEY_F7 as isize,
-    F8 = low::sys::KeyboardKey::KEY_F8 as isize,
-    F9 = low::sys::KeyboardKey::KEY_F9 as isize,
-    F10 = low::sys::KeyboardKey::KEY_F10 as isize,
-    F11 = low::sys::KeyboardKey::KEY_F11 as isize,
-    F12 = low::sys::KeyboardKey::KEY_F12 as isize,
-    LeftShift = low::sys::KeyboardKey::KEY_LEFT_SHIFT as isize,
-    LeftControl = low::sys::KeyboardKey::KEY_LEFT_CONTROL as isize,
-    LeftAlt = low::sys::KeyboardKey::KEY_LEFT_ALT as isize,
-    LeftSuper = low::sys::KeyboardKey::KEY_LEFT_SUPER as isize,
-    RightShift = low::sys::KeyboardKey::KEY_RIGHT_SHIFT as isize,
-    RightControl = low::sys::KeyboardKey::KEY_RIGHT_CONTROL as isize,
-    RightAlt = low::sys::KeyboardKey::KEY_RIGHT_ALT as isize,
-    RightSuper = low::sys::KeyboardKey::KEY_RIGHT_SUPER as isize,
-    KbMenu = low::sys::KeyboardKey::KEY_KB_MENU as isize,
-    Kp0 = low::sys::KeyboardKey::KEY_KP_0 as isize,
-    Kp1 = low::sys::KeyboardKey::KEY_KP_1 as isize,
-    Kp2 = low::sys::KeyboardKey::KEY_KP_2 as isize,
-    Kp3 = low::sys::KeyboardKey::KEY_KP_3 as isize,
-    Kp4 = low::sys::KeyboardKey::KEY_KP_4 as isize,
-    Kp5 = low::sys::KeyboardKey::KEY_KP_5 as isize,
-    Kp6 = low::sys::KeyboardKey::KEY_KP_6 as isize,
-    Kp7 = low::sys::KeyboardKey::KEY_KP_7 as isize,
-    Kp8 = low::sys::KeyboardKey::KEY_KP_8 as isize,
-    Kp9 = low::sys::KeyboardKey::KEY_KP_9 as isize,
-    KpDecimal = low::sys::KeyboardKey::KEY_KP_DECIMAL as isize,
-    KpDivide = low::sys::KeyboardKey::KEY_KP_DIVIDE as isize,
-    KpMultiply = low::sys::KeyboardKey::KEY_KP_MULTIPLY as isize,
-    KpSubtract = low::sys::KeyboardKey::KEY_KP_SUBTRACT as isize,
-    KpAdd = low::sys::KeyboardKey::KEY_KP_ADD as isize,
-    KpEnter = low::sys::KeyboardKey::KEY_KP_ENTER as isize,
-    KpEqual = low::sys::KeyboardKey::KEY_KP_EQUAL as isize,
-    Back = low::sys::KeyboardKey::KEY_BACK as isize,
-    Menu = low::sys::KeyboardKey::KEY_MENU as isize,
-    VolumeUp = low::sys::KeyboardKey::KEY_VOLUME_UP as isize,
-    VolumeDown = low::sys::KeyboardKey::KEY_VOLUME_DOWN as isize,
+    // Alphanumeric keys
+    /** Key: `'` | `"` */ Apostrophe = sys::KeyboardKey::KEY_APOSTROPHE as isize,
+    /** Key: `,` | `<` */ Comma = sys::KeyboardKey::KEY_COMMA as isize,
+    /** Key: `-` | `_` */ Minus = sys::KeyboardKey::KEY_MINUS as isize,
+    /** Key: `.` | `>` */ Period = sys::KeyboardKey::KEY_PERIOD as isize,
+    /** Key: `/` | `?` */ Slash = sys::KeyboardKey::KEY_SLASH as isize,
+    /** Key: `0` | `)` */ Zero = sys::KeyboardKey::KEY_ZERO as isize,
+    /** Key: `1` | `!` */ One = sys::KeyboardKey::KEY_ONE as isize,
+    /** Key: `2` | `@` */ Two = sys::KeyboardKey::KEY_TWO as isize,
+    /** Key: `3` | `#` */ Three = sys::KeyboardKey::KEY_THREE as isize,
+    /** Key: `4` | `$` */ Four = sys::KeyboardKey::KEY_FOUR as isize,
+    /** Key: `5` | `%` */ Five = sys::KeyboardKey::KEY_FIVE as isize,
+    /** Key: `6` | `^` */ Six = sys::KeyboardKey::KEY_SIX as isize,
+    /** Key: `7` | `&` */ Seven = sys::KeyboardKey::KEY_SEVEN as isize,
+    /** Key: `8` | `*` */ Eight = sys::KeyboardKey::KEY_EIGHT as isize,
+    /** Key: `9` | `(` */ Nine = sys::KeyboardKey::KEY_NINE as isize,
+    /** Key: `;` | `:` */ Semicolon = sys::KeyboardKey::KEY_SEMICOLON as isize,
+    /** Key: `=` | `+` */ Equal = sys::KeyboardKey::KEY_EQUAL as isize,
+    /** Key: `a` | `A` */ A = sys::KeyboardKey::KEY_A as isize,
+    /** Key: `b` | `B` */ B = sys::KeyboardKey::KEY_B as isize,
+    /** Key: `c` | `C` */ C = sys::KeyboardKey::KEY_C as isize,
+    /** Key: `d` | `D` */ D = sys::KeyboardKey::KEY_D as isize,
+    /** Key: `e` | `E` */ E = sys::KeyboardKey::KEY_E as isize,
+    /** Key: `f` | `F` */ F = sys::KeyboardKey::KEY_F as isize,
+    /** Key: `g` | `G` */ G = sys::KeyboardKey::KEY_G as isize,
+    /** Key: `h` | `H` */ H = sys::KeyboardKey::KEY_H as isize,
+    /** Key: `i` | `I` */ I = sys::KeyboardKey::KEY_I as isize,
+    /** Key: `j` | `J` */ J = sys::KeyboardKey::KEY_J as isize,
+    /** Key: `k` | `K` */ K = sys::KeyboardKey::KEY_K as isize,
+    /** Key: `l` | `L` */ L = sys::KeyboardKey::KEY_L as isize,
+    /** Key: `m` | `M` */ M = sys::KeyboardKey::KEY_M as isize,
+    /** Key: `n` | `N` */ N = sys::KeyboardKey::KEY_N as isize,
+    /** Key: `o` | `O` */ O = sys::KeyboardKey::KEY_O as isize,
+    /** Key: `p` | `P` */ P = sys::KeyboardKey::KEY_P as isize,
+    /** Key: `q` | `Q` */ Q = sys::KeyboardKey::KEY_Q as isize,
+    /** Key: `r` | `R` */ R = sys::KeyboardKey::KEY_R as isize,
+    /** Key: `s` | `S` */ S = sys::KeyboardKey::KEY_S as isize,
+    /** Key: `t` | `T` */ T = sys::KeyboardKey::KEY_T as isize,
+    /** Key: `u` | `U` */ U = sys::KeyboardKey::KEY_U as isize,
+    /** Key: `v` | `V` */ V = sys::KeyboardKey::KEY_V as isize,
+    /** Key: `w` | `W` */ W = sys::KeyboardKey::KEY_W as isize,
+    /** Key: `x` | `X` */ X = sys::KeyboardKey::KEY_X as isize,
+    /** Key: `y` | `Y` */ Y = sys::KeyboardKey::KEY_Y as isize,
+    /** Key: `z` | `Z` */ Z = sys::KeyboardKey::KEY_Z as isize,
+    /** Key: `[` | `{` */ LeftBracket = sys::KeyboardKey::KEY_LEFT_BRACKET as isize,
+    /** Key: `\\` | `|` */ Backslash = sys::KeyboardKey::KEY_BACKSLASH as isize,
+    /** Key: `]` | `}` */ RightBracket = sys::KeyboardKey::KEY_RIGHT_BRACKET as isize,
+    /** Key: `` ` `` | `~` */ Grave = sys::KeyboardKey::KEY_GRAVE as isize,
+    // Function keys
+    /** Key: Space */ Space = sys::KeyboardKey::KEY_SPACE as isize,
+    /** Key: Esc */ Escape = sys::KeyboardKey::KEY_ESCAPE as isize,
+    /** Key: Enter */ Enter = sys::KeyboardKey::KEY_ENTER as isize,
+    /** Key: Tab */ Tab = sys::KeyboardKey::KEY_TAB as isize,
+    /** Key: Backspace */ Backspace = sys::KeyboardKey::KEY_BACKSPACE as isize,
+    /** Key: Ins */ Insert = sys::KeyboardKey::KEY_INSERT as isize,
+    /** Key: Del */ Delete = sys::KeyboardKey::KEY_DELETE as isize,
+    /** Key: Cursor right */ Right = sys::KeyboardKey::KEY_RIGHT as isize,
+    /** Key: Cursor left */ Left = sys::KeyboardKey::KEY_LEFT as isize,
+    /** Key: Cursor down */ Down = sys::KeyboardKey::KEY_DOWN as isize,
+    /** Key: Cursor up */ Up = sys::KeyboardKey::KEY_UP as isize,
+    /** Key: Page up */ PageUp = sys::KeyboardKey::KEY_PAGE_UP as isize,
+    /** Key: Page down */ PageDown = sys::KeyboardKey::KEY_PAGE_DOWN as isize,
+    /** Key: Home */ Home = sys::KeyboardKey::KEY_HOME as isize,
+    /** Key: End */ End = sys::KeyboardKey::KEY_END as isize,
+    /** Key: Caps lock */ CapsLock = sys::KeyboardKey::KEY_CAPS_LOCK as isize,
+    /** Key: Scroll lock */ ScrollLock = sys::KeyboardKey::KEY_SCROLL_LOCK as isize,
+    /** Key: Num lock */ NumLock = sys::KeyboardKey::KEY_NUM_LOCK as isize,
+    /** Key: Print screen */ PrintScreen = sys::KeyboardKey::KEY_PRINT_SCREEN as isize,
+    /** Key: Pause */ Pause = sys::KeyboardKey::KEY_PAUSE as isize,
+    /** Key: `F1` */ F1 = sys::KeyboardKey::KEY_F1 as isize,
+    /** Key: `F2` */ F2 = sys::KeyboardKey::KEY_F2 as isize,
+    /** Key: `F3` */ F3 = sys::KeyboardKey::KEY_F3 as isize,
+    /** Key: `F4` */ F4 = sys::KeyboardKey::KEY_F4 as isize,
+    /** Key: `F5` */ F5 = sys::KeyboardKey::KEY_F5 as isize,
+    /** Key: `F6` */ F6 = sys::KeyboardKey::KEY_F6 as isize,
+    /** Key: `F7` */ F7 = sys::KeyboardKey::KEY_F7 as isize,
+    /** Key: `F8` */ F8 = sys::KeyboardKey::KEY_F8 as isize,
+    /** Key: `F9` */ F9 = sys::KeyboardKey::KEY_F9 as isize,
+    /** Key: `F10` */ F10 = sys::KeyboardKey::KEY_F10 as isize,
+    /** Key: `F11` */ F11 = sys::KeyboardKey::KEY_F11 as isize,
+    /** Key: `F12` */ F12 = sys::KeyboardKey::KEY_F12 as isize,
+    /** Key: Shift left */ LeftShift = sys::KeyboardKey::KEY_LEFT_SHIFT as isize,
+    /** Key: Ctrl left */ LeftControl = sys::KeyboardKey::KEY_LEFT_CONTROL as isize,
+    /** Key: Alt left */ LeftAlt = sys::KeyboardKey::KEY_LEFT_ALT as isize,
+    /** Key: Super left */ LeftSuper = sys::KeyboardKey::KEY_LEFT_SUPER as isize,
+    /** Key: Shift right */ RightShift = sys::KeyboardKey::KEY_RIGHT_SHIFT as isize,
+    /** Key: Ctrl right */ RightControl = sys::KeyboardKey::KEY_RIGHT_CONTROL as isize,
+    /** Key: Alt right */ RightAlt = sys::KeyboardKey::KEY_RIGHT_ALT as isize,
+    /** Key: Super right */ RightSuper = sys::KeyboardKey::KEY_RIGHT_SUPER as isize,
+    /** Key: KB menu */ KbMenu = sys::KeyboardKey::KEY_KB_MENU as isize,
+    // Keypad keys
+    /** Key: Keypad `0` */ Kp0 = sys::KeyboardKey::KEY_KP_0 as isize,
+    /** Key: Keypad `1` */ Kp1 = sys::KeyboardKey::KEY_KP_1 as isize,
+    /** Key: Keypad `2` */ Kp2 = sys::KeyboardKey::KEY_KP_2 as isize,
+    /** Key: Keypad `3` */ Kp3 = sys::KeyboardKey::KEY_KP_3 as isize,
+    /** Key: Keypad `4` */ Kp4 = sys::KeyboardKey::KEY_KP_4 as isize,
+    /** Key: Keypad `5` */ Kp5 = sys::KeyboardKey::KEY_KP_5 as isize,
+    /** Key: Keypad `6` */ Kp6 = sys::KeyboardKey::KEY_KP_6 as isize,
+    /** Key: Keypad `7` */ Kp7 = sys::KeyboardKey::KEY_KP_7 as isize,
+    /** Key: Keypad `8` */ Kp8 = sys::KeyboardKey::KEY_KP_8 as isize,
+    /** Key: Keypad `9` */ Kp9 = sys::KeyboardKey::KEY_KP_9 as isize,
+    /** Key: Keypad `.` */ KpDecimal = sys::KeyboardKey::KEY_KP_DECIMAL as isize,
+    /** Key: Keypad `/` */ KpDivide = sys::KeyboardKey::KEY_KP_DIVIDE as isize,
+    /** Key: Keypad `*` */ KpMultiply = sys::KeyboardKey::KEY_KP_MULTIPLY as isize,
+    /** Key: Keypad `-` */ KpSubtract = sys::KeyboardKey::KEY_KP_SUBTRACT as isize,
+    /** Key: Keypad `+` */ KpAdd = sys::KeyboardKey::KEY_KP_ADD as isize,
+    /** Key: Keypad Enter */ KpEnter = sys::KeyboardKey::KEY_KP_ENTER as isize,
+    /** Key: Keypad `=` */ KpEqual = sys::KeyboardKey::KEY_KP_EQUAL as isize,
+    // Android key buttons
+    /** Key: Android back button */ Back = sys::KeyboardKey::KEY_BACK as isize,
+    /** Key: Android menu button */ Menu = sys::KeyboardKey::KEY_MENU as isize,
+    /** Key: Android volume up button */ VolumeUp = sys::KeyboardKey::KEY_VOLUME_UP as isize,
+    /** Key: Android volume down button */ VolumeDown = sys::KeyboardKey::KEY_VOLUME_DOWN as isize,
 }
 
-impl From<KeyboardKey> for low::sys::KeyboardKey {
+impl KeyboardKey {
     #[inline]
-    fn from(value: KeyboardKey) -> Self {
-        unsafe { std::mem::transmute(value as i32) }
+    const fn into_sys(self) -> sys::KeyboardKey {
+        unsafe { std::mem::transmute(self as i32) }
     }
-}
-
-impl TryFrom<low::sys::KeyboardKey> for KeyboardKey {
-    type Error = ();
 
     #[inline]
-    fn try_from(value: low::sys::KeyboardKey) -> Result<Self, Self::Error> {
+    const fn opt_into_sys(value: Option<Self>) -> sys::KeyboardKey {
         match value {
-            low::sys::KeyboardKey::KEY_NULL => Err(()),
-            _ => Ok(unsafe { std::mem::transmute(value as i16) }),
+            Some(k) => unsafe { std::mem::transmute(k as i32) },
+            None => sys::KeyboardKey::KEY_NULL,
         }
     }
+
+    #[inline]
+    const fn from_sys(value: sys::KeyboardKey) -> Option<Self> {
+        unsafe { std::mem::transmute(value as i16) }
+    }
 }
 
+/// Mouse buttons
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MouseButton {
-    Left = low::sys::MouseButton::MOUSE_BUTTON_LEFT as isize,
-    Right = low::sys::MouseButton::MOUSE_BUTTON_RIGHT as isize,
-    Middle = low::sys::MouseButton::MOUSE_BUTTON_MIDDLE as isize,
-    Side = low::sys::MouseButton::MOUSE_BUTTON_SIDE as isize,
-    Extra = low::sys::MouseButton::MOUSE_BUTTON_EXTRA as isize,
-    Forward = low::sys::MouseButton::MOUSE_BUTTON_FORWARD as isize,
-    Back = low::sys::MouseButton::MOUSE_BUTTON_BACK as isize,
+    /// Mouse button left
+    Left = sys::MouseButton::MOUSE_BUTTON_LEFT as isize,
+    /// Mouse button right
+    Right = sys::MouseButton::MOUSE_BUTTON_RIGHT as isize,
+    /// Mouse button middle (pressed wheel)
+    Middle = sys::MouseButton::MOUSE_BUTTON_MIDDLE as isize,
+    /// Mouse button side (advanced mouse device)
+    Side = sys::MouseButton::MOUSE_BUTTON_SIDE as isize,
+    /// Mouse button extra (advanced mouse device)
+    Extra = sys::MouseButton::MOUSE_BUTTON_EXTRA as isize,
+    /// Mouse button forward (advanced mouse device)
+    Forward = sys::MouseButton::MOUSE_BUTTON_FORWARD as isize,
+    /// Mouse button back (advanced mouse device)
+    Back = sys::MouseButton::MOUSE_BUTTON_BACK as isize,
 }
 
-impl From<MouseButton> for low::sys::MouseButton {
+impl From<MouseButton> for sys::MouseButton {
     #[inline]
     fn from(value: MouseButton) -> Self {
         unsafe { std::mem::transmute(value as i32) }
     }
 }
 
-impl From<low::sys::MouseButton> for MouseButton {
+impl From<sys::MouseButton> for MouseButton {
     #[inline]
-    fn from(value: low::sys::MouseButton) -> Self {
+    fn from(value: sys::MouseButton) -> Self {
         unsafe { std::mem::transmute(value as i8) }
     }
 }
 
+/// Mouse cursor
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MouseCursor {
-    Default = low::sys::MouseCursor::MOUSE_CURSOR_DEFAULT as isize,
-    Arrow = low::sys::MouseCursor::MOUSE_CURSOR_ARROW as isize,
-    IBeam = low::sys::MouseCursor::MOUSE_CURSOR_IBEAM as isize,
-    Crosshair = low::sys::MouseCursor::MOUSE_CURSOR_CROSSHAIR as isize,
-    PointingHand = low::sys::MouseCursor::MOUSE_CURSOR_POINTING_HAND as isize,
-    ResizeEW = low::sys::MouseCursor::MOUSE_CURSOR_RESIZE_EW as isize,
-    ResizeNS = low::sys::MouseCursor::MOUSE_CURSOR_RESIZE_NS as isize,
-    ResizeNWSE = low::sys::MouseCursor::MOUSE_CURSOR_RESIZE_NWSE as isize,
-    ResizeNESW = low::sys::MouseCursor::MOUSE_CURSOR_RESIZE_NESW as isize,
-    ResizeAll = low::sys::MouseCursor::MOUSE_CURSOR_RESIZE_ALL as isize,
-    NotAllowed = low::sys::MouseCursor::MOUSE_CURSOR_NOT_ALLOWED as isize,
+    /// Default pointer shape
+    Default = sys::MouseCursor::MOUSE_CURSOR_DEFAULT as isize,
+    /// Arrow shape
+    Arrow = sys::MouseCursor::MOUSE_CURSOR_ARROW as isize,
+    /// Text writing cursor shape
+    IBeam = sys::MouseCursor::MOUSE_CURSOR_IBEAM as isize,
+    /// Cross shape
+    Crosshair = sys::MouseCursor::MOUSE_CURSOR_CROSSHAIR as isize,
+    /// Pointing hand cursor
+    PointingHand = sys::MouseCursor::MOUSE_CURSOR_POINTING_HAND as isize,
+    /// Horizontal resize/move arrow shape
+    ResizeEW = sys::MouseCursor::MOUSE_CURSOR_RESIZE_EW as isize,
+    /// Vertical resize/move arrow shape
+    ResizeNS = sys::MouseCursor::MOUSE_CURSOR_RESIZE_NS as isize,
+    /// Top-left to bottom-right diagonal resize/move arrow shape
+    ResizeNWSE = sys::MouseCursor::MOUSE_CURSOR_RESIZE_NWSE as isize,
+    /// The top-right to bottom-left diagonal resize/move arrow shape
+    ResizeNESW = sys::MouseCursor::MOUSE_CURSOR_RESIZE_NESW as isize,
+    /// The omnidirectional resize/move cursor shape
+    ResizeAll = sys::MouseCursor::MOUSE_CURSOR_RESIZE_ALL as isize,
+    /// The operation-not-allowed shape
+    NotAllowed = sys::MouseCursor::MOUSE_CURSOR_NOT_ALLOWED as isize,
 }
 
-impl From<MouseCursor> for low::sys::MouseCursor {
+impl From<MouseCursor> for sys::MouseCursor {
     #[inline]
     fn from(value: MouseCursor) -> Self {
         unsafe { std::mem::transmute(value as i32) }
     }
 }
 
-impl From<low::sys::MouseCursor> for MouseCursor {
+impl From<sys::MouseCursor> for MouseCursor {
     #[inline]
-    fn from(value: low::sys::MouseCursor) -> Self {
+    fn from(value: sys::MouseCursor) -> Self {
         unsafe { std::mem::transmute(value as i8) }
     }
 }
 
+/// Gamepad buttons
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GamepadButton {
-    LeftFaceUp = low::sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_UP as isize,
-    LeftFaceRight = low::sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_RIGHT as isize,
-    LeftFaceDown = low::sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_DOWN as isize,
-    LeftFaceLeft = low::sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_LEFT as isize,
-    RightFaceUp = low::sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_UP as isize,
-    RightFaceRight = low::sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_RIGHT as isize,
-    RightFaceDown = low::sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_DOWN as isize,
-    RightFaceLeft = low::sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_LEFT as isize,
-    LeftTrigger1 = low::sys::GamepadButton::GAMEPAD_BUTTON_LEFT_TRIGGER_1 as isize,
-    LeftTrigger2 = low::sys::GamepadButton::GAMEPAD_BUTTON_LEFT_TRIGGER_2 as isize,
-    RightTrigger1 = low::sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_TRIGGER_1 as isize,
-    RightTrigger2 = low::sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_TRIGGER_2 as isize,
-    MiddleLeft = low::sys::GamepadButton::GAMEPAD_BUTTON_MIDDLE_LEFT as isize,
-    Middle = low::sys::GamepadButton::GAMEPAD_BUTTON_MIDDLE as isize,
-    MiddleRight = low::sys::GamepadButton::GAMEPAD_BUTTON_MIDDLE_RIGHT as isize,
-    LeftThumb = low::sys::GamepadButton::GAMEPAD_BUTTON_LEFT_THUMB as isize,
-    RightThumb = low::sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_THUMB as isize,
+    /// Gamepad left DPAD up button
+    LeftFaceUp = sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_UP as isize,
+    /// Gamepad left DPAD right button
+    LeftFaceRight = sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_RIGHT as isize,
+    /// Gamepad left DPAD down button
+    LeftFaceDown = sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_DOWN as isize,
+    /// Gamepad left DPAD left button
+    LeftFaceLeft = sys::GamepadButton::GAMEPAD_BUTTON_LEFT_FACE_LEFT as isize,
+    /// Gamepad right button up (i.e. PS3: Triangle, Xbox: Y)
+    RightFaceUp = sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_UP as isize,
+    /// Gamepad right button right (i.e. PS3: Circle, Xbox: B)
+    RightFaceRight = sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_RIGHT as isize,
+    /// Gamepad right button down (i.e. PS3: Cross, Xbox: A)
+    RightFaceDown = sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_DOWN as isize,
+    /// Gamepad right button left (i.e. PS3: Square, Xbox: X)
+    RightFaceLeft = sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_FACE_LEFT as isize,
+    /// Gamepad top/back trigger left (first), it could be a trailing button
+    LeftTrigger1 = sys::GamepadButton::GAMEPAD_BUTTON_LEFT_TRIGGER_1 as isize,
+    /// Gamepad top/back trigger left (second), it could be a trailing button
+    LeftTrigger2 = sys::GamepadButton::GAMEPAD_BUTTON_LEFT_TRIGGER_2 as isize,
+    /// Gamepad top/back trigger right (first), it could be a trailing button
+    RightTrigger1 = sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_TRIGGER_1 as isize,
+    /// Gamepad top/back trigger right (second), it could be a trailing button
+    RightTrigger2 = sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_TRIGGER_2 as isize,
+    /// Gamepad center buttons, left one (i.e. PS3: Select)
+    MiddleLeft = sys::GamepadButton::GAMEPAD_BUTTON_MIDDLE_LEFT as isize,
+    /// Gamepad center buttons, middle one (i.e. PS3: PS, Xbox: XBOX)
+    Middle = sys::GamepadButton::GAMEPAD_BUTTON_MIDDLE as isize,
+    /// Gamepad center buttons, right one (i.e. PS3: Start)
+    MiddleRight = sys::GamepadButton::GAMEPAD_BUTTON_MIDDLE_RIGHT as isize,
+    /// Gamepad joystick pressed button left
+    LeftThumb = sys::GamepadButton::GAMEPAD_BUTTON_LEFT_THUMB as isize,
+    /// Gamepad joystick pressed button right
+    RightThumb = sys::GamepadButton::GAMEPAD_BUTTON_RIGHT_THUMB as isize,
 }
 
-impl From<GamepadButton> for low::sys::GamepadButton {
+impl From<GamepadButton> for sys::GamepadButton {
     #[inline]
     fn from(value: GamepadButton) -> Self {
         unsafe { std::mem::transmute(value as i32) }
     }
 }
 
-impl TryFrom<low::sys::GamepadButton> for GamepadButton {
+impl TryFrom<sys::GamepadButton> for GamepadButton {
     type Error = ();
 
     #[inline]
-    fn try_from(value: low::sys::GamepadButton) -> Result<Self, Self::Error> {
+    fn try_from(value: sys::GamepadButton) -> Result<Self, Self::Error> {
         match value {
-            low::sys::GamepadButton::GAMEPAD_BUTTON_UNKNOWN => Err(()),
+            sys::GamepadButton::GAMEPAD_BUTTON_UNKNOWN => Err(()),
             _ => Ok(unsafe { std::mem::transmute(value as i8) }),
         }
     }
 }
 
+/// Gamepad axes
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GamepadAxis {
-    LeftX = low::sys::GamepadAxis::GAMEPAD_AXIS_LEFT_X as isize,
-    LeftY = low::sys::GamepadAxis::GAMEPAD_AXIS_LEFT_Y as isize,
-    RightX = low::sys::GamepadAxis::GAMEPAD_AXIS_RIGHT_X as isize,
-    RightY = low::sys::GamepadAxis::GAMEPAD_AXIS_RIGHT_Y as isize,
-    LeftTrigger = low::sys::GamepadAxis::GAMEPAD_AXIS_LEFT_TRIGGER as isize,
-    RightTrigger = low::sys::GamepadAxis::GAMEPAD_AXIS_RIGHT_TRIGGER as isize,
+    /// Gamepad left stick X axis
+    LeftX = sys::GamepadAxis::GAMEPAD_AXIS_LEFT_X as isize,
+    /// Gamepad left stick Y axis
+    LeftY = sys::GamepadAxis::GAMEPAD_AXIS_LEFT_Y as isize,
+    /// Gamepad right stick X axis
+    RightX = sys::GamepadAxis::GAMEPAD_AXIS_RIGHT_X as isize,
+    /// Gamepad right stick Y axis
+    RightY = sys::GamepadAxis::GAMEPAD_AXIS_RIGHT_Y as isize,
+    /// Gamepad back trigger left, pressure level: [1..-1]
+    LeftTrigger = sys::GamepadAxis::GAMEPAD_AXIS_LEFT_TRIGGER as isize,
+    /// Gamepad back trigger right, pressure level: [1..-1]
+    RightTrigger = sys::GamepadAxis::GAMEPAD_AXIS_RIGHT_TRIGGER as isize,
 }
 
-impl From<GamepadAxis> for low::sys::GamepadAxis {
+impl From<GamepadAxis> for sys::GamepadAxis {
     #[inline]
     fn from(value: GamepadAxis) -> Self {
         unsafe { std::mem::transmute(value as i32) }
     }
 }
 
-impl From<low::sys::GamepadAxis> for GamepadAxis {
+impl From<sys::GamepadAxis> for GamepadAxis {
     #[inline]
-    fn from(value: low::sys::GamepadAxis) -> Self {
+    fn from(value: sys::GamepadAxis) -> Self {
         unsafe { std::mem::transmute(value as i8) }
     }
 }
 
+/// Pixel formats
+///
+/// NOTE: Support depends on OpenGL version and platform
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum PixelFormat {
-    UncompressedGrayscale = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_GRAYSCALE as isize,
-    UncompressedGrayAlpha = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA as isize,
-    UncompressedR5G6B5 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R5G6B5 as isize,
-    UncompressedR8G8B8 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R8G8B8 as isize,
-    UncompressedR5G5B5A1 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 as isize,
-    UncompressedR4G4B4A4 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 as isize,
-    UncompressedR8G8B8A8 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 as isize,
-    UncompressedR32 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R32 as isize,
-    UncompressedR32G32B32 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R32G32B32 as isize,
-    UncompressedR32G32B32A32 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 as isize,
-    UncompressedR16 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R16 as isize,
-    UncompressedR16G16B16 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R16G16B16 as isize,
-    UncompressedR16G16B16A16 = low::sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 as isize,
-    CompressedDxt1RGB = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT1_RGB as isize,
-    CompressedDxt1RGBA = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT1_RGBA as isize,
-    CompressedDxt3RGBA = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT3_RGBA as isize,
-    CompressedDxt5RGBA = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT5_RGBA as isize,
-    CompressedEtc1RGB = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_ETC1_RGB as isize,
-    CompressedEtc2RGB = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_ETC2_RGB as isize,
-    CompressedEtc2EacRGBA = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA as isize,
-    CompressedPvrtRGB = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_PVRT_RGB as isize,
-    CompressedPvrtRGBA = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_PVRT_RGBA as isize,
-    CompressedAstc4x4RGBA = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA as isize,
-    CompressedAstc8x8RGBA = low::sys::PixelFormat::PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA as isize,
+    /// Uncompressed opaque grayscale format -- 8 bit per pixel (no alpha)
+    UncompressedGrayscale = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_GRAYSCALE as isize,
+    /// Uncompressed transparent grayscale format -- 8*2 bpp (2 channels)
+    UncompressedGrayAlpha = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA as isize,
+    /// Uncompressed 16-bit RGB format: 5-bit red channel, 6-bit green channel, 5-bit blue channel -- 16 bpp
+    UncompressedR5G6B5 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R5G6B5 as isize,
+    /// Uncompressed 24-bit RGB format: 8-bit red channel, 8-bit green channel, 8-bit blue channel -- 24 bpp
+    UncompressedR8G8B8 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R8G8B8 as isize,
+    /// Uncompressed 16-bit RGBA format: 5-bit red channel, 5-bit green channel, 5-bit blue channel, 1-bit alpha channel -- 16 bpp (1 bit alpha)
+    UncompressedR5G5B5A1 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 as isize,
+    /// Uncompressed 16-bit RGBA format: 4-bit red channel, 4-bit green channel, 4-bit blue channel, 4-bit alpha channel -- 16 bpp (4 bit alpha)
+    UncompressedR4G4B4A4 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 as isize,
+    /// Uncompressed 32-bit RGBA format: 8-bit red channel, 8-bit green channel, 8-bit blue channel, 8-bit alpha channel -- 32 bpp
+    UncompressedR8G8B8A8 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 as isize,
+    /// Uncompressed 32-bit color format: 32-bit red channel -- 32 bpp (1 channel - float)
+    UncompressedR32 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R32 as isize,
+    /// Uncompressed 96-bit RGB format: 32-bit red channel, 32-bit green channel, 32-bit blue channel -- 32*3 bpp (3 channels - float)
+    UncompressedR32G32B32 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R32G32B32 as isize,
+    /// Uncompressed 128-bit RGB format: 32-bit red channel, 32-bit green channel, 32-bit blue channel, 32-bit alpha channel -- 32*4 bpp (4 channels - float)
+    UncompressedR32G32B32A32 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 as isize,
+    /// Uncompressed 16-bit color format: 16-bit red channel -- 16 bpp (1 channel - half float)
+    UncompressedR16 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R16 as isize,
+    /// Uncompressed 48-bit RGB format: 16-bit red channel, 16-bit green channel, 16-bit blue channel -- 16*3 bpp (3 channels - half float)
+    UncompressedR16G16B16 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R16G16B16 as isize,
+    /// Uncompressed 48-bit RGB format: 16-bit red channel, 16-bit green channel, 16-bit blue channel, 16-bit alpha channel -- 16*4 bpp (4 channels - half float)
+    UncompressedR16G16B16A16 = sys::PixelFormat::PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 as isize,
+    /// Compressed DXT1 RGB format -- 4 bpp (no alpha)
+    CompressedDxt1RGB = sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT1_RGB as isize,
+    /// Compressed DXT1 RGBA format -- 4 bpp (1 bit alpha)
+    CompressedDxt1RGBA = sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT1_RGBA as isize,
+    /// Compressed DXT3 RGBA format -- 8 bpp
+    CompressedDxt3RGBA = sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT3_RGBA as isize,
+    /// Compressed DXT5 RGBA format -- 8 bpp
+    CompressedDxt5RGBA = sys::PixelFormat::PIXELFORMAT_COMPRESSED_DXT5_RGBA as isize,
+    /// Compressed ETC1 (Ericsson Texture Compression) RGB format -- 4 bpp
+    CompressedEtc1RGB = sys::PixelFormat::PIXELFORMAT_COMPRESSED_ETC1_RGB as isize,
+    /// Compressed ETC2 (Ericsson Texture Compression) RGB format -- 4 bpp
+    CompressedEtc2RGB = sys::PixelFormat::PIXELFORMAT_COMPRESSED_ETC2_RGB as isize,
+    /// Compressed ETC2 (Ericsson Texture Compression) EAC RGBA format -- 8 bpp
+    CompressedEtc2EacRGBA = sys::PixelFormat::PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA as isize,
+    /// PowerVR Texture Compressed (PVRTC) RGB format -- 4 bpp
+    CompressedPvrtRGB = sys::PixelFormat::PIXELFORMAT_COMPRESSED_PVRT_RGB as isize,
+    /// PowerVR Texture Compressed (PVRTC) RGBA format -- 4 bpp
+    CompressedPvrtRGBA = sys::PixelFormat::PIXELFORMAT_COMPRESSED_PVRT_RGBA as isize,
+    /// 4x4-block Adaptive Scalable Texture Compression (ASTC) RGBA format -- 8 bpp
+    CompressedAstc4x4RGBA = sys::PixelFormat::PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA as isize,
+    /// 8x8-block Adaptive Scalable Texture Compression (ASTC) RGBA format -- 2 bpp
+    CompressedAstc8x8RGBA = sys::PixelFormat::PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA as isize,
 }
 
-impl From<PixelFormat> for low::sys::PixelFormat {
+impl From<PixelFormat> for sys::PixelFormat {
     #[inline]
     fn from(value: PixelFormat) -> Self {
         unsafe { std::mem::transmute(value as i32) }
     }
 }
 
-impl From<low::sys::PixelFormat> for PixelFormat {
+impl From<sys::PixelFormat> for PixelFormat {
     #[inline]
-    fn from(value: low::sys::PixelFormat) -> Self {
+    fn from(value: sys::PixelFormat) -> Self {
         unsafe { std::mem::transmute(value as i8) }
     }
 }
 
+/// Image, pixel data stored in CPU memory (RAM)
+#[repr(C)]
 #[derive(Debug)]
 pub struct Image {
-    data: std::ptr::NonNull<[u8]>,
-    pub width: u32,
-    pub height: u32,
-    pub mipmaps: u32,
-    pub format: PixelFormat,
+    // Fields are private so that users cannot modify the values and set them to an invalid state.
+    // Image fields should only be modified through image methods.
+    data: NonNull<u8>,
+    width: u32,
+    height: u32,
+    mipmaps: u32,
+    #[cfg(target_endian = "little")]
+    _format_padding: MaybeUninit<[u8; 3]>,
+    format: PixelFormat,
+    #[cfg(target_endian = "big")]
+    _format_padding: MaybeUninit<[u8; 3]>,
+}
+const _: () = {
+    assert!(std::mem::size_of::<NonNull<u8>>() == std::mem::size_of::<*mut c_void>());
+    assert!(std::mem::size_of::<u32>() == std::mem::size_of::<c_int>());
+    assert!(std::mem::size_of::<Image>() == std::mem::size_of::<sys::Image>());
+};
+
+impl Drop for Image {
+    /// Unload image from CPU memory (RAM)
+    #[inline]
+    fn drop(&mut self) {
+        low::unload_image(*self.as_sys());
+    }
 }
 
 impl Image {
+    /// # Panics
+    /// - `width` is negative
+    /// - `height` is negative
+    /// - `format` does not correspond to a variant of [`PixelFormat`]
+    ///
+    /// # Safety
+    ///
+    /// - [`Self::drop`] must run for *at most* one unique call of [`low::load_image`].
+    /// - [`Self::drop`] must **not** run if `value` did not come from [`low::load_image`].
+    ///
+    /// It is recommended to avoid having multiple [`Image`]s that correspond to the same [`low::load_image`] call.
+    ///
+    /// - A **valid** Image's `data` must have a length of [`low::get_pixel_data_size`] with `value`'s fields.
     #[inline]
-    fn from_raw(value: low::sys::Image) -> Option<Self> {
-        if !value.data.is_null() {
-            assert!((0..=24).contains(&value.format));
-            let width = value.width.try_into().unwrap();
-            let height = value.height.try_into().unwrap();
-            let format = unsafe { std::mem::transmute(value.format) };
-            let size = low::textures::get_pixel_data_size(width, height, format);
-            Some(Self {
-                data: unsafe { std::ptr::NonNull::new_unchecked(std::ptr::slice_from_raw_parts_mut(value.data, size)) },
-                width,
-                height,
-                mipmaps: value.mipmaps.try_into().unwrap(),
-                format,
-            })
-        } else {
-            None
+    #[allow(dead_code, reason = "to be used in `load_image`")]
+    unsafe fn from_sys(value: sys::Image) -> Option<Self> {
+        const _: () = {
+            let img = unsafe {
+                std::mem::transmute::<_, Option<Image>>(sys::Image {
+                    data: std::ptr::null_mut(),
+                    width: 0,
+                    height: 0,
+                    mipmaps: 0,
+                    format: 1,
+                })
+            };
+            let null_transmutes_to_none = img.is_none();
+            std::mem::forget(img);
+            assert!(null_transmutes_to_none, "null data should transmute to None");
+        };
+
+        assert!(0 <= value.width);
+        assert!(0 <= value.height);
+        assert!(1 <= value.format && value.format <= 24);
+
+        // SAFETY:
+        // - each field has been asserted as valid (except for data)
+        // - transmutes to None if (and only if, due to asserts) `data` is NULL
+        // - `Image` is repr(C) and contains padding for compatibility with `sys::Image`
+        // - each field of `Image` is the same size and shape as the corresponding fields in `sys::Image`
+        unsafe { std::mem::transmute(value) }
+    }
+
+    /// # Panics
+    /// - `width` overflows when cast to signed
+    /// - `height` overflows when cast to signed
+    /// - `mipmaps` overflows when cast to signed
+    #[inline]
+    fn as_sys(&self) -> &sys::Image {
+        assert!(self.width <= i32::MAX as u32);
+        assert!(self.height <= i32::MAX as u32);
+        assert!(self.mipmaps <= i32::MAX as u32);
+        unsafe { std::mem::transmute(self) }
+    }
+
+    /// # Panics
+    /// - any `width` overflows when cast to signed
+    /// - any `height` overflows when cast to signed
+    /// - any `mipmaps` overflows when cast to signed
+    #[inline]
+    fn slice_as_sys(slice: &[Image]) -> &[sys::Image] {
+        for img in slice {
+            assert!(img.width <= i32::MAX as u32);
+            assert!(img.height <= i32::MAX as u32);
+            assert!(img.mipmaps <= i32::MAX as u32);
         }
+        unsafe { std::mem::transmute(slice) }
     }
 
     #[inline]
-    fn to_raw(&self) -> low::sys::Image {
-        low::sys::Image {
-            data: unsafe { self.data.as_mut() }.as_mut_ptr(),
-            width: self.width.try_into().unwrap(),
-            height: self.height.try_into().unwrap(),
-            mipmaps: self.mipmaps.try_into().unwrap(),
-            format: (self.format as i8).into(),
-        }
+    const fn data_len(&self) -> usize {
+        // SAFETY: `PixelFormat` discriminants are identical to `sys::PixelFormat`'s
+        let format = unsafe { std::mem::transmute(self.format as i32) };
+        low::get_pixel_data_size(self.width, self.height, format)
     }
 
-    pub fn data(&self) -> &[u8] {
-        self.data().as_ref()
+    /// Image raw data as bytes
+    #[inline]
+    pub const fn data(&self) -> &[u8] {
+        let len = self.data_len();
+        // SAFETY: `data` is guaranteed to have length `len` if `from_raw` safety is upheld
+        unsafe { std::slice::from_raw_parts(self.data.as_ptr(), len) }
+    }
+
+    /// Image raw data as mutable bytes
+    #[inline]
+    pub const fn data_mut(&mut self) -> &mut [u8] {
+        let len = self.data_len();
+        // SAFETY: `data` is guaranteed to have length `len` if `from_raw` safety is upheld
+        unsafe { std::slice::from_raw_parts_mut(self.data.as_ptr(), len) }
+    }
+
+    /// Image base width
+    #[inline]
+    pub const fn width(&self) -> u32 {
+        self.width
+    }
+
+    /// Image base height
+    #[inline]
+    pub const fn height(&self) -> u32 {
+        self.height
+    }
+
+    /// Mipmap levels, 1 by default
+    #[inline]
+    pub const fn mipmaps(&self) -> u32 {
+        self.mipmaps
+    }
+
+    /// Data format
+    #[inline]
+    pub const fn format(&self) -> PixelFormat {
+        self.format
     }
 }
 
-/// Evidence that the window has been initialized
+/// Handle to the open window
 ///
-/// Closes the window upon exiting scope
-pub struct Window(());
+/// Cannot call [`Window::draw`] or [`Window::texture_mode`] and does not close the window.
+/// Most window-related methods are implemented on this structure instead of [`Window`].
+pub struct WindowInner(());
 
-impl Drop for Window {
-    /// Close window and unload OpenGL context
-    #[inline]
-    fn drop(&mut self) {
-        low::close_window();
-    }
-}
-
-impl Window {
-    /// Initialize window and OpenGL context
-    #[inline]
-    pub fn init(width: u32, height: u32, title: impl IntoCStr) -> Option<Self> {
-        if !low::is_window_ready() {
-            let title = title.into_cstr().unwrap();
-            low::init_window(width, height, title.as_ref());
-            if low::is_window_ready() {
-                return Some(Self(()));
-            }
-        }
-        None
-    }
-
-    /// Check if application should close ([`low::sys::KeyboardKey::KEY_ESCAPE`] pressed or windows close icon clicked)
+impl WindowInner {
+    /// Check if application should close ([`sys::KeyboardKey::KEY_ESCAPE`] pressed or windows close icon clicked)
     #[inline]
     pub fn should_close(&self) -> bool {
         low::window_should_close()
@@ -512,14 +861,14 @@ impl Window {
 
     /// Set icon for window (single image, RGBA 32bit)
     #[inline]
-    pub fn set_window_icon(&mut self, image: sys::Image) {
-        low::set_window_icon(image);
+    pub fn set_window_icon(&mut self, image: &Image) {
+        low::set_window_icon(*image.as_sys());
     }
 
     /// Set icon for window (multiple images, RGBA 32bit)
     #[inline]
-    pub fn set_window_icons(&mut self, images: &[sys::Image]) {
-        low::set_window_icons(images);
+    pub fn set_window_icons(&mut self, images: &[Image]) {
+        low::set_window_icons(Image::slice_as_sys(images));
     }
 
     /// Set title for window
@@ -535,31 +884,18 @@ impl Window {
         low::set_window_position(x, y)
     }
 
-    /// Setup canvas (framebuffer) to start drawing
-    #[inline]
-    pub fn draw(&mut self, f: impl for<'d> FnOnce(&mut Self, &'d mut Drawing, &'d mut BaseDrawMode)) {
-        low::begin_drawing();
-        f(self, &mut Drawing(()), &mut BaseDrawMode(()));
-    }
-
-    #[inline]
-    pub fn texture_mode(&mut self, target: &mut low::sys::RenderTexture2D, f: impl for<'d> FnOnce(&mut Self, &'d mut TextureMode, &'d mut BaseDrawMode)) {
-        low::begin_texture_mode(*target);
-        f(self, &mut TextureMode(()), &mut BaseDrawMode(()))
-    }
-
     /// Measure string width for default font
     #[inline]
     pub fn measure_text(&self, text: impl IntoCStr, font_size: u32) -> i32 {
         let text = text.into_cstr().unwrap();
-        low::text::measure_text(text.as_ref(), font_size)
+        low::measure_text(text.as_ref(), font_size)
     }
 
     /// Measure string size for Font
     #[inline]
-    pub fn measure_text_ex(&self, font: low::sys::Font, text: impl IntoCStr, font_size: f32, spacing: f32) -> Vector2 {
+    pub fn measure_text_ex(&self, font: sys::Font, text: impl IntoCStr, font_size: f32, spacing: f32) -> Vector2 {
         let text = text.into_cstr().unwrap();
-        low::text::measure_text_ex(font, text.as_ref(), font_size, spacing).into()
+        Vector2::from_sys(low::measure_text_ex(font, text.as_ref(), font_size, spacing))
     }
 
     // Input-related functions: keyboard
@@ -568,7 +904,7 @@ impl Window {
     #[inline]
     pub fn is_key_pressed(&self, key: KeyboardKey) -> bool {
         unsafe {
-            low::input::is_key_pressed(key.into())
+            low::is_key_pressed(key.into_sys())
         }
     }
 
@@ -576,7 +912,7 @@ impl Window {
     #[inline]
     pub fn is_key_pressed_repeat(&self, key: KeyboardKey) -> bool {
         unsafe {
-            low::input::is_key_pressed_repeat(key.into())
+            low::is_key_pressed_repeat(key.into_sys())
         }
     }
 
@@ -584,7 +920,7 @@ impl Window {
     #[inline]
     pub fn is_key_down(&self, key: KeyboardKey) -> bool {
         unsafe {
-            low::input::is_key_down(key.into())
+            low::is_key_down(key.into_sys())
         }
     }
 
@@ -592,7 +928,7 @@ impl Window {
     #[inline]
     pub fn is_key_released(&self, key: KeyboardKey) -> bool {
         unsafe {
-            low::input::is_key_released(key.into())
+            low::is_key_released(key.into_sys())
         }
     }
 
@@ -600,7 +936,7 @@ impl Window {
     #[inline]
     pub fn is_key_up(&self, key: KeyboardKey) -> bool {
         unsafe {
-            low::input::is_key_up(key.into())
+            low::is_key_up(key.into_sys())
         }
     }
 
@@ -608,8 +944,8 @@ impl Window {
     #[inline]
     pub fn get_key_pressed(&self) -> Option<KeyboardKey> {
         unsafe {
-            low::input::get_key_pressed()
-                .and_then(|k| k.try_into().ok())
+            low::get_key_pressed()
+                .and_then(KeyboardKey::from_sys)
         }
     }
 
@@ -617,7 +953,7 @@ impl Window {
     #[inline]
     pub fn get_char_pressed(&self) -> Option<char> {
         unsafe {
-            low::input::get_char_pressed()
+            low::get_char_pressed()
         }
     }
 
@@ -625,7 +961,7 @@ impl Window {
     #[inline]
     pub fn get_key_name(&self, key: KeyboardKey) -> Option<&'static str> {
         unsafe {
-            low::input::get_key_name(key.into())
+            low::get_key_name(key.into_sys())
                 .map(|s| str::from_utf8(s.to_bytes()).unwrap())
         }
     }
@@ -634,7 +970,7 @@ impl Window {
     #[inline]
     pub fn set_exit_key(&mut self, key: Option<KeyboardKey>) {
         unsafe {
-            low::input::set_exit_key(key.map_or(low::sys::KeyboardKey::KEY_NULL, KeyboardKey::into));
+            low::set_exit_key(KeyboardKey::opt_into_sys(key));
         }
     }
 
@@ -644,7 +980,7 @@ impl Window {
     #[inline]
     pub fn is_gamepad_available(&self, gamepad: usize) -> bool {
         unsafe {
-            low::input::is_gamepad_available(gamepad)
+            low::is_gamepad_available(gamepad)
         }
     }
 
@@ -652,7 +988,7 @@ impl Window {
     #[inline]
     pub fn get_gamepad_name(&self, gamepad: usize) -> Option<&'static str> {
         unsafe {
-            low::input::get_gamepad_name(gamepad)
+            low::get_gamepad_name(gamepad)
                 .map(|s| str::from_utf8(s.to_bytes()).unwrap())
         }
     }
@@ -661,7 +997,7 @@ impl Window {
     #[inline]
     pub fn is_gamepad_button_pressed(&self, gamepad: usize, button: GamepadButton) -> bool {
         unsafe {
-            low::input::is_gamepad_button_pressed(gamepad, button.into())
+            low::is_gamepad_button_pressed(gamepad, button.into())
         }
     }
 
@@ -669,7 +1005,7 @@ impl Window {
     #[inline]
     pub fn is_gamepad_button_down(&self, gamepad: usize, button: GamepadButton) -> bool {
         unsafe {
-            low::input::is_gamepad_button_down(gamepad, button.into())
+            low::is_gamepad_button_down(gamepad, button.into())
         }
     }
 
@@ -677,7 +1013,7 @@ impl Window {
     #[inline]
     pub fn is_gamepad_button_released(&self, gamepad: usize, button: GamepadButton) -> bool {
         unsafe {
-            low::input::is_gamepad_button_released(gamepad, button.into())
+            low::is_gamepad_button_released(gamepad, button.into())
         }
     }
 
@@ -685,7 +1021,7 @@ impl Window {
     #[inline]
     pub fn is_gamepad_button_up(&self, gamepad: usize, button: GamepadButton) -> bool {
         unsafe {
-            low::input::is_gamepad_button_up(gamepad, button.into())
+            low::is_gamepad_button_up(gamepad, button.into())
         }
     }
 
@@ -693,7 +1029,7 @@ impl Window {
     #[inline]
     pub fn get_gamepad_button_pressed(&self) -> Option<GamepadButton> {
         unsafe {
-            low::input::get_gamepad_button_pressed().try_into().ok()
+            low::get_gamepad_button_pressed().try_into().ok()
         }
     }
 
@@ -701,7 +1037,7 @@ impl Window {
     #[inline]
     pub fn get_gamepad_axis_count(&self, gamepad: usize) -> usize {
         unsafe {
-            low::input::get_gamepad_axis_count(gamepad)
+            low::get_gamepad_axis_count(gamepad)
         }
     }
 
@@ -709,7 +1045,7 @@ impl Window {
     #[inline]
     pub fn get_gamepad_axis_movement(&self, gamepad: usize, axis: GamepadAxis) -> f32 {
         unsafe {
-            low::input::get_gamepad_axis_movement(gamepad, axis.into())
+            low::get_gamepad_axis_movement(gamepad, axis.into())
         }
     }
 
@@ -718,7 +1054,7 @@ impl Window {
     pub fn set_gamepad_mappings(&mut self, mappings: Option<impl IntoCStr>) -> i32 {
         let mappings = mappings.map(|s| s.into_cstr().unwrap());
         unsafe {
-            low::input::set_gamepad_mappings(mappings.as_ref().map(|s| s.as_ref()))
+            low::set_gamepad_mappings(mappings.as_ref().map(|s| s.as_ref()))
         }
     }
 
@@ -726,7 +1062,7 @@ impl Window {
     #[inline]
     pub fn set_gamepad_vibration(&mut self, gamepad: usize, left_motor: f32, right_motor: f32, duration: f32) {
         unsafe {
-            low::input::set_gamepad_vibration(gamepad, left_motor, right_motor, duration);
+            low::set_gamepad_vibration(gamepad, left_motor, right_motor, duration);
         }
     }
 
@@ -742,7 +1078,7 @@ impl Window {
     #[inline]
     pub fn is_mouse_button_pressed(&self, button: MouseButton) -> bool {
         unsafe {
-            low::input::is_mouse_button_pressed(button.into())
+            low::is_mouse_button_pressed(button.into())
         }
     }
 
@@ -750,7 +1086,7 @@ impl Window {
     #[inline]
     pub fn is_mouse_button_down(&self, button: MouseButton) -> bool {
         unsafe {
-            low::input::is_mouse_button_down(button.into())
+            low::is_mouse_button_down(button.into())
         }
     }
 
@@ -758,7 +1094,7 @@ impl Window {
     #[inline]
     pub fn is_mouse_button_released(&self, button: MouseButton) -> bool {
         unsafe {
-            low::input::is_mouse_button_released(button.into())
+            low::is_mouse_button_released(button.into())
         }
     }
 
@@ -766,7 +1102,7 @@ impl Window {
     #[inline]
     pub fn is_mouse_button_up(&self, button: MouseButton) -> bool {
         unsafe {
-            low::input::is_mouse_button_up(button.into())
+            low::is_mouse_button_up(button.into())
         }
     }
 
@@ -774,7 +1110,7 @@ impl Window {
     #[inline]
     pub fn get_mouse_x(&self) -> i32 {
         unsafe {
-            low::input::get_mouse_x()
+            low::get_mouse_x()
         }
     }
 
@@ -782,7 +1118,7 @@ impl Window {
     #[inline]
     pub fn get_mouse_y(&self) -> i32 {
         unsafe {
-            low::input::get_mouse_y()
+            low::get_mouse_y()
         }
     }
 
@@ -790,7 +1126,7 @@ impl Window {
     #[inline]
     pub fn get_mouse_position(&self) -> Vector2 {
         unsafe {
-            low::input::get_mouse_position().into()
+            low::get_mouse_position().into()
         }
     }
 
@@ -798,7 +1134,7 @@ impl Window {
     #[inline]
     pub fn get_mouse_delta(&self) -> Vector2 {
         unsafe {
-            low::input::get_mouse_delta().into()
+            low::get_mouse_delta().into()
         }
     }
 
@@ -806,7 +1142,7 @@ impl Window {
     #[inline]
     pub fn set_mouse_position(&mut self, x: i32, y: i32) {
         unsafe {
-            low::input::set_mouse_position(x, y);
+            low::set_mouse_position(x, y);
         }
     }
 
@@ -814,7 +1150,7 @@ impl Window {
     #[inline]
     pub fn set_mouse_offset(&mut self, offset_x: i32, offset_y: i32) {
         unsafe {
-            low::input::set_mouse_offset(offset_x, offset_y);
+            low::set_mouse_offset(offset_x, offset_y);
         }
     }
 
@@ -822,7 +1158,7 @@ impl Window {
     #[inline]
     pub fn set_mouse_scale(&mut self, scale_x: f32, scale_y: f32) {
         unsafe {
-            low::input::set_mouse_scale(scale_x, scale_y);
+            low::set_mouse_scale(scale_x, scale_y);
         }
     }
 
@@ -830,7 +1166,7 @@ impl Window {
     #[inline]
     pub fn get_mouse_wheel_move(&self) -> f32 {
         unsafe {
-            low::input::get_mouse_wheel_move()
+            low::get_mouse_wheel_move()
         }
     }
 
@@ -838,7 +1174,7 @@ impl Window {
     #[inline]
     pub fn get_mouse_wheel_move_v(&self) -> Vector2 {
         unsafe {
-            low::input::get_mouse_wheel_move_v().into()
+            low::get_mouse_wheel_move_v().into()
         }
     }
 
@@ -846,7 +1182,7 @@ impl Window {
     #[inline]
     pub fn set_mouse_cursor(&mut self, cursor: MouseCursor) {
         unsafe {
-            low::input::set_mouse_cursor(cursor.into());
+            low::set_mouse_cursor(cursor.into());
         }
     }
 
@@ -856,7 +1192,7 @@ impl Window {
     #[inline]
     pub fn get_touch_x(&self) -> i32 {
         unsafe {
-            low::input::get_touch_x()
+            low::get_touch_x()
         }
     }
 
@@ -864,7 +1200,7 @@ impl Window {
     #[inline]
     pub fn get_touch_y(&self) -> i32 {
         unsafe {
-            low::input::get_touch_y()
+            low::get_touch_y()
         }
     }
 
@@ -872,7 +1208,7 @@ impl Window {
     #[inline]
     pub fn get_touch_position(&self, index: usize) -> Vector2 {
         unsafe {
-            low::input::get_touch_position(index).into()
+            low::get_touch_position(index).into()
         }
     }
 
@@ -880,7 +1216,7 @@ impl Window {
     #[inline]
     pub fn get_touch_point_id(&self, index: usize) -> Option<u32> {
         unsafe {
-            low::input::get_touch_point_id(index)
+            low::get_touch_point_id(index)
         }
     }
 
@@ -888,44 +1224,122 @@ impl Window {
     #[inline]
     pub fn get_touch_point_count(&self) -> usize {
         unsafe {
-            low::input::get_touch_point_count()
+            low::get_touch_point_count()
         }
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
-    a: u8,
+/// Handle for Raylib window functions
+///
+/// Closes the window upon exiting scope
+pub struct Window(WindowInner);
+
+impl std::ops::Deref for Window {
+    type Target = WindowInner;
+
+    #[inline]
+    fn deref(&self) -> &WindowInner {
+        &self.0
+    }
 }
 
-impl From<Color> for low::sys::Color {
+impl std::ops::DerefMut for Window {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut WindowInner {
+        &mut self.0
+    }
+}
+
+impl Drop for Window {
+    /// Close window and unload OpenGL context
+    #[inline]
+    fn drop(&mut self) {
+        low::close_window();
+    }
+}
+
+impl Window {
+    /// Initialize window and OpenGL context
+    #[inline]
+    pub fn init(width: u32, height: u32, title: impl IntoCStr) -> Option<Self> {
+        if !low::is_window_ready() {
+            let title = title.into_cstr().unwrap();
+            low::init_window(width, height, title.as_ref());
+            if low::is_window_ready() {
+                return Some(Self(WindowInner(())));
+            }
+        }
+        None
+    }
+
+    /// Setup canvas (framebuffer) to start drawing
+    #[inline]
+    pub fn draw<'w>(&'w mut self, f: impl for<'d> FnOnce(&'w mut WindowInner, &'d mut Drawing, &'d mut BaseDrawMode)) {
+        low::begin_drawing();
+        f(&mut self.0, &mut Drawing(()), &mut BaseDrawMode(()));
+    }
+
+    /// Begin drawing to render texture
+    #[inline]
+    pub fn texture_mode<'w>(&'w mut self, target: &mut sys::RenderTexture2D, f: impl for<'d> FnOnce(&'w mut WindowInner, &'d mut TextureMode, &'d mut BaseDrawMode)) {
+        low::begin_texture_mode(*target);
+        f(&mut self.0, &mut TextureMode(()), &mut BaseDrawMode(()))
+    }
+}
+
+/// Color, 4 components, R8G8B8A8 (32bit)
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub struct Color {
+    /// Color red value
+    pub r: u8,
+    /// Color green value
+    pub g: u8,
+    /// Color blue value
+    pub b: u8,
+    /// Color alpha value
+    pub a: u8,
+}
+
+impl From<Color> for sys::Color {
     #[inline]
     fn from(Color { r, g, b, a }: Color) -> Self {
         Self { r, g, b, a }
     }
 }
 
-impl From<low::sys::Color> for Color {
+impl From<sys::Color> for Color {
     #[inline]
-    fn from(low::sys::Color { r, g, b, a }: low::sys::Color) -> Self {
+    fn from(sys::Color { r, g, b, a }: sys::Color) -> Self {
         Self { r, g, b, a }
     }
 }
 
+/// Construct an opaque grayscale color
+#[inline]
+pub const fn gray(v: u8) -> Color {
+    rgb(v, v, v)
+}
+
+/// Construct a grayscale color with transparency
+#[inline]
+pub const fn gray_a(v: u8, a: u8) -> Color {
+    rgba(v, v, v, a)
+}
+
+/// Construct an opaque RGB color
 #[inline]
 pub const fn rgb(r: u8, g: u8, b: u8) -> Color {
     Color { r, g, b, a: 255 }
 }
 
+/// Construct an RGBA color with transparency
 #[inline]
 pub const fn rgba(r: u8, g: u8, b: u8, a: u8) -> Color {
     Color { r, g, b, a }
 }
 
 impl Color {
+    /// Construct a new color from RGBA components
     #[inline]
     pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self { r, g, b, a }
@@ -961,6 +1375,7 @@ impl Color {
     /** Blank (Transparent)        */ pub const BLANK:      Color = rgba(0, 0, 0, 0);
 }
 
+/// CSS named colors for [`Color`]
 pub trait CSSPalette {
     /** #f0f8ffff */ const ALICEBLUE:            Color = rgb(0xf0, 0xf8, 0xff);
     /** #faebd7ff */ const ANTIQUEWHITE:         Color = rgb(0xfa, 0xeb, 0xd7);
@@ -1102,7 +1517,7 @@ pub trait CSSPalette {
     /** #d2b48cff */ const TAN:                  Color = rgb(0xd2, 0xb4, 0x8c);
     /** #008080ff */ const TEAL:                 Color = rgb(0x00, 0x80, 0x80);
     /** #d8bfd8ff */ const THISTLE:              Color = rgb(0xd8, 0xbf, 0xd8);
-    /** #00000000 */ const TRANSPARENT:          Color = rgb(0x00, 0x00, 0x00);
+    /** #00000000 */ const TRANSPARENT:          Color = Color::BLANK;
     /** #ff6347ff */ const TOMATO:               Color = rgb(0xff, 0x63, 0x47);
     /** #40e0d0ff */ const TURQUOISE:            Color = rgb(0x40, 0xe0, 0xd0);
     /** #ee82eeff */ const VIOLET:               Color = rgb(0xee, 0x82, 0xee);
@@ -1115,6 +1530,9 @@ pub trait CSSPalette {
 
 impl CSSPalette for Color {}
 
+/// A handle for draw functions available in [`Window::draw`]
+///
+/// Ends drawing when dropped
 pub struct Drawing(());
 
 impl Drop for Drawing {
@@ -1125,6 +1543,9 @@ impl Drop for Drawing {
     }
 }
 
+/// Evidence [`Window::texture_mode`] has been called and hasn't returned yet
+///
+/// Ends texture mode when dropped
 pub struct TextureMode(());
 
 impl Drop for TextureMode {
@@ -1135,13 +1556,20 @@ impl Drop for TextureMode {
     }
 }
 
-mod internal {
-    pub trait Sealed {}
-    impl Sealed for super::Drawing {}
-    impl Sealed for super::TextureMode {}
+mod private {
+    pub trait SealedDraw {}
+    impl SealedDraw for super::Drawing {}
+    impl SealedDraw for super::TextureMode {}
+
+    pub trait SealedDrawMode {}
+    impl<T: ?Sized> SealedDrawMode for super::DrawModeEnum<'_, T> {}
+    impl SealedDrawMode for super::BaseDrawMode {}
+    impl<T: ?Sized> SealedDrawMode for super::ScissorMode<'_, T> {}
+    impl<T: ?Sized + SealedDrawMode> SealedDrawMode for &mut T {}
 }
 
-pub trait Draw: internal::Sealed {
+/// Raylib drawing functions
+pub trait Draw: private::SealedDraw {
     /// Set background color (framebuffer clear color)
     #[inline]
     fn clear_background(&mut self, color: Color) {
@@ -1152,109 +1580,82 @@ pub trait Draw: internal::Sealed {
     #[inline]
     fn draw_text(&mut self, text: impl IntoCStr, pos_x: i32, pos_y: i32, font_size: u32, color: Color) {
         let text = text.into_cstr().unwrap();
-        low::text::draw_text(text.as_ref(), pos_x, pos_y, font_size, color.into());
+        low::draw_text(text.as_ref(), pos_x, pos_y, font_size, color.into());
     }
 
     /// Draw a color-filled rectangle
     #[inline]
     fn draw_rectangle(&mut self, pos_x: i32, pos_y: i32, width: i32, height: i32, color: Color) {
-        low::shapes::draw_rectangle(pos_x, pos_y, width, height, color.into());
+        low::draw_rectangle(pos_x, pos_y, width, height, color.into());
     }
 }
 
 impl Draw for Drawing {}
 impl Draw for TextureMode {}
 
-/// Change the draw mode
+/// Union of all Raylib draw modes
 ///
-/// This trait is intentionally separate from the [`Drawing`] handle.
-/// It is, on its own, zero-cost if the draw mode stack is statically known.
-///
-/// Conditional draw modes are possible by using [`DrawModeEnum`].
-pub trait DrawMode {
+/// Implements [`DrawMode`] and ends the stored draw mode when dropped, except in the case of [`Self::Ignore`]
+pub enum DrawModeEnum<'a, M: ?Sized + 'a> {
+    /// Passthrough to outer draw mode
+    ///
+    /// Does not end outer draw mode when dropped
+    Ignore(&'a mut M),
+
+    /// See [`BaseDrawMode`]
+    Base(BaseDrawMode),
+
+    /// See [`ScissorMode`]
+    Scissor(ScissorMode<'a, M>),
+}
+
+/// Conversion to [`DrawModeEnum`], shared by both [`DrawMode`] implementors and their references
+pub trait IntoDrawModeEnum: private::SealedDrawMode {
+    /// The [`DrawModeEnum`] whose generics can store `self`
     type Enum: DrawMode;
 
-    /// Convert the draw mode into a [`DrawModeEnum`]
+    /// Convert `self` into a [`DrawModeEnum`]
     ///
-    /// ## See also
-    /// - [`DrawMode::no_mode()`]
+    /// Does not change the mode if `self` is a reference instead of a value
     fn into_enum(self) -> Self::Enum;
+}
 
-    /// Used as the "`None`" variant of draw modes
-    ///
-    /// All other branches should use [`DrawMode::into_enum()`]
-    ///
-    /// # Example
-    /// ```ignore
-    /// let m = if condition {
-    ///     m.begin_scissor(0, 0, 50, 50).into_enum()
-    /// } else {
-    ///     m.no_mode()
-    /// };
-    /// ```
-    ///
-    /// Necessary to prevent the inner draw mode from popping when you would expect
-    /// one of the other branches to drop, by adding a buffer layer
-    ///
-    /// --------------------------------------------------------------------------------
-    /// ### Aside
-    ///
-    /// No, storing the draw mode in enums is not "zero-cost", it stores a discriminant.
-    /// But genuinely *intended*, well-defined behavior of Raylib shouldn't be outright
-    /// removed for the sake of having EXCLUSIVELY zero-cost abstractions. Sometimes
-    /// runtime conditions need to be done *at runtime* to ensure safety.
-    ///
-    /// Plus, if you want ZERO cost, you always have the option of calling into the
-    /// [`crate::low_level`] module itself, if you trust yourself to call the
-    /// corresponding `end_*_mode` methods in the right order.
+/// The "`None`" variant of draw modes
+///
+/// # Example
+/// ```ignore
+/// let m = if condition {
+///     m.begin_scissor(0, 0, 50, 50).into_enum()
+/// } else {
+///     m.into_enum()
+/// };
+/// ```
+///
+/// Necessary to prevent the inner draw mode from popping when you would expect
+/// one of the other branches to drop, by adding a buffer layer
+///
+/// --------------------------------------------------------------------------------
+///
+/// ### Aside
+///
+/// No, storing the draw mode in enums is not "zero-cost", it stores a discriminant.
+/// But genuinely *intended*, well-defined behavior of Raylib shouldn't be outright
+/// removed for the sake of having EXCLUSIVELY zero-cost abstractions. Sometimes
+/// runtime conditions need to be done *at runtime* to ensure safety.
+///
+/// Plus, if you want ZERO cost, you always have the option of calling into the
+/// [`low`] module itself, if you trust yourself to call the corresponding `end_*`
+/// methods in the right order.
+impl<'a, M: ?Sized + DrawMode> IntoDrawModeEnum for &'a mut M {
+    type Enum = DrawModeEnum<'a, M>;
+
     #[inline]
-    fn no_mode(&mut self) -> DrawModeEnum<'_, Self> {
+    fn into_enum(self) -> DrawModeEnum<'a, M> {
         DrawModeEnum::Ignore(self)
     }
 }
 
-pub trait DrawModeExt<'a, M: ?Sized + DrawMode> {
-    /// Convert the draw mode into a [`DrawModeEnum`]
-    ///
-    /// Alias for [`DrawMode::no_mode()`]
-    fn into_enum(self) -> DrawModeEnum<'a, M>;
-}
-
-impl<'a, M: ?Sized + DrawMode> DrawModeExt<'a, M> for &'a mut M {
-    #[inline]
-    fn into_enum(self) -> DrawModeEnum<'a, M> {
-        self.no_mode()
-    }
-}
-
-pub enum DrawModeEnum<'a, M: ?Sized + 'a> {
-    Ignore(&'a mut M),
-    Base(BaseDrawMode),
-    Scissor(ScissorMode<'a, M>),
-}
-
-impl<'a, M: ?Sized + 'a> From<&'a mut M> for DrawModeEnum<'a, M> {
-    #[inline]
-    fn from(value: &'a mut M) -> Self {
-        Self::Ignore(value)
-    }
-}
-
-impl From<BaseDrawMode> for DrawModeEnum<'static, ()> {
-    #[inline]
-    fn from(value: BaseDrawMode) -> Self {
-        Self::Base(value)
-    }
-}
-
-impl<'a, M: ?Sized + 'a> From<ScissorMode<'a, M>> for DrawModeEnum<'a, M> {
-    #[inline]
-    fn from(value: ScissorMode<'a, M>) -> Self {
-        Self::Scissor(value)
-    }
-}
-
-impl<M: ?Sized> DrawMode for DrawModeEnum<'_, M> {
+impl<M: ?Sized> IntoDrawModeEnum for DrawModeEnum<'_, M> {
     type Enum = Self;
 
     #[inline]
@@ -1263,9 +1664,20 @@ impl<M: ?Sized> DrawMode for DrawModeEnum<'_, M> {
     }
 }
 
+/// Change the draw mode
+///
+/// This trait is intentionally separate from the [`Drawing`] handle.
+/// It is, on its own, zero-cost if the draw mode stack is statically known.
+///
+/// Conditional draw modes are possible by using [`DrawModeEnum`].
+pub trait DrawMode: IntoDrawModeEnum {}
+
+impl<M: ?Sized> DrawMode for DrawModeEnum<'_, M> {}
+
+/// The default draw mode -- created alongside [`Drawing`] or [`TextureMode`]
 pub struct BaseDrawMode(());
 
-impl DrawMode for BaseDrawMode {
+impl IntoDrawModeEnum for BaseDrawMode {
     type Enum = DrawModeEnum<'static, ()>;
 
     #[inline]
@@ -1274,6 +1686,9 @@ impl DrawMode for BaseDrawMode {
     }
 }
 
+impl DrawMode for BaseDrawMode {}
+
+/// Raylib scisor mode
 pub struct ScissorMode<'a, M: ?Sized>(PhantomData<&'a mut M>);
 
 impl<M: ?Sized> Drop for ScissorMode<'_, M> {
@@ -1293,7 +1708,7 @@ impl<'a, M: ?Sized> ScissorMode<'a, M> {
     }
 }
 
-impl<'a, M: ?Sized> DrawMode for ScissorMode<'a, M> {
+impl<'a, M: ?Sized> IntoDrawModeEnum for ScissorMode<'a, M> {
     type Enum = DrawModeEnum<'a, M>;
 
     #[inline]
@@ -1301,3 +1716,5 @@ impl<'a, M: ?Sized> DrawMode for ScissorMode<'a, M> {
         DrawModeEnum::Scissor(self)
     }
 }
+
+impl<'a, M: ?Sized> DrawMode for ScissorMode<'a, M> {}

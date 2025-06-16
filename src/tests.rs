@@ -19,7 +19,7 @@ fn await_turn() -> MutexGuard<'static, ()> {
 fn test0() {
     let _turn = await_turn();
     {
-        let mut rl = Window::init(1280, 720, "Test 0")
+        let mut rl = Window::init(1280, 720, c"Test 0")
             .unwrap();
 
         while !rl.should_close() {
@@ -51,7 +51,7 @@ fn test0() {
 
 #[test]
 fn test1() {
-    use crate::low_level::text::TextToSnakeHandle;
+    use crate::low::text::TextToSnakeHandle;
     let mut handle = TextToSnakeHandle::get().unwrap();
     let result = handle.text_to_snake(c"HelloWorld");
     assert_eq!(result, c"hello_world");

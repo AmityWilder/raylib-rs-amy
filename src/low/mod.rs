@@ -1396,10 +1396,12 @@ pub fn open_url(
 //------------------------------------------------------------------
 
 pub mod utils;
+pub use utils::*;
 
 //------------------------------------------------------------------
 
 pub mod fs;
+pub use fs::*;
 
 // Compression/Encoding functionality
 
@@ -1502,7 +1504,7 @@ pub fn compute_crc32(
 define_buffer_handle!(ComputeMD5Handle);
 
 impl ComputeMD5Handle {
-    /// Compute MD5 hash code, returns static int[4] (16 bytes)
+    /// Compute MD5 hash code, returns static [int; 4] (16 bytes)
     #[inline]
     pub fn compute_md5<'a>(
         &'a mut self,
@@ -1522,7 +1524,7 @@ impl ComputeMD5Handle {
 define_buffer_handle!(ComputeSHA1Handle);
 
 impl ComputeSHA1Handle {
-    /// Compute SHA1 hash code, returns static int[5] (20 bytes)
+    /// Compute SHA1 hash code, returns static [int; 5] (20 bytes)
     #[inline]
     pub fn compute_sha1<'a>(
         &'a mut self,
@@ -1636,47 +1638,55 @@ pub fn play_automation_event(
 //------------------------------------------------------------------------------------
 
 pub mod input;
+pub use input::*;
 
 //------------------------------------------------------------------------------------
 // Gestures and Touch Handling Functions (Module: rgestures)
 //------------------------------------------------------------------------------------
 
 pub mod gestures;
+pub use gestures::*;
 
 //------------------------------------------------------------------------------------
 // Camera System Functions (Module: rcamera)
 //------------------------------------------------------------------------------------
 
 pub mod camera;
+pub use camera::*;
 
 //------------------------------------------------------------------------------------
 // Basic Shapes Drawing Functions (Module: shapes)
 //------------------------------------------------------------------------------------
 
 pub mod shapes;
+pub use shapes::*;
 
 //------------------------------------------------------------------------------------
 // Texture Loading and Drawing Functions (Module: textures)
 //------------------------------------------------------------------------------------
 
 pub mod textures;
+pub use textures::*;
 
 //------------------------------------------------------------------------------------
 // Font Loading and Text Drawing Functions (Module: text)
 //------------------------------------------------------------------------------------
 
 pub mod text;
+pub use text::*;
 
 //------------------------------------------------------------------------------------
 // Basic 3d Shapes Drawing Functions (Module: models)
 //------------------------------------------------------------------------------------
 
 pub mod models;
+pub use models::*;
 
 //------------------------------------------------------------------------------------
 // Audio Loading and Playing Functions (Module: audio)
 //------------------------------------------------------------------------------------
 
 pub mod audio;
+pub use audio::*;
 
 pub mod rlgl;

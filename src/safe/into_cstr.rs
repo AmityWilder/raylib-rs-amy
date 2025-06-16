@@ -1,3 +1,5 @@
+//! Trait for efficiently converting into [`CStr`]
+
 use std::{borrow::Cow, ffi::{CStr, CString, FromBytesWithNulError, NulError}, path::{Path, PathBuf}};
 
 /// An error indicating that an interior nul byte was found.
@@ -8,6 +10,7 @@ use std::{borrow::Cow, ffi::{CStr, CString, FromBytesWithNulError, NulError}, pa
 /// See [`NulError`] and [`FromBytesWithNulError`] for more info.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct IntoCStrNulError {
+    /// The position of the nul byte in the value that caused IntoCStr to fail.
     pub position: usize,
 }
 
@@ -86,7 +89,7 @@ pub trait IntoCStr: Sized {
     /// # Example
     ///
     /// ```
-    /// # use raylib_rs_amy::prelude::IntoCStr;
+    /// # use raylib_amy::prelude::IntoCStr;
     /// # use std::ffi::CStr;
     ///
     /// fn cstr_fn(c_str: &CStr) {
@@ -107,12 +110,7 @@ pub trait IntoCStr: Sized {
 ///
 /// Types that implement this trait are guaranteed to return `self` when `into_cstr`
 /// is called, and can therefore be converted to `const char*` without conversion.
-pub trait IntoCStrNoOp: std::ops::Deref<Target = CStr> + AsRef<CStr> {
-    #[inline]
-    fn as_ptr(&self) -> *const std::ffi::c_char {
-        CStr::as_ptr(self)
-    }
-}
+pub trait IntoCStrNoOp: std::ops::Deref<Target = CStr> + AsRef<CStr> {}
 
 /// No-op. Returns `self` unconditionally.
 impl<T: IntoCStrNoOp> IntoCStr for T {

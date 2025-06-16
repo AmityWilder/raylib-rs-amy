@@ -243,6 +243,7 @@ fn main() {
         .derive_default(true)
         .derive_copy(true)
         .derive_eq(true)
+        .derive_ord(true)
         .derive_hash(true)
         .generate_comments(true)
         .enable_function_attribute_detection()

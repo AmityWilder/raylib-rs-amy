@@ -1140,7 +1140,7 @@ pub fn check_collision_circle_rec(
     }
 }
 
-/// Check if circle collides with a line created betweeen two points [p1] and [p2]
+/// Check if circle collides with a line created betweeen two points `p1` and `p2`
 #[inline]
 pub fn check_collision_circle_line(
     center: sys::Vector2,
@@ -1206,20 +1206,20 @@ pub fn check_collision_point_triangle(
     }
 }
 
-/// Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
+/// Check if point belongs to line created between two points `p1` and `p2` with defined margin in pixels `threshold`
 #[inline]
 pub fn check_collision_point_line(
     point: sys::Vector2,
     p1: sys::Vector2,
     p2: sys::Vector2,
-    threshold: i32,
+    threshold: u32,
 ) -> bool {
     unsafe {
         sys::CheckCollisionPointLine(
             point,
             p1,
             p2,
-            threshold,
+            threshold.try_into().unwrap(),
         )
     }
 }
