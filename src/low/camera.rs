@@ -2,7 +2,7 @@ use super::sys;
 
 /// Update camera position for selected mode
 #[inline]
-pub fn update_camera(
+pub unsafe fn update_camera(
     camera: &mut sys::Camera,
     mode: sys::CameraMode,
 ) {
@@ -25,7 +25,7 @@ pub fn update_camera(
 /// - `rotation.z` - roll
 /// - `zoom` - Move towards target
 #[inline]
-pub fn update_camera_pro(
+pub unsafe fn update_camera_pro(
     camera: &mut sys::Camera,
     movement: sys::Vector3,
     rotation: sys::Vector3,
@@ -43,7 +43,7 @@ pub fn update_camera_pro(
 
 /// Returns the cameras forward vector (normalized)
 #[inline]
-pub fn get_camera_forward(
+pub unsafe fn get_camera_forward(
     camera: &sys::Camera,
 ) -> sys::Vector3 {
     unsafe {
@@ -57,7 +57,7 @@ pub fn get_camera_forward(
 ///
 /// Note: The up vector might not be perpendicular to the forward vector
 #[inline]
-pub fn get_camera_up(
+pub unsafe fn get_camera_up(
     camera: &sys::Camera,
 ) -> sys::Vector3 {
     unsafe {
@@ -69,7 +69,7 @@ pub fn get_camera_up(
 
 /// Returns the cameras right vector (normalized)
 #[inline]
-pub fn get_camera_right(
+pub unsafe fn get_camera_right(
     camera: &sys::Camera,
 ) -> sys::Vector3 {
     unsafe {
@@ -81,7 +81,7 @@ pub fn get_camera_right(
 
 /// Moves the camera in its forward direction
 #[inline]
-pub fn camera_move_forward(
+pub unsafe fn camera_move_forward(
     camera: &mut sys::Camera,
     distance: f32,
     move_in_world_plane: bool,
@@ -97,7 +97,7 @@ pub fn camera_move_forward(
 
 /// Moves the camera in its up direction
 #[inline]
-pub fn camera_move_up(
+pub unsafe fn camera_move_up(
     camera: &mut sys::Camera,
     distance: f32,
 ) {
@@ -111,7 +111,7 @@ pub fn camera_move_up(
 
 /// Moves the camera target in its current right direction
 #[inline]
-pub fn camera_move_right(
+pub unsafe fn camera_move_right(
     camera: &mut sys::Camera,
     distance: f32,
     move_in_world_plane: bool,
@@ -127,7 +127,7 @@ pub fn camera_move_right(
 
 /// Moves the camera position closer/farther to/from the camera target
 #[inline]
-pub fn camera_move_to_target(
+pub unsafe fn camera_move_to_target(
     camera: &mut sys::Camera,
     delta: f32,
 ) {
@@ -147,7 +147,7 @@ pub fn camera_move_to_target(
 ///
 /// Note: angle must be provided in radians
 #[inline]
-pub fn camera_yaw(
+pub unsafe fn camera_yaw(
     camera: &mut sys::Camera,
     angle: f32,
     rotate_around_target: bool,
@@ -168,7 +168,7 @@ pub fn camera_yaw(
 ///
 /// NOTE: angle must be provided in radians
 #[inline]
-pub fn camera_pitch(
+pub unsafe fn camera_pitch(
     camera: &mut sys::Camera,
     angle: f32,
     lock_view: bool,
@@ -192,7 +192,7 @@ pub fn camera_pitch(
 ///
 /// Note: angle must be provided in radians
 #[inline]
-pub fn camera_roll(
+pub unsafe fn camera_roll(
     camera: &mut sys::Camera,
     angle: f32,
 ) {
@@ -206,7 +206,7 @@ pub fn camera_roll(
 
 /// Returns the camera view matrix
 #[inline]
-pub fn get_camera_view_matrix(
+pub unsafe fn get_camera_view_matrix(
     camera: &sys::Camera,
 ) -> sys::Matrix {
     unsafe {
@@ -218,7 +218,7 @@ pub fn get_camera_view_matrix(
 
 /// Returns the camera projection matrix
 #[inline]
-pub fn get_camera_projection_matrix(
+pub unsafe fn get_camera_projection_matrix(
     camera: &sys::Camera,
     aspect: f32,
 ) -> sys::Matrix {

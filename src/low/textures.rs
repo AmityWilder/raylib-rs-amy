@@ -6,8 +6,10 @@ use super::*;
 // NOTE: These functions do not require GPU access
 
 /// Load image from file into CPU memory (RAM)
+///
+/// Returned image `data` will be NULL if the image could not be loaded.
 #[inline]
-pub fn load_image(
+pub unsafe fn load_image(
     file_name: &CStr,
 ) -> sys::Image {
     unsafe {
@@ -18,8 +20,10 @@ pub fn load_image(
 }
 
 /// Load image from RAW file data
+///
+/// Returned image `data` will be NULL if the image could not be loaded.
 #[inline]
-pub fn load_image_raw(
+pub unsafe fn load_image_raw(
     file_name: &CStr,
     width: u32,
     height: u32,
@@ -43,10 +47,10 @@ pub fn load_image_raw(
 ///  - All frames are returned in RGBA format
 ///  - Frames delay data is discarded
 #[inline]
-pub fn load_image_anim(
+pub unsafe fn load_image_anim(
     file_name: &CStr,
 ) -> (sys::Image, usize) {
-    let mut frames = MaybeUninit::uninit(); // LoadImageAnim will assign with 0
+    let mut frames = MaybeUninit::uninit();
     unsafe {
         let image = sys::LoadImageAnim(
             file_name.as_ptr(),
@@ -57,16 +61,16 @@ pub fn load_image_anim(
 }
 
 /// Load image sequence from memory buffer
-//  - Image.data buffer includes all frames: `[image#0][image#1][image#2][...]`
-//  - Number of frames is returned through 'frames' parameter
-//  - All frames are returned in RGBA format
-//  - Frames delay data is discarded
+///  - Image.data buffer includes all frames: `[image#0][image#1][image#2][...]`
+///  - Number of frames is returned through 'frames' parameter
+///  - All frames are returned in RGBA format
+///  - Frames delay data is discarded
 #[inline]
-pub fn load_image_anim_from_memory(
+pub unsafe fn load_image_anim_from_memory(
     file_type: &CStr,
     file_data: &[u8],
 ) -> (sys::Image, usize) {
-    let mut frames = MaybeUninit::uninit(); // LoadImageAnimFromMemory will assign with 0
+    let mut frames = MaybeUninit::uninit();
     unsafe {
         let image = sys::LoadImageAnimFromMemory(
             file_type.as_ptr(),
@@ -78,10 +82,11 @@ pub fn load_image_anim_from_memory(
     }
 }
 
-/// Load image from memory buffer, fileType refers to extension: i.e. '.png'
-/// WARNING: File extension must be provided in lower-case
+/// Load image from memory buffer, file_type refers to extension: i.e. '.png'
+///
+/// Returned image `data` will be NULL if the image could not be loaded.
 #[inline]
-pub fn load_image_from_memory(
+pub unsafe fn load_image_from_memory(
     file_type: &CStr,
     file_data: &[u8],
 ) -> sys::Image {
@@ -95,9 +100,10 @@ pub fn load_image_from_memory(
 }
 
 /// Load image from GPU texture data
+///
 /// NOTE: Compressed texture formats not supported
 #[inline]
-pub fn load_image_from_texture(
+pub unsafe fn load_image_from_texture(
     texture: sys::Texture2D,
 ) -> sys::Image {
     unsafe {
@@ -109,7 +115,7 @@ pub fn load_image_from_texture(
 
 /// Load image from screen buffer and (screenshot)
 #[inline]
-pub fn load_image_from_screen() -> sys::Image {
+pub unsafe fn load_image_from_screen() -> sys::Image {
     unsafe {
         sys::LoadImageFromScreen()
     }
@@ -117,19 +123,25 @@ pub fn load_image_from_screen() -> sys::Image {
 
 /// Check if an image is valid (data and parameters)
 #[inline]
-pub fn is_image_valid(
+pub unsafe fn is_image_valid(
     image: sys::Image,
 ) -> bool {
-    unsafe {
-        sys::IsImageValid(
-            image,
-        )
-    }
+    // Please keep up to date with `IsImageValid`
+
+    let mut result = false;
+
+    if  (!image.data.is_null()) &&  // Validate pixel data available
+        (image.width > 0) &&        // Validate image width
+        (image.height > 0) &&       // Validate image height
+        (image.format > 0) &&       // Validate image format
+        (image.mipmaps > 0) { result = true; } // Validate image mipmaps (at least 1 for basic mipmap level)
+
+    return result;
 }
 
 /// Unload image from CPU memory (RAM)
 #[inline]
-pub fn unload_image(
+pub unsafe fn unload_image(
     image: sys::Image,
 ) {
     unsafe {
@@ -139,18 +151,22 @@ pub fn unload_image(
     }
 }
 
-/// Export image data to file, returns true on success
+/// Export image data to file
+///
 /// NOTE: File format depends on file_name extension
 #[inline]
-pub fn export_image(
+pub unsafe fn export_image(
     image: sys::Image,
     file_name: &CStr,
-) -> bool {
-    unsafe {
+) -> Result<(), ()> {
+    match unsafe {
         sys::ExportImage(
             image,
             file_name.as_ptr(),
         )
+    } {
+        true => Ok(()),
+        false => Err(()),
     }
 }
 
@@ -178,7 +194,7 @@ pub fn export_image_to_memory(
 /// Export image as code file (.h) defining an array of bytes
 #[allow(clippy::result_unit_err, reason = "returns true on success")]
 #[inline]
-pub fn export_image_as_code(
+pub unsafe fn export_image_as_code(
     image: sys::Image,
     file_name: &CStr,
 ) -> Result<(), ()> {
@@ -197,7 +213,7 @@ pub fn export_image_as_code(
 
 /// Generate image: plain color
 #[inline]
-pub fn gen_image_color(
+pub unsafe fn gen_image_color(
     width: u32,
     height: u32,
     color: sys::Color,
@@ -213,7 +229,7 @@ pub fn gen_image_color(
 
 /// Generate image: linear gradient, direction in degrees [0..360], 0=Vertical gradient
 #[inline]
-pub fn gen_image_gradient_linear(
+pub unsafe fn gen_image_gradient_linear(
     width: u32,
     height: u32,
     direction: i32,
@@ -233,7 +249,7 @@ pub fn gen_image_gradient_linear(
 
 /// Generate image: radial gradient
 #[inline]
-pub fn gen_image_gradient_radial(
+pub unsafe fn gen_image_gradient_radial(
     width: u32,
     height: u32,
     density: f32,
@@ -253,7 +269,7 @@ pub fn gen_image_gradient_radial(
 
 /// Generate image: square gradient
 #[inline]
-pub fn gen_image_gradient_square(
+pub unsafe fn gen_image_gradient_square(
     width: u32,
     height: u32,
     density: f32,
@@ -273,7 +289,7 @@ pub fn gen_image_gradient_square(
 
 /// Generate image: checked
 #[inline]
-pub fn gen_image_checked(
+pub unsafe fn gen_image_checked(
     width: u32,
     height: u32,
     checks_x: u32,
@@ -295,7 +311,7 @@ pub fn gen_image_checked(
 
 /// Generate image: white noise
 #[inline]
-pub fn gen_image_white_noise(
+pub unsafe fn gen_image_white_noise(
     width: u32,
     height: u32,
     factor: f32,
@@ -311,7 +327,7 @@ pub fn gen_image_white_noise(
 
 /// Generate image: perlin noise
 #[inline]
-pub fn gen_image_perlin_noise(
+pub unsafe fn gen_image_perlin_noise(
     width: u32,
     height: u32,
     offset_x: i32,
@@ -331,7 +347,7 @@ pub fn gen_image_perlin_noise(
 
 /// Generate image: cellular algorithm, bigger tile_size means bigger cells
 #[inline]
-pub fn gen_image_cellular(
+pub unsafe fn gen_image_cellular(
     width: u32,
     height: u32,
     tile_size: NonZeroI32, // this value is used to divide other numbers
@@ -347,7 +363,7 @@ pub fn gen_image_cellular(
 
 /// Generate image: grayscale image from text data
 #[inline]
-pub fn gen_image_text(
+pub unsafe fn gen_image_text(
     width: u32,
     height: u32,
     text: &CStr,
@@ -365,7 +381,7 @@ pub fn gen_image_text(
 
 /// Create an image duplicate (useful for transformations)
 #[inline]
-pub fn image_copy(
+pub unsafe fn image_copy(
     image: sys::Image,
 ) -> sys::Image {
     unsafe {
@@ -377,7 +393,7 @@ pub fn image_copy(
 
 /// Create an image from another image piece
 #[inline]
-pub fn image_from_image(
+pub unsafe fn image_from_image(
     image: sys::Image,
     rec: sys::Rectangle,
 ) -> sys::Image {
@@ -401,7 +417,7 @@ pub enum ColorChannel {
 
 /// Create an image from a selected channel of another image (GRAYSCALE)
 #[inline]
-pub fn image_from_channel(
+pub unsafe fn image_from_channel(
     image: sys::Image,
     selected_channel: ColorChannel,
 ) -> sys::Image {
@@ -415,7 +431,7 @@ pub fn image_from_channel(
 
 /// Create an image from text (default font)
 #[inline]
-pub fn image_text(
+pub unsafe fn image_text(
     text: &CStr,
     font_size: u32,
     color: sys::Color,
@@ -431,7 +447,7 @@ pub fn image_text(
 
 /// Create an image from text (custom sprite font)
 #[inline]
-pub fn image_text_ex(
+pub unsafe fn image_text_ex(
     font: sys::Font,
     text: &CStr,
     font_size: f32,
@@ -451,7 +467,7 @@ pub fn image_text_ex(
 
 /// Convert image data to desired format
 #[inline]
-pub fn image_format(
+pub unsafe fn image_format(
     image: &mut sys::Image,
     new_format: sys::PixelFormat,
 ) {
@@ -465,7 +481,7 @@ pub fn image_format(
 
 /// Convert image to POT (power-of-two)
 #[inline]
-pub fn image_to_pot(
+pub unsafe fn image_to_pot(
     image: &mut sys::Image,
     fill: sys::Color,
 ) {
@@ -479,7 +495,7 @@ pub fn image_to_pot(
 
 /// Crop an image to a defined rectangle
 #[inline]
-pub fn image_crop(
+pub unsafe fn image_crop(
     image: &mut sys::Image,
     crop: sys::Rectangle,
 ) {
@@ -493,7 +509,7 @@ pub fn image_crop(
 
 /// Crop image depending on alpha value
 #[inline]
-pub fn image_alpha_crop(
+pub unsafe fn image_alpha_crop(
     image: &mut sys::Image,
     threshold: f32,
 ) {
@@ -507,7 +523,7 @@ pub fn image_alpha_crop(
 
 /// Clear alpha channel to desired color
 #[inline]
-pub fn image_alpha_clear(
+pub unsafe fn image_alpha_clear(
     image: &mut sys::Image,
     color: sys::Color,
     threshold: f32,
@@ -523,7 +539,7 @@ pub fn image_alpha_clear(
 
 /// Apply alpha mask to image
 #[inline]
-pub fn image_alpha_mask(
+pub unsafe fn image_alpha_mask(
     image: &mut sys::Image,
     alpha_mask: sys::Image,
 ) {
@@ -537,7 +553,7 @@ pub fn image_alpha_mask(
 
 /// Premultiply alpha channel
 #[inline]
-pub fn image_alpha_premultiply(
+pub unsafe fn image_alpha_premultiply(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -549,7 +565,7 @@ pub fn image_alpha_premultiply(
 
 /// Apply Gaussian blur using a box blur approximation
 #[inline]
-pub fn image_blur_gaussian(
+pub unsafe fn image_blur_gaussian(
     image: &mut sys::Image,
     blur_size: u32,
 ) {
@@ -563,7 +579,7 @@ pub fn image_blur_gaussian(
 
 /// Apply custom square convolution kernel to image
 #[inline]
-pub fn image_kernel_convolution(
+pub unsafe fn image_kernel_convolution(
     image: &mut sys::Image,
     kernel: &[f32],
 ) {
@@ -578,7 +594,7 @@ pub fn image_kernel_convolution(
 
 /// Resize image (Bicubic scaling algorithm)
 #[inline]
-pub fn image_resize(
+pub unsafe fn image_resize(
     image: &mut sys::Image,
     new_width: u32,
     new_height: u32,
@@ -594,7 +610,7 @@ pub fn image_resize(
 
 /// Resize image (Nearest-Neighbor scaling algorithm)
 #[inline]
-pub fn image_resize_nn(
+pub unsafe fn image_resize_nn(
     image: &mut sys::Image,
     new_width: u32,
     new_height: u32,
@@ -610,7 +626,7 @@ pub fn image_resize_nn(
 
 /// Resize canvas and fill with color
 #[inline]
-pub fn image_resize_canvas(
+pub unsafe fn image_resize_canvas(
     image: &mut sys::Image,
     new_width: u32,
     new_height: u32,
@@ -632,7 +648,7 @@ pub fn image_resize_canvas(
 
 /// Compute all mipmap levels for a provided image
 #[inline]
-pub fn image_mipmaps(
+pub unsafe fn image_mipmaps(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -646,7 +662,7 @@ pub fn image_mipmaps(
 /// NOTE: In case selected bpp do not represent a known 16bit format,
 /// dithered data is stored in the LSB part of the unsigned short
 #[inline]
-pub fn image_dither(
+pub unsafe fn image_dither(
     image: &mut sys::Image,
     r_bpp: u8,
     g_bpp: u8,
@@ -666,7 +682,7 @@ pub fn image_dither(
 
 /// Flip image vertically
 #[inline]
-pub fn image_flip_vertical(
+pub unsafe fn image_flip_vertical(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -678,7 +694,7 @@ pub fn image_flip_vertical(
 
 /// Flip image horizontally
 #[inline]
-pub fn image_flip_horizontal(
+pub unsafe fn image_flip_horizontal(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -690,7 +706,7 @@ pub fn image_flip_horizontal(
 
 /// Rotate image by input angle in degrees (-359 to 359)
 #[inline]
-pub fn image_rotate(
+pub unsafe fn image_rotate(
     image: &mut sys::Image,
     degrees: i32,
 ) {
@@ -704,7 +720,7 @@ pub fn image_rotate(
 
 /// Rotate image clockwise 90deg
 #[inline]
-pub fn image_rotate_cw(
+pub unsafe fn image_rotate_cw(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -716,7 +732,7 @@ pub fn image_rotate_cw(
 
 /// Rotate image counter-clockwise 90deg
 #[inline]
-pub fn image_rotate_ccw(
+pub unsafe fn image_rotate_ccw(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -728,7 +744,7 @@ pub fn image_rotate_ccw(
 
 /// Modify image color: tint
 #[inline]
-pub fn image_color_tint(
+pub unsafe fn image_color_tint(
     image: &mut sys::Image,
     color: sys::Color,
 ) {
@@ -742,7 +758,7 @@ pub fn image_color_tint(
 
 /// Modify image color: invert
 #[inline]
-pub fn image_color_invert(
+pub unsafe fn image_color_invert(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -754,7 +770,7 @@ pub fn image_color_invert(
 
 /// Modify image color: grayscale
 #[inline]
-pub fn image_color_grayscale(
+pub unsafe fn image_color_grayscale(
     image: &mut sys::Image,
 ) {
     unsafe {
@@ -766,7 +782,7 @@ pub fn image_color_grayscale(
 
 /// Modify image color: contrast (-100 to 100)
 #[inline]
-pub fn image_color_contrast(
+pub unsafe fn image_color_contrast(
     image: &mut sys::Image,
     contrast: f32,
 ) {
@@ -780,7 +796,7 @@ pub fn image_color_contrast(
 
 /// Modify image color: brightness (-255 to 255)
 #[inline]
-pub fn image_color_brightness(
+pub unsafe fn image_color_brightness(
     image: &mut sys::Image,
     brightness: i32,
 ) {
@@ -794,7 +810,7 @@ pub fn image_color_brightness(
 
 /// Modify image color: replace color
 #[inline]
-pub fn image_color_replace(
+pub unsafe fn image_color_replace(
     image: &mut sys::Image,
     color: sys::Color,
     replace: sys::Color,
@@ -846,7 +862,7 @@ impl ImageColors {
 /// Load color data from image as a Color array (RGBA - 32bit)
 /// NOTE: Memory allocated should be freed using [`unload_image_colors()`];
 #[inline]
-pub fn load_image_colors(
+pub unsafe fn load_image_colors(
     image: sys::Image,
 ) -> Option<ImageColors> {
     unsafe {
@@ -897,7 +913,7 @@ impl ImagePalette {
 /// Load colors palette from image as a Color array (RGBA - 32bit)
 /// NOTE: Memory allocated should be freed using [`unload_image_palette()`]
 #[inline]
-pub fn load_image_palette(
+pub unsafe fn load_image_palette(
     image: sys::Image,
     max_palette_size: usize,
 ) -> Option<ImagePalette> {
@@ -917,7 +933,7 @@ pub fn load_image_palette(
 
 /// Unload color data loaded with [`load_image_colors()`]
 #[inline]
-pub fn unload_image_colors(
+pub unsafe fn unload_image_colors(
     colors: ImageColors,
 ) {
     unsafe {
@@ -929,7 +945,7 @@ pub fn unload_image_colors(
 
 /// Unload colors palette loaded with [`load_image_palette()`]
 #[inline]
-pub fn unload_image_palette(
+pub unsafe fn unload_image_palette(
     colors: ImagePalette,
 ) {
     unsafe {
@@ -941,7 +957,7 @@ pub fn unload_image_palette(
 
 /// Get image alpha border rectangle
 #[inline]
-pub fn get_image_alpha_border(
+pub unsafe fn get_image_alpha_border(
     image: sys::Image,
     threshold: f32,
 ) -> sys::Rectangle {
@@ -955,7 +971,7 @@ pub fn get_image_alpha_border(
 
 /// Get image pixel color at (x, y) position
 #[inline]
-pub fn get_image_color(
+pub unsafe fn get_image_color(
     image: sys::Image,
     x: i32,
     y: i32,
@@ -974,7 +990,7 @@ pub fn get_image_color(
 
 /// Clear image background with given color
 #[inline]
-pub fn image_clear_background(
+pub unsafe fn image_clear_background(
     dst: &mut sys::Image,
     color: sys::Color,
 ) {
@@ -988,7 +1004,7 @@ pub fn image_clear_background(
 
 /// Draw pixel within an image
 #[inline]
-pub fn image_draw_pixel(
+pub unsafe fn image_draw_pixel(
     dst: &mut sys::Image,
     pos_x: i32,
     pos_y: i32,
@@ -1006,7 +1022,7 @@ pub fn image_draw_pixel(
 
 /// Draw pixel within an image (Vector version)
 #[inline]
-pub fn image_draw_pixel_v(
+pub unsafe fn image_draw_pixel_v(
     dst: &mut sys::Image,
     position: sys::Vector2,
     color: sys::Color,
@@ -1022,7 +1038,7 @@ pub fn image_draw_pixel_v(
 
 /// Draw line within an image
 #[inline]
-pub fn image_draw_line(
+pub unsafe fn image_draw_line(
     dst: &mut sys::Image,
     start_pos_x: i32,
     start_pos_y: i32,
@@ -1044,7 +1060,7 @@ pub fn image_draw_line(
 
 /// Draw line within an image (Vector version)
 #[inline]
-pub fn image_draw_line_v(
+pub unsafe fn image_draw_line_v(
     dst: &mut sys::Image,
     start: sys::Vector2,
     end: sys::Vector2,
@@ -1062,7 +1078,7 @@ pub fn image_draw_line_v(
 
 /// Draw a line defining thickness within an image
 #[inline]
-pub fn image_draw_line_ex(
+pub unsafe fn image_draw_line_ex(
     dst: &mut sys::Image,
     start: sys::Vector2,
     end: sys::Vector2,
@@ -1082,7 +1098,7 @@ pub fn image_draw_line_ex(
 
 /// Draw a filled circle within an image
 #[inline]
-pub fn image_draw_circle(
+pub unsafe fn image_draw_circle(
     dst: &mut sys::Image,
     center_x: i32,
     center_y: i32,
@@ -1102,7 +1118,7 @@ pub fn image_draw_circle(
 
 /// Draw a filled circle within an image (Vector version)
 #[inline]
-pub fn image_draw_circle_v(
+pub unsafe fn image_draw_circle_v(
     dst: &mut sys::Image,
     center: sys::Vector2,
     radius: i32,
@@ -1120,7 +1136,7 @@ pub fn image_draw_circle_v(
 
 /// Draw circle outline within an image
 #[inline]
-pub fn image_draw_circle_lines(
+pub unsafe fn image_draw_circle_lines(
     dst: &mut sys::Image,
     center_x: i32,
     center_y: i32,
@@ -1140,7 +1156,7 @@ pub fn image_draw_circle_lines(
 
 /// Draw circle outline within an image (Vector version)
 #[inline]
-pub fn image_draw_circle_lines_v(
+pub unsafe fn image_draw_circle_lines_v(
     dst: &mut sys::Image,
     center: sys::Vector2,
     radius: i32,
@@ -1158,7 +1174,7 @@ pub fn image_draw_circle_lines_v(
 
 /// Draw rectangle within an image
 #[inline]
-pub fn image_draw_rectangle(
+pub unsafe fn image_draw_rectangle(
     dst: &mut sys::Image,
     pos_x: i32,
     pos_y: i32,
@@ -1180,7 +1196,7 @@ pub fn image_draw_rectangle(
 
 /// Draw rectangle within an image (Vector version)
 #[inline]
-pub fn image_draw_rectangle_v(
+pub unsafe fn image_draw_rectangle_v(
     dst: &mut sys::Image,
     position: sys::Vector2,
     size: sys::Vector2,
@@ -1198,7 +1214,7 @@ pub fn image_draw_rectangle_v(
 
 /// Draw rectangle within an image
 #[inline]
-pub fn image_draw_rectangle_rec(
+pub unsafe fn image_draw_rectangle_rec(
     dst: &mut sys::Image,
     rec: sys::Rectangle,
     color: sys::Color,
@@ -1214,7 +1230,7 @@ pub fn image_draw_rectangle_rec(
 
 /// Draw rectangle lines within an image
 #[inline]
-pub fn image_draw_rectangle_lines(
+pub unsafe fn image_draw_rectangle_lines(
     dst: &mut sys::Image,
     rec: sys::Rectangle,
     thick: i32,
@@ -1232,7 +1248,7 @@ pub fn image_draw_rectangle_lines(
 
 /// Draw triangle within an image
 #[inline]
-pub fn image_draw_triangle(
+pub unsafe fn image_draw_triangle(
     dst: &mut sys::Image,
     v1: sys::Vector2,
     v2: sys::Vector2,
@@ -1252,7 +1268,7 @@ pub fn image_draw_triangle(
 
 /// Draw triangle with interpolated colors within an image
 #[inline]
-pub fn image_draw_triangle_ex(
+pub unsafe fn image_draw_triangle_ex(
     dst: &mut sys::Image,
     v1: sys::Vector2,
     v2: sys::Vector2,
@@ -1276,7 +1292,7 @@ pub fn image_draw_triangle_ex(
 
 /// Draw triangle outline within an image
 #[inline]
-pub fn image_draw_triangle_lines(
+pub unsafe fn image_draw_triangle_lines(
     dst: &mut sys::Image,
     v1: sys::Vector2,
     v2: sys::Vector2,
@@ -1296,7 +1312,7 @@ pub fn image_draw_triangle_lines(
 
 /// Draw a triangle fan defined by points within an image (first vertex is the center)
 #[inline]
-pub fn image_draw_triangle_fan(
+pub unsafe fn image_draw_triangle_fan(
     dst: &mut sys::Image,
     points: &[sys::Vector2],
     color: sys::Color,
@@ -1313,7 +1329,7 @@ pub fn image_draw_triangle_fan(
 
 /// Draw a triangle strip defined by points within an image
 #[inline]
-pub fn image_draw_triangle_strip(
+pub unsafe fn image_draw_triangle_strip(
     dst: &mut sys::Image,
     points: &[sys::Vector2],
     color: sys::Color,
@@ -1330,7 +1346,7 @@ pub fn image_draw_triangle_strip(
 
 /// Draw a source image within a destination image (tint applied to source)
 #[inline]
-pub fn image_draw(
+pub unsafe fn image_draw(
     dst: &mut sys::Image,
     src: sys::Image,
     src_rec: sys::Rectangle,
@@ -1350,7 +1366,7 @@ pub fn image_draw(
 
 /// Draw text (using default font) within an image (destination)
 #[inline]
-pub fn image_draw_text(
+pub unsafe fn image_draw_text(
     dst: &mut sys::Image,
     text: &CStr,
     pos_x: i32,
@@ -1372,7 +1388,7 @@ pub fn image_draw_text(
 
 /// Draw text (custom sprite font) within an image (destination)
 #[inline]
-pub fn image_draw_text_ex(
+pub unsafe fn image_draw_text_ex(
     dst: &mut sys::Image,
     font: sys::Font,
     text: &CStr,
@@ -1397,405 +1413,525 @@ pub fn image_draw_text_ex(
 // Texture loading functions
 // NOTE: These functions require GPU access
 
-// /// Load texture from file into GPU memory (VRAM)
-// #[inline]
-// pub fn LoadTexture(
-//     fileName: *const ::std::os::raw::c_char,
-// ) -> sys::Texture2D {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Load texture from file into GPU memory (VRAM)
+#[inline]
+pub unsafe fn load_texture(
+    file_name: &CStr,
+) -> sys::Texture2D {
+    unsafe {
+        sys::LoadTexture(
+            file_name.as_ptr(),
+        )
+    }
+}
 
-// /// Load texture from image data
-// #[inline]
-// pub fn LoadTextureFromImage(
-//     image: sys::Image,
-// ) -> sys::Texture2D {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Load texture from image data
+#[inline]
+pub unsafe fn load_texture_from_image(
+    image: sys::Image,
+) -> sys::Texture2D {
+    unsafe {
+        sys::LoadTextureFromImage(
+            image,
+        )
+    }
+}
 
-// /// Load cubemap from image, multiple image cubemap layouts supported
-// #[inline]
-// pub fn LoadTextureCubemap(
-//     image: sys::Image,
-//     layout: i32,
-// ) -> sys::TextureCubemap {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Load cubemap from image, multiple image cubemap layouts supported
+#[inline]
+pub unsafe fn load_texture_cubemap(
+    image: sys::Image,
+    layout: i32,
+) -> sys::TextureCubemap {
+    unsafe {
+        sys::LoadTextureCubemap(
+            image,
+            layout,
+        )
+    }
+}
 
-// /// Load texture for rendering (framebuffer)
-// #[inline]
-// pub fn LoadRenderTexture(
-//     width: i32,
-//     height: i32,
-// ) -> sys::RenderTexture2D {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Load texture for rendering (framebuffer)
+#[inline]
+pub unsafe fn load_render_texture(
+    width: u32,
+    height: u32,
+) -> sys::RenderTexture2D {
+    unsafe {
+        sys::LoadRenderTexture(
+            width.try_into().unwrap(),
+            height.try_into().unwrap(),
+        )
+    }
+}
 
-// /// Check if a texture is valid (loaded in GPU)
-// #[inline]
-// pub fn IsTextureValid(
-//     texture: sys::Texture2D,
-// ) -> bool {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Check if a texture is valid (loaded in GPU)
+#[inline]
+pub unsafe fn is_texture_valid(
+    texture: sys::Texture2D,
+) -> bool {
+    unsafe {
+        sys::IsTextureValid(
+            texture,
+        )
+    }
+}
 
-// /// Unload texture from GPU memory (VRAM)
-// #[inline]
-// pub fn UnloadTexture(
-//     texture: sys::Texture2D,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Unload texture from GPU memory (VRAM)
+#[inline]
+pub unsafe fn unload_texture(
+    texture: sys::Texture2D,
+) {
+    unsafe {
+        sys::UnloadTexture(
+            texture,
+        );
+    }
+}
 
-// /// Check if a render texture is valid (loaded in GPU)
-// #[inline]
-// pub fn IsRenderTextureValid(
-//     target: sys::RenderTexture2D,
-// ) -> bool {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Check if a render texture is valid (loaded in GPU)
+#[inline]
+pub unsafe fn is_render_texture_valid(
+    target: sys::RenderTexture2D,
+) -> bool {
+    unsafe {
+        sys::IsRenderTextureValid(
+            target,
+        )
+    }
+}
 
-// /// Unload render texture from GPU memory (VRAM)
-// #[inline]
-// pub fn UnloadRenderTexture(
-//     target: sys::RenderTexture2D,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Unload render texture from GPU memory (VRAM)
+#[inline]
+pub unsafe fn unload_render_texture(
+    target: sys::RenderTexture2D,
+) {
+    unsafe {
+        sys::UnloadRenderTexture(
+            target,
+        );
+    }
+}
 
-// /// Update GPU texture with new data
-// #[inline]
-// pub fn UpdateTexture(
-//     texture: sys::Texture2D,
-//     pixels: *const ::std::os::raw::c_void,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Update GPU texture with new data
+#[inline]
+pub unsafe fn update_texture(
+    texture: sys::Texture2D,
+    pixels: &[u8],
+) {
+    let expect_len = get_pixel_data_size(
+        texture.width.try_into().unwrap(),
+        texture.height.try_into().unwrap(),
+        unsafe { std::mem::transmute(texture.format) },
+    );
+    assert_eq!(pixels.len(), expect_len);
+    unsafe {
+        sys::UpdateTexture(
+            texture,
+            pixels.as_ptr().cast::<c_void>(),
+        );
+    }
+}
 
-// /// Update GPU texture rectangle with new data
-// #[inline]
-// pub fn UpdateTextureRec(
-//     texture: sys::Texture2D,
-//     rec: sys::Rectangle,
-//     pixels: *const ::std::os::raw::c_void,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Update GPU texture rectangle with new data
+#[inline]
+pub unsafe fn update_texture_rec(
+    texture: sys::Texture2D,
+    rec: sys::Rectangle,
+    pixels: &[u8],
+) {
+    unsafe {
+        sys::UpdateTextureRec(
+            texture,
+            rec,
+            pixels.as_ptr().cast::<c_void>(),
+        );
+    }
+}
 
-// // Texture configuration functions
+// Texture configuration functions
 
-// /// Generate GPU mipmaps for a texture
-// #[inline]
-// pub fn GenTextureMipmaps(
-//     texture: *mut sys::Texture2D,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Generate GPU mipmaps for a texture
+#[inline]
+pub unsafe fn gen_texture_mipmaps(
+    texture: &mut sys::Texture2D,
+) {
+    unsafe {
+        sys::GenTextureMipmaps(
+            texture,
+        );
+    }
+}
 
-// /// Set texture scaling filter mode
-// #[inline]
-// pub fn SetTextureFilter(
-//     texture: sys::Texture2D,
-//     filter: i32,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Set texture scaling filter mode
+#[inline]
+pub unsafe fn set_texture_filter(
+    texture: sys::Texture2D,
+    filter: sys::TextureFilter,
+) {
+    unsafe {
+        sys::SetTextureFilter(
+            texture,
+            filter as i32,
+        );
+    }
+}
 
-// /// Set texture wrapping mode
-// #[inline]
-// pub fn SetTextureWrap(
-//     texture: sys::Texture2D,
-//     wrap: i32,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Set texture wrapping mode
+#[inline]
+pub unsafe fn set_texture_wrap(
+    texture: sys::Texture2D,
+    wrap: i32,
+) {
+    unsafe {
+        sys::SetTextureWrap(
+            texture,
+            wrap,
+        );
+    }
+}
 
-// // Texture drawing functions
+// Texture drawing functions
 
-// /// Draw a Texture2D
-// #[inline]
-// pub fn DrawTexture(
-//     texture: sys::Texture2D,
-//     posX: i32,
-//     posY: i32,
-//     tint: sys::Color,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Draw a Texture2D
+#[inline]
+pub unsafe fn draw_texture(
+    texture: sys::Texture2D,
+    pos_x: i32,
+    pos_y: i32,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::DrawTexture(
+            texture,
+            pos_x,
+            pos_y,
+            tint,
+        );
+    }
+}
 
-// /// Draw a Texture2D with position defined as Vector2
-// #[inline]
-// pub fn DrawTextureV(
-//     texture: sys::Texture2D,
-//     position: sys::Vector2,
-//     tint: sys::Color,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Draw a Texture2D with position defined as Vector2
+#[inline]
+pub unsafe fn draw_texture_v(
+    texture: sys::Texture2D,
+    position: sys::Vector2,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::DrawTextureV(
+            texture,
+            position,
+            tint,
+        );
+    }
+}
 
-// /// Draw a Texture2D with extended parameters
-// #[inline]
-// pub fn DrawTextureEx(
-//     texture: sys::Texture2D,
-//     position: sys::Vector2,
-//     rotation: f32,
-//     scale: f32,
-//     tint: sys::Color,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Draw a Texture2D with extended parameters
+#[inline]
+pub unsafe fn draw_texture_ex(
+    texture: sys::Texture2D,
+    position: sys::Vector2,
+    rotation: f32,
+    scale: f32,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::DrawTextureEx(
+            texture,
+            position,
+            rotation,
+            scale,
+            tint,
+        );
+    }
+}
 
-// /// Draw a part of a texture defined by a rectangle
-// #[inline]
-// pub fn DrawTextureRec(
-//     texture: sys::Texture2D,
-//     source: sys::Rectangle,
-//     position: sys::Vector2,
-//     tint: sys::Color,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Draw a part of a texture defined by a rectangle
+#[inline]
+pub unsafe fn draw_texture_rec(
+    texture: sys::Texture2D,
+    source: sys::Rectangle,
+    position: sys::Vector2,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::DrawTextureRec(
+            texture,
+            source,
+            position,
+            tint,
+        );
+    }
+}
 
-// /// Draw a part of a texture defined by a rectangle with 'pro' parameters
-// #[inline]
-// pub fn DrawTexturePro(
-//     texture: sys::Texture2D,
-//     source: sys::Rectangle,
-//     dest: sys::Rectangle,
-//     origin: sys::Vector2,
-//     rotation: f32,
-//     tint: sys::Color,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Draw a part of a texture defined by a rectangle with 'pro' parameters
+#[inline]
+pub unsafe fn draw_texture_pro(
+    texture: sys::Texture2D,
+    source: sys::Rectangle,
+    dest: sys::Rectangle,
+    origin: sys::Vector2,
+    rotation: f32,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::DrawTexturePro(
+            texture,
+            source,
+            dest,
+            origin,
+            rotation,
+            tint,
+        );
+    }
+}
 
-// /// Draws a texture (or part of it) that stretches or shrinks nicely
-// #[inline]
-// pub fn DrawTextureNPatch(
-//     texture: sys::Texture2D,
-//     nPatchInfo: sys::NPatchInfo,
-//     dest: sys::Rectangle,
-//     origin: sys::Vector2,
-//     rotation: f32,
-//     tint: sys::Color,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Draws a texture (or part of it) that stretches or shrinks nicely
+#[inline]
+pub unsafe fn draw_texture_n_patch(
+    texture: sys::Texture2D,
+    n_patch_info: sys::NPatchInfo,
+    dest: sys::Rectangle,
+    origin: sys::Vector2,
+    rotation: f32,
+    tint: sys::Color,
+) {
+    unsafe {
+        sys::DrawTextureNPatch(
+            texture,
+            n_patch_info,
+            dest,
+            origin,
+            rotation,
+            tint,
+        );
+    }
+}
 
-// // Color/pixel related functions
+// Color/pixel related functions
 
-// /// Check if two colors are equal
-// #[inline]
-// pub fn ColorIsEqual(
-//     col1: sys::Color,
-//     col2: sys::Color,
-// ) -> bool {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Check if two colors are equal
+#[inline]
+pub unsafe fn color_is_equal(
+    col1: sys::Color,
+    col2: sys::Color,
+) -> bool {
+    unsafe {
+        sys::ColorIsEqual(
+            col1,
+            col2,
+        )
+    }
+}
 
-// /// Get color with alpha applied, alpha goes from 0.0f to 1.0f
-// #[inline]
-// pub fn Fade(
-//     color: sys::Color,
-//     alpha: f32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get color with alpha applied, alpha goes from 0.0 to 1.0
+#[inline]
+pub unsafe fn fade(
+    color: sys::Color,
+    alpha: f32,
+) -> sys::Color {
+    unsafe {
+        sys::Fade(
+            color,
+            alpha,
+        )
+    }
+}
 
-// /// Get hexadecimal value for a Color (0xRRGGBBAA)
-// #[inline]
-// pub fn ColorToInt(
-//     color: sys::Color,
-// ) -> i32 {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get hexadecimal value for a Color (0xRRGGBBAA)
+#[inline]
+pub unsafe fn color_to_int(
+    color: sys::Color,
+) -> i32 {
+    unsafe {
+        sys::ColorToInt(
+            color,
+        )
+    }
+}
 
-// /// Get Color normalized as float [0..1]
-// #[inline]
-// pub fn ColorNormalize(
-//     color: sys::Color,
-// ) -> sys::Vector4 {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get Color normalized as float [0..1]
+#[inline]
+pub unsafe fn color_normalize(
+    color: sys::Color,
+) -> sys::Vector4 {
+    unsafe {
+        sys::ColorNormalize(
+            color,
+        )
+    }
+}
 
-// /// Get Color from normalized values [0..1]
-// #[inline]
-// pub fn ColorFromNormalized(
-//     normalized: sys::Vector4,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get Color from normalized values [0..1]
+#[inline]
+pub unsafe fn color_from_normalized(
+    normalized: sys::Vector4,
+) -> sys::Color {
+    unsafe {
+        sys::ColorFromNormalized(
+            normalized,
+        )
+    }
+}
 
-// /// Get HSV values for a Color, hue [0..360], saturation/value [0..1]
-// #[inline]
-// pub fn ColorToHSV(
-//     color: sys::Color,
-// ) -> sys::Vector3 {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get HSV values for a Color, hue [0..360], saturation/value [0..1]
+#[inline]
+pub unsafe fn color_to_hsv(
+    color: sys::Color,
+) -> sys::Vector3 {
+    unsafe {
+        sys::ColorToHSV(
+            color
+        )
+    }
+}
 
-// /// Get a Color from HSV values, hue [0..360], saturation/value [0..1]
-// #[inline]
-// pub fn ColorFromHSV(
-//     hue: f32,
-//     saturation: f32,
-//     value: f32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get a Color from HSV values, hue [0..360], saturation/value [0..1]
+#[inline]
+pub unsafe fn color_from_hsv(
+    hue: f32,
+    saturation: f32,
+    value: f32,
+) -> sys::Color {
+    unsafe {
+        sys::ColorFromHSV(
+            hue,
+            saturation,
+            value,
+        )
+    }
+}
 
-// /// Get color multiplied with another color
-// #[inline]
-// pub fn ColorTint(
-//     color: sys::Color,
-//     tint: sys::Color,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get color multiplied with another color
+#[inline]
+pub unsafe fn color_tint(
+    color: sys::Color,
+    tint: sys::Color,
+) -> sys::Color {
+    unsafe {
+        sys::ColorTint(
+            color,
+            tint,
+        )
+    }
+}
 
-// /// Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
-// #[inline]
-// pub fn ColorBrightness(
-//     color: sys::Color,
-//     factor: f32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
+#[inline]
+pub unsafe fn color_brightness(
+    color: sys::Color,
+    factor: f32,
+) -> sys::Color {
+    unsafe {
+        sys::ColorBrightness(
+            color,
+            factor,
+        )
+    }
+}
 
-// /// Get color with contrast correction, contrast values between -1.0f and 1.0f
-// #[inline]
-// pub fn ColorContrast(
-//     color: sys::Color,
-//     contrast: f32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get color with contrast correction, contrast values between -1.0f and 1.0f
+#[inline]
+pub unsafe fn color_contrast(
+    color: sys::Color,
+    contrast: f32,
+) -> sys::Color {
+    unsafe {
+        sys::ColorContrast(
+            color,
+            contrast,
+        )
+    }
+}
 
-// /// Get color with alpha applied, alpha goes from 0.0f to 1.0f
-// #[inline]
-// pub fn ColorAlpha(
-//     color: sys::Color,
-//     alpha: f32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get color with alpha applied, alpha goes from 0.0f to 1.0f
+#[inline]
+pub unsafe fn color_alpha(
+    color: sys::Color,
+    alpha: f32,
+) -> sys::Color {
+    unsafe {
+        sys::ColorAlpha(
+            color,
+            alpha,
+        )
+    }
+}
 
-// /// Get src alpha-blended into dst color with tint
-// #[inline]
-// pub fn ColorAlphaBlend(
-//     dst: sys::Color,
-//     src: sys::Color,
-//     tint: sys::Color,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get src alpha-blended into dst color with tint
+#[inline]
+pub unsafe fn color_alpha_blend(
+    dst: sys::Color,
+    src: sys::Color,
+    tint: sys::Color,
+) -> sys::Color {
+    unsafe {
+        sys::ColorAlphaBlend(
+            dst,
+            src,
+            tint,
+        )
+    }
+}
 
-// /// Get color lerp interpolation between two colors, factor [0.0f..1.0f]
-// #[inline]
-// pub fn ColorLerp(
-//     color1: sys::Color,
-//     color2: sys::Color,
-//     factor: f32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get color lerp interpolation between two colors, factor [0.0f..1.0f]
+#[inline]
+pub unsafe fn color_lerp(
+    color1: sys::Color,
+    color2: sys::Color,
+    factor: f32,
+) -> sys::Color {
+    unsafe {
+        sys::ColorLerp(
+            color1,
+            color2,
+            factor,
+        )
+    }
+}
 
-// /// Get Color structure from hexadecimal value
-// #[inline]
-// pub fn GetColor(
-//     hexValue: u32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get Color structure from hexadecimal value
+#[inline]
+pub unsafe fn get_color(
+    hex_value: u32,
+) -> sys::Color {
+    unsafe {
+        sys::GetColor(
+            hex_value,
+        )
+    }
+}
 
-// /// Get Color from a source pixel pointer of certain format
-// #[inline]
-// pub fn GetPixelColor(
-//     srcPtr: *mut ::std::os::raw::c_void,
-//     format: i32,
-// ) -> sys::Color {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Get Color from a source pixel pointer of certain format
+#[inline]
+pub unsafe fn get_pixel_color(
+    src_ptr: &[u8],
+    format: sys::PixelFormat,
+) -> sys::Color {
+    unsafe {
+        sys::GetPixelColor(
+            src_ptr.as_ptr().cast_mut().cast::<c_void>(),
+            format as i32,
+        )
+    }
+}
 
-// /// Set color formatted into destination pixel pointer
-// #[inline]
-// pub fn SetPixelColor(
-//     dstPtr: *mut ::std::os::raw::c_void,
-//     color: sys::Color,
-//     format: i32,
-// ) {
-//     unsafe {
-//         sys::
-//     }
-// }
+/// Set color formatted into destination pixel pointer
+#[inline]
+pub unsafe fn set_pixel_color(
+    dst_ptr: &mut [u8],
+    color: sys::Color,
+    format: sys::PixelFormat,
+) {
+    unsafe {
+        sys::SetPixelColor(
+            dst_ptr.as_mut_ptr().cast::<c_void>(),
+            color,
+            format as i32,
+        );
+    }
+}
 
 /// Get pixel data size in bytes for certain format
 /// NOTE: Size can be requested for `Image` or `Texture` data

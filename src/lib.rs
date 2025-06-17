@@ -1,4 +1,4 @@
-#![warn(clippy::missing_safety_doc, clippy::missing_panics_doc)]
+#![warn(clippy::missing_safety_doc, clippy::undocumented_unsafe_blocks, clippy::missing_panics_doc)]
 
 /// Low-level wrappers for ffi functions
 ///
@@ -21,6 +21,7 @@
 /// **Please review the following code every time the Raylib submodule is updated:**
 ///
 /// - [`low::textures::get_pixel_data_size()`]
+/// - [`low::textures::is_image_valid()`]
 pub mod low;
 
 /// High-level code for covering edge cases and best practice

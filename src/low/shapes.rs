@@ -5,7 +5,7 @@ use super::*;
 /// NOTE: It can be useful when using basic shapes and one single font,
 /// defining a font char white rectangle would allow drawing everything in a single draw call
 #[inline]
-pub fn set_shapes_texture(
+pub unsafe fn set_shapes_texture(
     texture: sys::Texture2D,
     source: sys::Rectangle,
 ) {
@@ -131,7 +131,7 @@ pub unsafe fn draw_line_v(
 
 /// Draw a line (using triangles/quads)
 #[inline]
-pub fn draw_line_ex(
+pub unsafe fn draw_line_ex(
     start_pos: sys::Vector2,
     end_pos: sys::Vector2,
     thick: f32,
@@ -149,7 +149,7 @@ pub fn draw_line_ex(
 
 /// Draw lines sequence (using gl lines)
 #[inline]
-pub fn draw_line_strip(
+pub unsafe fn draw_line_strip(
     points: &[sys::Vector2],
     color: sys::Color,
 ) {
@@ -164,7 +164,7 @@ pub fn draw_line_strip(
 
 /// Draw line segment cubic-bezier in-out interpolation
 #[inline]
-pub fn draw_line_bezier(
+pub unsafe fn draw_line_bezier(
     start_pos: sys::Vector2,
     end_pos: sys::Vector2,
     thick: f32,
@@ -182,7 +182,7 @@ pub fn draw_line_bezier(
 
 /// Draw a color-filled circle
 #[inline]
-pub fn draw_circle(
+pub unsafe fn draw_circle(
     center_x: i32,
     center_y: i32,
     radius: f32,
@@ -200,7 +200,7 @@ pub fn draw_circle(
 
 /// Draw a piece of a circle
 #[inline]
-pub fn draw_circle_sector(
+pub unsafe fn draw_circle_sector(
     center: sys::Vector2,
     radius: f32,
     start_angle: f32,
@@ -222,7 +222,7 @@ pub fn draw_circle_sector(
 
 /// Draw circle sector outline
 #[inline]
-pub fn draw_circle_sector_lines(
+pub unsafe fn draw_circle_sector_lines(
     center: sys::Vector2,
     radius: f32,
     start_angle: f32,
@@ -244,7 +244,7 @@ pub fn draw_circle_sector_lines(
 
 /// Draw a gradient-filled circle
 #[inline]
-pub fn draw_circle_gradient(
+pub unsafe fn draw_circle_gradient(
     center_x: i32,
     center_y: i32,
     radius: f32,
@@ -264,7 +264,7 @@ pub fn draw_circle_gradient(
 
 /// Draw a color-filled circle (Vector version)
 #[inline]
-pub fn draw_circle_v(
+pub unsafe fn draw_circle_v(
     center: sys::Vector2,
     radius: f32,
     color: sys::Color,
@@ -280,7 +280,7 @@ pub fn draw_circle_v(
 
 /// Draw circle outline
 #[inline]
-pub fn draw_circle_lines(
+pub unsafe fn draw_circle_lines(
     center_x: i32,
     center_y: i32,
     radius: f32,
@@ -298,7 +298,7 @@ pub fn draw_circle_lines(
 
 /// Draw circle outline (Vector version)
 #[inline]
-pub fn draw_circle_lines_v(
+pub unsafe fn draw_circle_lines_v(
     center: sys::Vector2,
     radius: f32,
     color: sys::Color,
@@ -314,7 +314,7 @@ pub fn draw_circle_lines_v(
 
 /// Draw ellipse
 #[inline]
-pub fn draw_ellipse(
+pub unsafe fn draw_ellipse(
     center_x: i32,
     center_y: i32,
     radius_h: f32,
@@ -334,7 +334,7 @@ pub fn draw_ellipse(
 
 /// Draw ellipse (Vector version)
 #[inline]
-pub fn draw_ellipse_v(
+pub unsafe fn draw_ellipse_v(
     center: sys::Vector2,
     radius_h: f32,
     radius_v: f32,
@@ -352,7 +352,7 @@ pub fn draw_ellipse_v(
 
 /// Draw ellipse outline
 #[inline]
-pub fn draw_ellipse_lines(
+pub unsafe fn draw_ellipse_lines(
     center_x: i32,
     center_y: i32,
     radius_h: f32,
@@ -372,7 +372,7 @@ pub fn draw_ellipse_lines(
 
 /// Draw ellipse outline (Vector version)
 #[inline]
-pub fn draw_ellipse_lines_v(
+pub unsafe fn draw_ellipse_lines_v(
     center: sys::Vector2,
     radius_h: f32,
     radius_v: f32,
@@ -390,7 +390,7 @@ pub fn draw_ellipse_lines_v(
 
 /// Draw ring
 #[inline]
-pub fn draw_ring(
+pub unsafe fn draw_ring(
     center: sys::Vector2,
     inner_radius: f32,
     outer_radius: f32,
@@ -414,7 +414,7 @@ pub fn draw_ring(
 
 /// Draw ring outline
 #[inline]
-pub fn draw_ring_lines(
+pub unsafe fn draw_ring_lines(
     center: sys::Vector2,
     inner_radius: f32,
     outer_radius: f32,
@@ -438,7 +438,7 @@ pub fn draw_ring_lines(
 
 /// Draw a color-filled rectangle
 #[inline]
-pub fn draw_rectangle(
+pub unsafe fn draw_rectangle(
     pos_x: i32,
     pos_y: i32,
     width: i32,
@@ -458,7 +458,7 @@ pub fn draw_rectangle(
 
 /// Draw a color-filled rectangle (Vector version)
 #[inline]
-pub fn draw_rectangle_v(
+pub unsafe fn draw_rectangle_v(
     position: sys::Vector2,
     size: sys::Vector2,
     color: sys::Color,
@@ -474,7 +474,7 @@ pub fn draw_rectangle_v(
 
 /// Draw a color-filled rectangle
 #[inline]
-pub fn draw_rectangle_rec(
+pub unsafe fn draw_rectangle_rec(
     rec: sys::Rectangle,
     color: sys::Color,
 ) {
@@ -488,7 +488,7 @@ pub fn draw_rectangle_rec(
 
 /// Draw a color-filled rectangle with pro parameters
 #[inline]
-pub fn draw_rectangle_pro(
+pub unsafe fn draw_rectangle_pro(
     rec: sys::Rectangle,
     origin: sys::Vector2,
     rotation: f32,
@@ -506,7 +506,7 @@ pub fn draw_rectangle_pro(
 
 /// Draw a vertical-gradient-filled rectangle
 #[inline]
-pub fn draw_rectangle_gradient_v(
+pub unsafe fn draw_rectangle_gradient_v(
     pos_x: i32,
     pos_y: i32,
     width: i32,
@@ -528,7 +528,7 @@ pub fn draw_rectangle_gradient_v(
 
 /// Draw a horizontal-gradient-filled rectangle
 #[inline]
-pub fn draw_rectangle_gradient_h(
+pub unsafe fn draw_rectangle_gradient_h(
     pos_x: i32,
     pos_y: i32,
     width: i32,
@@ -550,7 +550,7 @@ pub fn draw_rectangle_gradient_h(
 
 /// Draw a gradient-filled rectangle with custom vertex colors
 #[inline]
-pub fn draw_rectangle_gradient_ex(
+pub unsafe fn draw_rectangle_gradient_ex(
     rec: sys::Rectangle,
     top_left: sys::Color,
     bottom_left: sys::Color,
@@ -570,7 +570,7 @@ pub fn draw_rectangle_gradient_ex(
 
 /// Draw rectangle outline
 #[inline]
-pub fn draw_rectangle_lines(
+pub unsafe fn draw_rectangle_lines(
     pos_x: i32,
     pos_y: i32,
     width: i32,
@@ -590,7 +590,7 @@ pub fn draw_rectangle_lines(
 
 /// Draw rectangle outline with extended parameters
 #[inline]
-pub fn draw_rectangle_lines_ex(
+pub unsafe fn draw_rectangle_lines_ex(
     rec: sys::Rectangle,
     line_thick: f32,
     color: sys::Color,
@@ -606,7 +606,7 @@ pub fn draw_rectangle_lines_ex(
 
 /// Draw rectangle with rounded edges
 #[inline]
-pub fn draw_rectangle_rounded(
+pub unsafe fn draw_rectangle_rounded(
     rec: sys::Rectangle,
     roundness: f32,
     segments: u32,
@@ -624,7 +624,7 @@ pub fn draw_rectangle_rounded(
 
 /// Draw rectangle lines with rounded edges
 #[inline]
-pub fn draw_rectangle_rounded_lines(
+pub unsafe fn draw_rectangle_rounded_lines(
     rec: sys::Rectangle,
     roundness: f32,
     segments: u32,
@@ -642,7 +642,7 @@ pub fn draw_rectangle_rounded_lines(
 
 /// Draw rectangle with rounded edges outline
 #[inline]
-pub fn draw_rectangle_rounded_lines_ex(
+pub unsafe fn draw_rectangle_rounded_lines_ex(
     rec: sys::Rectangle,
     roundness: f32,
     segments: u32,
@@ -662,7 +662,7 @@ pub fn draw_rectangle_rounded_lines_ex(
 
 /// Draw a color-filled triangle (vertex in counter-clockwise order!)
 #[inline]
-pub fn draw_triangle(
+pub unsafe fn draw_triangle(
     v1: sys::Vector2,
     v2: sys::Vector2,
     v3: sys::Vector2,
@@ -680,7 +680,7 @@ pub fn draw_triangle(
 
 /// Draw triangle outline (vertex in counter-clockwise order!)
 #[inline]
-pub fn draw_triangle_lines(
+pub unsafe fn draw_triangle_lines(
     v1: sys::Vector2,
     v2: sys::Vector2,
     v3: sys::Vector2,
@@ -698,7 +698,7 @@ pub fn draw_triangle_lines(
 
 /// Draw a triangle fan defined by points (first vertex is the center)
 #[inline]
-pub fn draw_triangle_fan(
+pub unsafe fn draw_triangle_fan(
     points: &[sys::Vector2],
     color: sys::Color,
 ) {
@@ -713,7 +713,7 @@ pub fn draw_triangle_fan(
 
 /// Draw a triangle strip defined by points
 #[inline]
-pub fn draw_triangle_strip(
+pub unsafe fn draw_triangle_strip(
     points: &[sys::Vector2],
     color: sys::Color,
 ) {
@@ -728,7 +728,7 @@ pub fn draw_triangle_strip(
 
 /// Draw a regular polygon (Vector version)
 #[inline]
-pub fn draw_poly(
+pub unsafe fn draw_poly(
     center: sys::Vector2,
     sides: u32,
     radius: f32,
@@ -748,7 +748,7 @@ pub fn draw_poly(
 
 /// Draw a polygon outline of n sides
 #[inline]
-pub fn draw_poly_lines(
+pub unsafe fn draw_poly_lines(
     center: sys::Vector2,
     sides: u32,
     radius: f32,
@@ -768,7 +768,7 @@ pub fn draw_poly_lines(
 
 /// Draw a polygon outline of n sides with extended parameters
 #[inline]
-pub fn draw_poly_lines_ex(
+pub unsafe fn draw_poly_lines_ex(
     center: sys::Vector2,
     sides: u32,
     radius: f32,
@@ -792,7 +792,7 @@ pub fn draw_poly_lines_ex(
 
 /// Draw spline: Linear, minimum 2 points
 #[inline]
-pub fn draw_spline_linear(
+pub unsafe fn draw_spline_linear(
     points: &[sys::Vector2],
     thick: f32,
     color: sys::Color,
@@ -812,7 +812,7 @@ pub fn draw_spline_linear(
 
 /// Draw spline: B-Spline, minimum 4 points
 #[inline]
-pub fn draw_spline_basis(
+pub unsafe fn draw_spline_basis(
     points: &[sys::Vector2],
     thick: f32,
     color: sys::Color,
@@ -832,7 +832,7 @@ pub fn draw_spline_basis(
 
 /// Draw spline: Catmull-Rom, minimum 4 points
 #[inline]
-pub fn draw_spline_catmull_rom(
+pub unsafe fn draw_spline_catmull_rom(
     points: &[sys::Vector2],
     thick: f32,
     color: sys::Color,
@@ -852,7 +852,7 @@ pub fn draw_spline_catmull_rom(
 
 /// Draw spline: Quadratic Bezier, minimum 3 points (1 control point): [p1, c2, p3, c4...]
 #[inline]
-pub fn draw_spline_bezier_quadratic(
+pub unsafe fn draw_spline_bezier_quadratic(
     points: &[sys::Vector2],
     thick: f32,
     color: sys::Color,
@@ -872,7 +872,7 @@ pub fn draw_spline_bezier_quadratic(
 
 /// Draw spline: Cubic Bezier, minimum 4 points (2 control points): [p1, c2, c3, p4, c5, c6...]
 #[inline]
-pub fn draw_spline_bezier_cubic(
+pub unsafe fn draw_spline_bezier_cubic(
     points: &[sys::Vector2],
     thick: f32,
     color: sys::Color,
@@ -892,7 +892,7 @@ pub fn draw_spline_bezier_cubic(
 
 /// Draw spline segment: Linear, 2 points
 #[inline]
-pub fn draw_spline_segment_linear(
+pub unsafe fn draw_spline_segment_linear(
     p1: sys::Vector2,
     p2: sys::Vector2,
     thick: f32,
@@ -910,7 +910,7 @@ pub fn draw_spline_segment_linear(
 
 /// Draw spline segment: B-Spline, 4 points
 #[inline]
-pub fn draw_spline_segment_basis(
+pub unsafe fn draw_spline_segment_basis(
     p1: sys::Vector2,
     p2: sys::Vector2,
     p3: sys::Vector2,
@@ -932,7 +932,7 @@ pub fn draw_spline_segment_basis(
 
 /// Draw spline segment: Catmull-Rom, 4 points
 #[inline]
-pub fn draw_spline_segment_catmull_rom(
+pub unsafe fn draw_spline_segment_catmull_rom(
     p1: sys::Vector2,
     p2: sys::Vector2,
     p3: sys::Vector2,
@@ -954,7 +954,7 @@ pub fn draw_spline_segment_catmull_rom(
 
 /// Draw spline segment: Quadratic Bezier, 2 points, 1 control point
 #[inline]
-pub fn draw_spline_segment_bezier_quadratic(
+pub unsafe fn draw_spline_segment_bezier_quadratic(
     p1: sys::Vector2,
     c2: sys::Vector2,
     p3: sys::Vector2,
@@ -974,7 +974,7 @@ pub fn draw_spline_segment_bezier_quadratic(
 
 /// Draw spline segment: Cubic Bezier, 2 points, 2 control points
 #[inline]
-pub fn draw_spline_segment_bezier_cubic(
+pub unsafe fn draw_spline_segment_bezier_cubic(
     p1: sys::Vector2,
     c2: sys::Vector2,
     c3: sys::Vector2,
@@ -998,7 +998,7 @@ pub fn draw_spline_segment_bezier_cubic(
 
 /// Get (evaluate) spline point: Linear
 #[inline]
-pub fn get_spline_point_linear(
+pub unsafe fn get_spline_point_linear(
     start_pos: sys::Vector2,
     end_pos: sys::Vector2,
     t: f32,
@@ -1014,7 +1014,7 @@ pub fn get_spline_point_linear(
 
 /// Get (evaluate) spline point: B-Spline
 #[inline]
-pub fn get_spline_point_basis(
+pub unsafe fn get_spline_point_basis(
     p1: sys::Vector2,
     p2: sys::Vector2,
     p3: sys::Vector2,
@@ -1034,7 +1034,7 @@ pub fn get_spline_point_basis(
 
 /// Get (evaluate) spline point: Catmull-Rom
 #[inline]
-pub fn get_spline_point_catmull_rom(
+pub unsafe fn get_spline_point_catmull_rom(
     p1: sys::Vector2,
     p2: sys::Vector2,
     p3: sys::Vector2,
@@ -1054,7 +1054,7 @@ pub fn get_spline_point_catmull_rom(
 
 /// Get (evaluate) spline point: Quadratic Bezier
 #[inline]
-pub fn get_spline_point_bezier_quad(
+pub unsafe fn get_spline_point_bezier_quad(
     p1: sys::Vector2,
     c2: sys::Vector2,
     p3: sys::Vector2,
@@ -1072,7 +1072,7 @@ pub fn get_spline_point_bezier_quad(
 
 /// Get (evaluate) spline point: Cubic Bezier
 #[inline]
-pub fn get_spline_point_bezier_cubic(
+pub unsafe fn get_spline_point_bezier_cubic(
     p1: sys::Vector2,
     c2: sys::Vector2,
     c3: sys::Vector2,
@@ -1094,7 +1094,7 @@ pub fn get_spline_point_bezier_cubic(
 
 /// Check collision between two rectangles
 #[inline]
-pub fn check_collision_recs(
+pub unsafe fn check_collision_recs(
     rec1: sys::Rectangle,
     rec2: sys::Rectangle,
 ) -> bool {
@@ -1108,7 +1108,7 @@ pub fn check_collision_recs(
 
 /// Check collision between two circles
 #[inline]
-pub fn check_collision_circles(
+pub unsafe fn check_collision_circles(
     center1: sys::Vector2,
     radius1: f32,
     center2: sys::Vector2,
@@ -1126,7 +1126,7 @@ pub fn check_collision_circles(
 
 /// Check collision between circle and rectangle
 #[inline]
-pub fn check_collision_circle_rec(
+pub unsafe fn check_collision_circle_rec(
     center: sys::Vector2,
     radius: f32,
     rec: sys::Rectangle,
@@ -1142,7 +1142,7 @@ pub fn check_collision_circle_rec(
 
 /// Check if circle collides with a line created betweeen two points `p1` and `p2`
 #[inline]
-pub fn check_collision_circle_line(
+pub unsafe fn check_collision_circle_line(
     center: sys::Vector2,
     radius: f32,
     p1: sys::Vector2,
@@ -1160,7 +1160,7 @@ pub fn check_collision_circle_line(
 
 /// Check if point is inside rectangle
 #[inline]
-pub fn check_collision_point_rec(
+pub unsafe fn check_collision_point_rec(
     point: sys::Vector2,
     rec: sys::Rectangle,
 ) -> bool {
@@ -1174,7 +1174,7 @@ pub fn check_collision_point_rec(
 
 /// Check if point is inside circle
 #[inline]
-pub fn check_collision_point_circle(
+pub unsafe fn check_collision_point_circle(
     point: sys::Vector2,
     center: sys::Vector2,
     radius: f32,
@@ -1190,7 +1190,7 @@ pub fn check_collision_point_circle(
 
 /// Check if point is inside a triangle
 #[inline]
-pub fn check_collision_point_triangle(
+pub unsafe fn check_collision_point_triangle(
     point: sys::Vector2,
     p1: sys::Vector2,
     p2: sys::Vector2,
@@ -1208,7 +1208,7 @@ pub fn check_collision_point_triangle(
 
 /// Check if point belongs to line created between two points `p1` and `p2` with defined margin in pixels `threshold`
 #[inline]
-pub fn check_collision_point_line(
+pub unsafe fn check_collision_point_line(
     point: sys::Vector2,
     p1: sys::Vector2,
     p2: sys::Vector2,
@@ -1226,7 +1226,7 @@ pub fn check_collision_point_line(
 
 /// Check if point is within a polygon described by array of vertices
 #[inline]
-pub fn check_collision_point_poly(
+pub unsafe fn check_collision_point_poly(
     point: sys::Vector2,
     points: &[sys::Vector2],
 ) -> bool {
@@ -1241,7 +1241,7 @@ pub fn check_collision_point_poly(
 
 /// Check the collision between two lines defined by two points each, returns collision point by reference
 #[inline]
-pub fn check_collision_lines(
+pub unsafe fn check_collision_lines(
     start_pos1: sys::Vector2,
     end_pos1: sys::Vector2,
     start_pos2: sys::Vector2,
@@ -1265,7 +1265,7 @@ pub fn check_collision_lines(
 
 /// Get collision rectangle for two rectangles collision
 #[inline]
-pub fn get_collision_rec(
+pub unsafe fn get_collision_rec(
     rec1: sys::Rectangle,
     rec2: sys::Rectangle,
 ) -> sys::Rectangle {

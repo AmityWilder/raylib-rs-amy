@@ -4,7 +4,7 @@ use super::*;
 
 /// Check if file exists
 #[inline]
-pub fn file_exists(
+pub unsafe fn file_exists(
     file_name: &CStr,
 ) -> bool {
     unsafe {
@@ -16,7 +16,7 @@ pub fn file_exists(
 
 /// Check if a directory path exists
 #[inline]
-pub fn directory_exists(
+pub unsafe fn directory_exists(
     dir_path: &CStr,
 ) -> bool {
     unsafe {
@@ -30,7 +30,7 @@ pub fn directory_exists(
 ///
 /// NOTE: Extensions checking is not case-sensitive
 #[inline]
-pub fn is_file_extension(
+pub unsafe fn is_file_extension(
     file_name: &CStr,
     ext: &CStr,
 ) -> bool {
@@ -46,7 +46,7 @@ pub fn is_file_extension(
 ///
 /// NOTE: `GetFileSize()` conflicts with windows.h
 #[inline]
-pub fn get_file_length(
+pub unsafe fn get_file_length(
     file_name: &CStr,
 ) -> Result<usize, usize> {
     let len = unsafe {
@@ -63,7 +63,7 @@ pub fn get_file_length(
 
 /// Get pointer to extension for a filename string (includes dot: '.png')
 #[inline]
-pub fn get_file_extension(
+pub unsafe fn get_file_extension(
     file_name: &CStr,
 ) -> Option<&CStr> {
     let ptr = unsafe {
@@ -83,7 +83,7 @@ pub fn get_file_extension(
 
 /// Get pointer to filename for a path string
 #[inline]
-pub fn get_file_name(
+pub unsafe fn get_file_name(
     file_path: &CStr,
 ) -> Option<&CStr> {
     let ptr = unsafe {
@@ -106,7 +106,7 @@ define_buffer_handle!(GetFileNameWithoutExtHandle);
 impl GetFileNameWithoutExtHandle {
     /// Get filename string without extension
     #[inline]
-    pub fn get_file_name_without_ext<'a>(
+    pub unsafe fn get_file_name_without_ext<'a>(
         &'a mut self,
         file_path: &CStr,
     ) -> Option<&'a CStr> {
@@ -132,7 +132,7 @@ define_buffer_handle!(GetDirectoryPathHandle);
 impl GetDirectoryPathHandle {
     /// Get full path for a given fileName with path
     #[inline]
-    pub fn get_directory_path<'a>(
+    pub unsafe fn get_directory_path<'a>(
         &'a mut self,
         file_path: &CStr,
     ) -> Option<&'a CStr> {
@@ -158,7 +158,7 @@ define_buffer_handle!(GetPrevDirectoryPathHandle);
 impl GetPrevDirectoryPathHandle {
     /// Get previous directory path for a given path
     #[inline]
-    pub fn get_prev_directory_path<'a>(
+    pub unsafe fn get_prev_directory_path<'a>(
         &'a self,
         dir_path: &CStr,
     ) -> Option<&'a CStr> {
@@ -184,7 +184,7 @@ define_buffer_handle!(GetWorkingDirectoryHandle);
 impl GetWorkingDirectoryHandle {
     /// Get current working directory
     #[inline]
-    pub fn get_working_directory<'a>(
+    pub unsafe fn get_working_directory<'a>(
         &'a mut self,
     ) -> Option<&'a CStr> {
         let ptr = unsafe {
@@ -207,7 +207,7 @@ define_buffer_handle!(GetApplicationDirectoryHandle);
 impl GetApplicationDirectoryHandle {
     /// Get the directory of the running application
     #[inline]
-    pub fn get_application_directory<'a>(
+    pub unsafe fn get_application_directory<'a>(
         &'a mut self,
     ) -> Option<&'a CStr> {
         let ptr = unsafe {
@@ -227,7 +227,7 @@ impl GetApplicationDirectoryHandle {
 
 /// Create directories (including full path requested)
 #[inline]
-pub fn make_directory(
+pub unsafe fn make_directory(
     dir_path: &CStr,
 ) -> Result<(), NonZero<c_int>> {
     let result = unsafe {
@@ -244,7 +244,7 @@ pub fn make_directory(
 /// Change working directory, return true on success
 #[allow(clippy::result_unit_err, reason = "cope")]
 #[inline]
-pub fn change_directory(
+pub unsafe fn change_directory(
     dir: &CStr,
 ) -> Result<(), ()> {
     match unsafe {
@@ -259,7 +259,7 @@ pub fn change_directory(
 
 /// Check if a given path is a file or a directory
 #[inline]
-pub fn is_path_file(
+pub unsafe fn is_path_file(
     path: &CStr,
 ) -> bool {
     unsafe {
@@ -271,7 +271,7 @@ pub fn is_path_file(
 
 /// Check if fileName is valid for the platform/OS
 #[inline]
-pub fn is_file_name_valid(
+pub unsafe fn is_file_name_valid(
     file_name: &CStr,
 ) -> bool {
     unsafe {
@@ -283,7 +283,7 @@ pub fn is_file_name_valid(
 
 /// Load directory filepaths
 #[inline]
-pub fn load_directory_files(
+pub unsafe fn load_directory_files(
     dir_path: &CStr,
 ) -> sys::FilePathList {
     unsafe {
@@ -295,7 +295,7 @@ pub fn load_directory_files(
 
 /// Load directory filepaths with extension filtering and recursive directory scan. Use 'DIR' in the filter string to include directories in the result
 #[inline]
-pub fn load_directory_files_ex(
+pub unsafe fn load_directory_files_ex(
     base_path: Option<&CStr>,
     filter: Option<&CStr>,
     scan_subdirs: bool,
@@ -311,7 +311,7 @@ pub fn load_directory_files_ex(
 
 /// Unload filepaths
 #[inline]
-pub fn unload_directory_files(
+pub unsafe fn unload_directory_files(
     files: sys::FilePathList,
 ) {
     unsafe {
@@ -323,7 +323,7 @@ pub fn unload_directory_files(
 
 /// Check if a file has been dropped into window
 #[inline]
-pub fn is_file_dropped() -> bool {
+pub unsafe fn is_file_dropped() -> bool {
     unsafe {
         sys::IsFileDropped()
     }
@@ -331,7 +331,7 @@ pub fn is_file_dropped() -> bool {
 
 /// Load dropped filepaths
 #[inline]
-pub fn load_dropped_files() -> sys::FilePathList {
+pub unsafe fn load_dropped_files() -> sys::FilePathList {
     unsafe {
         sys::LoadDroppedFiles()
     }
@@ -341,7 +341,7 @@ pub fn load_dropped_files() -> sys::FilePathList {
 ///
 /// WARNING: files pointers are the same as internal ones
 #[inline]
-pub fn unload_dropped_files(
+pub unsafe fn unload_dropped_files(
     files: sys::FilePathList,
 ) {
     unsafe {
@@ -353,7 +353,7 @@ pub fn unload_dropped_files(
 
 /// Get file modification time (last write time)
 #[inline]
-pub fn get_file_mod_time(
+pub unsafe fn get_file_mod_time(
     file_name: &CStr,
 ) -> i64 {
     unsafe {

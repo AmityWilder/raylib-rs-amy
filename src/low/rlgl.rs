@@ -50,7 +50,7 @@ use super::*;
 
 // /// Choose the current matrix to be transformed
 // #[inline]
-// pub fn rlMatrixMode(
+// pub unsafe fn rlMatrixMode(
 //     mode: i32,
 // ) {
 //     unsafe {
@@ -60,7 +60,7 @@ use super::*;
 
 /// Push the current matrix to stack
 #[inline]
-pub fn rl_push_matrix() {
+pub unsafe fn rl_push_matrix() {
     unsafe {
         sys::rlPushMatrix();
     }
@@ -68,7 +68,7 @@ pub fn rl_push_matrix() {
 
 /// Pop latest inserted matrix from stack
 #[inline]
-pub fn rl_pop_matrix() {
+pub unsafe fn rl_pop_matrix() {
     unsafe {
         sys::rlPopMatrix();
     }
@@ -76,7 +76,7 @@ pub fn rl_pop_matrix() {
 
 /// Reset current matrix to identity matrix
 #[inline]
-pub fn rl_load_identity() {
+pub unsafe fn rl_load_identity() {
     unsafe {
         sys::rlLoadIdentity();
     }
@@ -84,7 +84,7 @@ pub fn rl_load_identity() {
 
 // /// Multiply the current matrix by a translation matrix
 // #[inline]
-// pub fn rlTranslatef(
+// pub unsafe fn rlTranslatef(
 //     x: f32,
 //     y: f32,
 //     z: f32,
@@ -96,7 +96,7 @@ pub fn rl_load_identity() {
 
 // /// Multiply the current matrix by a rotation matrix
 // #[inline]
-// pub fn rlRotatef(
+// pub unsafe fn rlRotatef(
 //     angle: f32,
 //     x: f32,
 //     y: f32,
@@ -109,7 +109,7 @@ pub fn rl_load_identity() {
 
 // /// Multiply the current matrix by a scaling matrix
 // #[inline]
-// pub fn rlScalef(
+// pub unsafe fn rlScalef(
 //     x: f32,
 //     y: f32,
 //     z: f32,
@@ -121,7 +121,7 @@ pub fn rl_load_identity() {
 
 // /// Multiply the current matrix by another matrix
 // #[inline]
-// pub fn rlMultMatrixf(
+// pub unsafe fn rlMultMatrixf(
 //     matf: *const f32,
 // ) {
 //     unsafe {
@@ -130,7 +130,7 @@ pub fn rl_load_identity() {
 // }
 
 // #[inline]
-// pub fn rlFrustum(
+// pub unsafe fn rlFrustum(
 //     left: f64,
 //     right: f64,
 //     bottom: f64,
@@ -144,7 +144,7 @@ pub fn rl_load_identity() {
 // }
 
 // #[inline]
-// pub fn rlOrtho(
+// pub unsafe fn rlOrtho(
 //     left: f64,
 //     right: f64,
 //     bottom: f64,
@@ -159,7 +159,7 @@ pub fn rl_load_identity() {
 
 // /// Set the viewport area
 // #[inline]
-// pub fn rlViewport(
+// pub unsafe fn rlViewport(
 //     x: i32,
 //     y: i32,
 //     width: i32,
@@ -172,7 +172,7 @@ pub fn rl_load_identity() {
 
 // /// Set clip planes distances
 // #[inline]
-// pub fn rlSetClipPlanes(
+// pub unsafe fn rlSetClipPlanes(
 //     nearPlane: f64,
 //     farPlane: f64,
 // ) {
@@ -183,7 +183,7 @@ pub fn rl_load_identity() {
 
 /// Get cull plane distance near
 #[inline]
-pub fn rl_get_cull_distance_near() -> f64 {
+pub unsafe fn rl_get_cull_distance_near() -> f64 {
     unsafe {
         sys::rlGetCullDistanceNear()
     }
@@ -191,7 +191,7 @@ pub fn rl_get_cull_distance_near() -> f64 {
 
 /// Get cull plane distance far
 #[inline]
-pub fn rl_get_cull_distance_far() -> f64 {
+pub unsafe fn rl_get_cull_distance_far() -> f64 {
     unsafe {
         sys::rlGetCullDistanceFar()
     }
@@ -203,7 +203,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Initialize drawing mode (how to organize vertex)
 // #[inline]
-// pub fn rlBegin(
+// pub unsafe fn rlBegin(
 //     mode: i32,
 // ) {
 //     unsafe {
@@ -213,7 +213,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Finish vertex providing
 // #[inline]
-// pub fn rlEnd() {
+// pub unsafe fn rlEnd() {
 //     unsafe {
 //         sys::
 //     }
@@ -221,7 +221,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (position) - 2 int
 // #[inline]
-// pub fn rlVertex2i(
+// pub unsafe fn rlVertex2i(
 //     x: i32,
 //     y: i32,
 // ) {
@@ -232,7 +232,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (position) - 2 float
 // #[inline]
-// pub fn rlVertex2f(
+// pub unsafe fn rlVertex2f(
 //     x: f32,
 //     y: f32,
 // ) {
@@ -243,7 +243,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (position) - 3 float
 // #[inline]
-// pub fn rlVertex3f(
+// pub unsafe fn rlVertex3f(
 //     x: f32,
 //     y: f32,
 //     z: f32,
@@ -255,7 +255,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (texture coordinate) - 2 float
 // #[inline]
-// pub fn rlTexCoord2f(
+// pub unsafe fn rlTexCoord2f(
 //     x: f32,
 //     y: f32,
 // ) {
@@ -266,7 +266,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (normal) - 3 float
 // #[inline]
-// pub fn rlNormal3f(
+// pub unsafe fn rlNormal3f(
 //     x: f32,
 //     y: f32,
 //     z: f32,
@@ -278,7 +278,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (color) - 4 byte
 // #[inline]
-// pub fn rlColor4ub(
+// pub unsafe fn rlColor4ub(
 //     r: u8,
 //     g: u8,
 //     b: u8,
@@ -291,7 +291,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (color) - 3 float
 // #[inline]
-// pub fn rlColor3f(
+// pub unsafe fn rlColor3f(
 //     x: f32,
 //     y: f32,
 //     z: f32,
@@ -303,7 +303,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Define one vertex (color) - 4 float
 // #[inline]
-// pub fn rlColor4f(
+// pub unsafe fn rlColor4f(
 //     x: f32,
 //     y: f32,
 //     z: f32,
@@ -324,7 +324,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 // /// Enable vertex array (VAO, if supported)
 // #[inline]
-// pub fn rlEnableVertexArray(
+// pub unsafe fn rlEnableVertexArray(
 //     vaoId: u32,
 // ) -> bool {
 //     unsafe {
@@ -334,7 +334,7 @@ pub fn rl_get_cull_distance_far() -> f64 {
 
 /// Disable vertex array (VAO, if supported)
 #[inline]
-pub fn rl_disable_vertex_array() {
+pub unsafe fn rl_disable_vertex_array() {
     unsafe {
         sys::rlDisableVertexArray();
     }
@@ -342,7 +342,7 @@ pub fn rl_disable_vertex_array() {
 
 // /// Enable vertex buffer (VBO)
 // #[inline]
-// pub fn rlEnableVertexBuffer(
+// pub unsafe fn rlEnableVertexBuffer(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -352,7 +352,7 @@ pub fn rl_disable_vertex_array() {
 
 /// Disable vertex buffer (VBO)
 #[inline]
-pub fn rl_disable_vertex_buffer() {
+pub unsafe fn rl_disable_vertex_buffer() {
     unsafe {
         sys::rlDisableVertexBuffer();
     }
@@ -360,7 +360,7 @@ pub fn rl_disable_vertex_buffer() {
 
 // /// Enable vertex buffer element (VBO element)
 // #[inline]
-// pub fn rlEnableVertexBufferElement(
+// pub unsafe fn rlEnableVertexBufferElement(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -370,7 +370,7 @@ pub fn rl_disable_vertex_buffer() {
 
 // /// Disable vertex buffer element (VBO element)
 // #[inline]
-// pub fn rlDisableVertexBufferElement() {
+// pub unsafe fn rlDisableVertexBufferElement() {
 //     unsafe {
 //         sys::
 //     }
@@ -378,7 +378,7 @@ pub fn rl_disable_vertex_buffer() {
 
 // /// Enable vertex attribute index
 // #[inline]
-// pub fn rlEnableVertexAttribute(
+// pub unsafe fn rlEnableVertexAttribute(
 //     index: u32,
 // ) {
 //     unsafe {
@@ -388,7 +388,7 @@ pub fn rl_disable_vertex_buffer() {
 
 // /// Disable vertex attribute index
 // #[inline]
-// pub fn rlDisableVertexAttribute(
+// pub unsafe fn rlDisableVertexAttribute(
 //     index: u32,
 // ) {
 //     unsafe {
@@ -400,7 +400,7 @@ pub fn rl_disable_vertex_buffer() {
 
 // /// Select and active a texture slot
 // #[inline]
-// pub fn rlActiveTextureSlot(
+// pub unsafe fn rlActiveTextureSlot(
 //     slot: i32,
 // ) {
 //     unsafe {
@@ -410,7 +410,7 @@ pub fn rl_disable_vertex_buffer() {
 
 // /// Enable texture
 // #[inline]
-// pub fn rlEnableTexture(
+// pub unsafe fn rlEnableTexture(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -420,7 +420,7 @@ pub fn rl_disable_vertex_buffer() {
 
 /// Disable texture
 #[inline]
-pub fn rl_disable_texture() {
+pub unsafe fn rl_disable_texture() {
     unsafe {
         sys::rlDisableTexture();
     }
@@ -428,7 +428,7 @@ pub fn rl_disable_texture() {
 
 // /// Enable texture cubemap
 // #[inline]
-// pub fn rlEnableTextureCubemap(
+// pub unsafe fn rlEnableTextureCubemap(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -438,7 +438,7 @@ pub fn rl_disable_texture() {
 
 /// Disable texture cubemap
 #[inline]
-pub fn rl_disable_texture_cubemap() {
+pub unsafe fn rl_disable_texture_cubemap() {
     unsafe {
         sys::rlDisableTextureCubemap();
     }
@@ -446,7 +446,7 @@ pub fn rl_disable_texture_cubemap() {
 
 // /// Set texture parameters (filter, wrap)
 // #[inline]
-// pub fn rlTextureParameters(
+// pub unsafe fn rlTextureParameters(
 //     id: u32,
 //     param: i32,
 //     value: i32,
@@ -458,7 +458,7 @@ pub fn rl_disable_texture_cubemap() {
 
 // /// Set cubemap parameters (filter, wrap)
 // #[inline]
-// pub fn rlCubemapParameters(
+// pub unsafe fn rlCubemapParameters(
 //     id: u32,
 //     param: i32,
 //     value: i32,
@@ -472,7 +472,7 @@ pub fn rl_disable_texture_cubemap() {
 
 // /// Enable shader program
 // #[inline]
-// pub fn rlEnableShader(
+// pub unsafe fn rlEnableShader(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -482,7 +482,7 @@ pub fn rl_disable_texture_cubemap() {
 
 /// Disable shader program
 #[inline]
-pub fn rl_disable_shader() {
+pub unsafe fn rl_disable_shader() {
     unsafe {
         sys::rlDisableShader();
     }
@@ -492,7 +492,7 @@ pub fn rl_disable_shader() {
 
 // /// Enable render texture (fbo)
 // #[inline]
-// pub fn rlEnableFramebuffer(
+// pub unsafe fn rlEnableFramebuffer(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -502,7 +502,7 @@ pub fn rl_disable_shader() {
 
 /// Disable render texture (fbo), return to default framebuffer
 #[inline]
-pub fn rl_disable_framebuffer() {
+pub unsafe fn rl_disable_framebuffer() {
     unsafe {
         sys::rlDisableFramebuffer();
     }
@@ -510,7 +510,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get the currently active render texture (fbo), 0 for default framebuffer
 // #[inline]
-// pub fn rlGetActiveFramebuffer() -> u32 {
+// pub unsafe fn rlGetActiveFramebuffer() -> u32 {
 //     unsafe {
 //         sys::
 //     }
@@ -518,7 +518,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Activate multiple draw color buffers
 // #[inline]
-// pub fn rlActiveDrawBuffers(
+// pub unsafe fn rlActiveDrawBuffers(
 //     count: i32,
 // ) {
 //     unsafe {
@@ -528,7 +528,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Blit active framebuffer to main framebuffer
 // #[inline]
-// pub fn rlBlitFramebuffer(
+// pub unsafe fn rlBlitFramebuffer(
 //     srcX: i32,
 //     srcY: i32,
 //     srcWidth: i32,
@@ -546,7 +546,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Bind framebuffer (FBO)
 // #[inline]
-// pub fn rlBindFramebuffer(
+// pub unsafe fn rlBindFramebuffer(
 //     target: u32,
 //     framebuffer: u32,
 // ) {
@@ -559,7 +559,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable color blending
 // #[inline]
-// pub fn rlEnableColorBlend() {
+// pub unsafe fn rlEnableColorBlend() {
 //     unsafe {
 //         sys::
 //     }
@@ -567,7 +567,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable color blending
 // #[inline]
-// pub fn rlDisableColorBlend() {
+// pub unsafe fn rlDisableColorBlend() {
 //     unsafe {
 //         sys::
 //     }
@@ -575,7 +575,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable depth test
 // #[inline]
-// pub fn rlEnableDepthTest() {
+// pub unsafe fn rlEnableDepthTest() {
 //     unsafe {
 //         sys::
 //     }
@@ -583,7 +583,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable depth test
 // #[inline]
-// pub fn rlDisableDepthTest() {
+// pub unsafe fn rlDisableDepthTest() {
 //     unsafe {
 //         sys::
 //     }
@@ -591,7 +591,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable depth write
 // #[inline]
-// pub fn rlEnableDepthMask() {
+// pub unsafe fn rlEnableDepthMask() {
 //     unsafe {
 //         sys::
 //     }
@@ -599,7 +599,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable depth write
 // #[inline]
-// pub fn rlDisableDepthMask() {
+// pub unsafe fn rlDisableDepthMask() {
 //     unsafe {
 //         sys::
 //     }
@@ -607,7 +607,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable backface culling
 // #[inline]
-// pub fn rlEnableBackfaceCulling() {
+// pub unsafe fn rlEnableBackfaceCulling() {
 //     unsafe {
 //         sys::
 //     }
@@ -615,7 +615,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable backface culling
 // #[inline]
-// pub fn rlDisableBackfaceCulling() {
+// pub unsafe fn rlDisableBackfaceCulling() {
 //     unsafe {
 //         sys::
 //     }
@@ -623,7 +623,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Color mask control
 // #[inline]
-// pub fn rlColorMask(
+// pub unsafe fn rlColorMask(
 //     r: bool,
 //     g: bool,
 //     b: bool,
@@ -636,7 +636,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set face culling mode
 // #[inline]
-// pub fn rlSetCullFace(
+// pub unsafe fn rlSetCullFace(
 //     mode: i32,
 // ) {
 //     unsafe {
@@ -646,7 +646,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable scissor test
 // #[inline]
-// pub fn rlEnableScissorTest() {
+// pub unsafe fn rlEnableScissorTest() {
 //     unsafe {
 //         sys::
 //     }
@@ -654,7 +654,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable scissor test
 // #[inline]
-// pub fn rlDisableScissorTest() {
+// pub unsafe fn rlDisableScissorTest() {
 //     unsafe {
 //         sys::
 //     }
@@ -662,7 +662,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Scissor test
 // #[inline]
-// pub fn rlScissor(
+// pub unsafe fn rlScissor(
 //     x: i32,
 //     y: i32,
 //     width: i32,
@@ -675,7 +675,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable point mode
 // #[inline]
-// pub fn rlEnablePointMode() {
+// pub unsafe fn rlEnablePointMode() {
 //     unsafe {
 //         sys::
 //     }
@@ -683,7 +683,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable point mode
 // #[inline]
-// pub fn rlDisablePointMode() {
+// pub unsafe fn rlDisablePointMode() {
 //     unsafe {
 //         sys::
 //     }
@@ -691,7 +691,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable wire mode
 // #[inline]
-// pub fn rlEnableWireMode() {
+// pub unsafe fn rlEnableWireMode() {
 //     unsafe {
 //         sys::
 //     }
@@ -699,7 +699,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable wire mode
 // #[inline]
-// pub fn rlDisableWireMode() {
+// pub unsafe fn rlDisableWireMode() {
 //     unsafe {
 //         sys::
 //     }
@@ -707,7 +707,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set the line drawing width
 // #[inline]
-// pub fn rlSetLineWidth(
+// pub unsafe fn rlSetLineWidth(
 //     width: f32,
 // ) {
 //     unsafe {
@@ -717,7 +717,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get the line drawing width
 // #[inline]
-// pub fn rlGetLineWidth() -> f32 {
+// pub unsafe fn rlGetLineWidth() -> f32 {
 //     unsafe {
 //         sys::
 //     }
@@ -725,7 +725,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable line aliasing
 // #[inline]
-// pub fn rlEnableSmoothLines() {
+// pub unsafe fn rlEnableSmoothLines() {
 //     unsafe {
 //         sys::
 //     }
@@ -733,7 +733,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable line aliasing
 // #[inline]
-// pub fn rlDisableSmoothLines() {
+// pub unsafe fn rlDisableSmoothLines() {
 //     unsafe {
 //         sys::
 //     }
@@ -741,7 +741,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Enable stereo rendering
 // #[inline]
-// pub fn rlEnableStereoRender() {
+// pub unsafe fn rlEnableStereoRender() {
 //     unsafe {
 //         sys::
 //     }
@@ -749,7 +749,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Disable stereo rendering
 // #[inline]
-// pub fn rlDisableStereoRender() {
+// pub unsafe fn rlDisableStereoRender() {
 //     unsafe {
 //         sys::
 //     }
@@ -757,7 +757,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Check if stereo render is enabled
 // #[inline]
-// pub fn rlIsStereoRenderEnabled() -> bool {
+// pub unsafe fn rlIsStereoRenderEnabled() -> bool {
 //     unsafe {
 //         sys::
 //     }
@@ -765,7 +765,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Clear color buffer with color
 // #[inline]
-// pub fn rlClearColor(
+// pub unsafe fn rlClearColor(
 //     r: u8,
 //     g: u8,
 //     b: u8,
@@ -778,7 +778,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Clear used screen buffers (color and depth)
 // #[inline]
-// pub fn rlClearScreenBuffers() {
+// pub unsafe fn rlClearScreenBuffers() {
 //     unsafe {
 //         sys::
 //     }
@@ -786,7 +786,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Check and log OpenGL error codes
 // #[inline]
-// pub fn rlCheckErrors() {
+// pub unsafe fn rlCheckErrors() {
 //     unsafe {
 //         sys::
 //     }
@@ -794,7 +794,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set blending mode
 // #[inline]
-// pub fn rlSetBlendMode(
+// pub unsafe fn rlSetBlendMode(
 //     mode: i32,
 // ) {
 //     unsafe {
@@ -804,7 +804,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set blending mode factor and equation (using OpenGL factors)
 // #[inline]
-// pub fn rlSetBlendFactors(
+// pub unsafe fn rlSetBlendFactors(
 //     glSrcFactor: i32,
 //     glDstFactor: i32,
 //     glEquation: i32,
@@ -816,7 +816,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set blending mode factors and equations separately (using OpenGL factors)
 // #[inline]
-// pub fn rlSetBlendFactorsSeparate(
+// pub unsafe fn rlSetBlendFactorsSeparate(
 //     glSrcRGB: i32,
 //     glDstRGB: i32,
 //     glSrcAlpha: i32,
@@ -836,7 +836,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Initialize rlgl (buffers, shaders, textures, states)
 // #[inline]
-// pub fn rlglInit(
+// pub unsafe fn rlglInit(
 //     width: i32,
 //     height: i32,
 // ) {
@@ -847,7 +847,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// De-initialize rlgl (buffers, shaders, textures)
 // #[inline]
-// pub fn rlglClose() {
+// pub unsafe fn rlglClose() {
 //     unsafe {
 //         sys::
 //     }
@@ -855,7 +855,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load OpenGL extensions (loader function required)
 // #[inline]
-// pub fn rlLoadExtensions(
+// pub unsafe fn rlLoadExtensions(
 //     loader: *mut ::std::os::raw::c_void,
 // ) {
 //     unsafe {
@@ -865,7 +865,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get current OpenGL version
 // #[inline]
-// pub fn rlGetVersion() -> i32 {
+// pub unsafe fn rlGetVersion() -> i32 {
 //     unsafe {
 //         sys::
 //     }
@@ -873,7 +873,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set current framebuffer width
 // #[inline]
-// pub fn rlSetFramebufferWidth(
+// pub unsafe fn rlSetFramebufferWidth(
 //     width: i32,
 // ) {
 //     unsafe {
@@ -883,7 +883,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get default framebuffer width
 // #[inline]
-// pub fn rlGetFramebufferWidth() -> i32 {
+// pub unsafe fn rlGetFramebufferWidth() -> i32 {
 //     unsafe {
 //         sys::
 //     }
@@ -891,7 +891,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set current framebuffer height
 // #[inline]
-// pub fn rlSetFramebufferHeight(
+// pub unsafe fn rlSetFramebufferHeight(
 //     height: i32,
 // ) {
 //     unsafe {
@@ -901,7 +901,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get default framebuffer height
 // #[inline]
-// pub fn rlGetFramebufferHeight() -> i32 {
+// pub unsafe fn rlGetFramebufferHeight() -> i32 {
 //     unsafe {
 //         sys::
 //     }
@@ -909,7 +909,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get default texture id
 // #[inline]
-// pub fn rlGetTextureIdDefault() -> u32 {
+// pub unsafe fn rlGetTextureIdDefault() -> u32 {
 //     unsafe {
 //         sys::
 //     }
@@ -917,7 +917,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get default shader id
 // #[inline]
-// pub fn rlGetShaderIdDefault() -> u32 {
+// pub unsafe fn rlGetShaderIdDefault() -> u32 {
 //     unsafe {
 //         sys::
 //     }
@@ -925,7 +925,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get default shader locations
 // #[inline]
-// pub fn rlGetShaderLocsDefault() -> *mut i32 {
+// pub unsafe fn rlGetShaderLocsDefault() -> *mut i32 {
 //     unsafe {
 //         sys::
 //     }
@@ -937,7 +937,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load a render batch system
 // #[inline]
-// pub fn rlLoadRenderBatch(
+// pub unsafe fn rlLoadRenderBatch(
 //     numBuffers: i32,
 //     bufferElements: i32,
 // ) -> sys::rlRenderBatch {
@@ -948,7 +948,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Unload render batch system
 // #[inline]
-// pub fn rlUnloadRenderBatch(
+// pub unsafe fn rlUnloadRenderBatch(
 //     batch: sys::rlRenderBatch,
 // ) {
 //     unsafe {
@@ -958,7 +958,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Draw render batch data (Update->Draw->Reset)
 // #[inline]
-// pub fn rlDrawRenderBatch(
+// pub unsafe fn rlDrawRenderBatch(
 //     batch: *mut sys::rlRenderBatch,
 // ) {
 //     unsafe {
@@ -968,7 +968,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set the active render batch for rlgl (NULL for default internal)
 // #[inline]
-// pub fn rlSetRenderBatchActive(
+// pub unsafe fn rlSetRenderBatchActive(
 //     batch: *mut sys::rlRenderBatch,
 // ) {
 //     unsafe {
@@ -978,7 +978,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Update and draw internal render batch
 // #[inline]
-// pub fn rlDrawRenderBatchActive() {
+// pub unsafe fn rlDrawRenderBatchActive() {
 //     unsafe {
 //         sys::
 //     }
@@ -986,7 +986,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Check internal buffer overflow for a given number of vertex
 // #[inline]
-// pub fn rlCheckRenderBatchLimit(
+// pub unsafe fn rlCheckRenderBatchLimit(
 //     vCount: i32,
 // ) -> bool {
 //     unsafe {
@@ -996,7 +996,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set current texture for render batch and check buffers limits
 // #[inline]
-// pub fn rlSetTexture(
+// pub unsafe fn rlSetTexture(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -1010,7 +1010,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load vertex array (vao) if supported
 // #[inline]
-// pub fn rlLoadVertexArray() -> u32 {
+// pub unsafe fn rlLoadVertexArray() -> u32 {
 //     unsafe {
 //         sys::
 //     }
@@ -1018,7 +1018,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load a vertex buffer object
 // #[inline]
-// pub fn rlLoadVertexBuffer(
+// pub unsafe fn rlLoadVertexBuffer(
 //     buffer: *const ::std::os::raw::c_void,
 //     size: i32,
 //     dynamic: bool,
@@ -1030,7 +1030,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load vertex buffer elements object
 // #[inline]
-// pub fn rlLoadVertexBufferElement(
+// pub unsafe fn rlLoadVertexBufferElement(
 //     buffer: *const ::std::os::raw::c_void,
 //     size: i32,
 //     dynamic: bool,
@@ -1042,7 +1042,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Update vertex buffer object data on GPU buffer
 // #[inline]
-// pub fn rlUpdateVertexBuffer(
+// pub unsafe fn rlUpdateVertexBuffer(
 //     bufferId: u32,
 //     data: *const ::std::os::raw::c_void,
 //     dataSize: i32,
@@ -1055,7 +1055,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Update vertex buffer elements data on GPU buffer
 // #[inline]
-// pub fn rlUpdateVertexBufferElements(
+// pub unsafe fn rlUpdateVertexBufferElements(
 //     id: u32,
 //     data: *const ::std::os::raw::c_void,
 //     dataSize: i32,
@@ -1068,7 +1068,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Unload vertex array (vao)
 // #[inline]
-// pub fn rlUnloadVertexArray(
+// pub unsafe fn rlUnloadVertexArray(
 //     vaoId: u32,
 // ) {
 //     unsafe {
@@ -1078,7 +1078,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Unload vertex buffer object
 // #[inline]
-// pub fn rlUnloadVertexBuffer(
+// pub unsafe fn rlUnloadVertexBuffer(
 //     vboId: u32,
 // ) {
 //     unsafe {
@@ -1088,7 +1088,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set vertex attribute data configuration
 // #[inline]
-// pub fn rlSetVertexAttribute(
+// pub unsafe fn rlSetVertexAttribute(
 //     index: u32,
 //     compSize: i32,
 //     type_: i32,
@@ -1103,7 +1103,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set vertex attribute data divisor
 // #[inline]
-// pub fn rlSetVertexAttributeDivisor(
+// pub unsafe fn rlSetVertexAttributeDivisor(
 //     index: u32,
 //     divisor: i32,
 // ) {
@@ -1114,7 +1114,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set vertex attribute default value, when attribute to provided
 // #[inline]
-// pub fn rlSetVertexAttributeDefault(
+// pub unsafe fn rlSetVertexAttributeDefault(
 //     locIndex: i32,
 //     value: *const ::std::os::raw::c_void,
 //     attribType: i32,
@@ -1127,7 +1127,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Draw vertex array (currently active vao)
 // #[inline]
-// pub fn rlDrawVertexArray(
+// pub unsafe fn rlDrawVertexArray(
 //     offset: i32,
 //     count: i32,
 // ) {
@@ -1138,7 +1138,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Draw vertex array elements
 // #[inline]
-// pub fn rlDrawVertexArrayElements(
+// pub unsafe fn rlDrawVertexArrayElements(
 //     offset: i32,
 //     count: i32,
 //     buffer: *const ::std::os::raw::c_void,
@@ -1150,7 +1150,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Draw vertex array (currently active vao) with instancing
 // #[inline]
-// pub fn rlDrawVertexArrayInstanced(
+// pub unsafe fn rlDrawVertexArrayInstanced(
 //     offset: i32,
 //     count: i32,
 //     instances: i32,
@@ -1162,7 +1162,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Draw vertex array elements with instancing
 // #[inline]
-// pub fn rlDrawVertexArrayElementsInstanced(
+// pub unsafe fn rlDrawVertexArrayElementsInstanced(
 //     offset: i32,
 //     count: i32,
 //     buffer: *const ::std::os::raw::c_void,
@@ -1177,7 +1177,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load texture data
 // #[inline]
-// pub fn rlLoadTexture(
+// pub unsafe fn rlLoadTexture(
 //     data: *const ::std::os::raw::c_void,
 //     width: i32,
 //     height: i32,
@@ -1191,7 +1191,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load depth texture/renderbuffer (to be attached to fbo)
 // #[inline]
-// pub fn rlLoadTextureDepth(
+// pub unsafe fn rlLoadTextureDepth(
 //     width: i32,
 //     height: i32,
 //     useRenderBuffer: bool,
@@ -1203,7 +1203,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load texture cubemap data
 // #[inline]
-// pub fn rlLoadTextureCubemap(
+// pub unsafe fn rlLoadTextureCubemap(
 //     data: *const ::std::os::raw::c_void,
 //     size: i32,
 //     format: i32,
@@ -1216,7 +1216,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Update texture with new data on GPU
 // #[inline]
-// pub fn rlUpdateTexture(
+// pub unsafe fn rlUpdateTexture(
 //     id: u32,
 //     offsetX: i32,
 //     offsetY: i32,
@@ -1232,7 +1232,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get OpenGL internal formats
 // #[inline]
-// pub fn rlGetGlTextureFormats(
+// pub unsafe fn rlGetGlTextureFormats(
 //     format: i32,
 //     glInternalFormat: *mut u32,
 //     glFormat: *mut u32,
@@ -1245,7 +1245,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get name string for pixel format
 // #[inline]
-// pub fn rlGetPixelFormatName(
+// pub unsafe fn rlGetPixelFormatName(
 //     format: u32,
 // ) -> *const ::std::os::raw::c_char {
 //     unsafe {
@@ -1255,7 +1255,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Unload texture from GPU memory
 // #[inline]
-// pub fn rlUnloadTexture(
+// pub unsafe fn rlUnloadTexture(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -1265,7 +1265,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Generate mipmap data for selected texture
 // #[inline]
-// pub fn rlGenTextureMipmaps(
+// pub unsafe fn rlGenTextureMipmaps(
 //     id: u32,
 //     width: i32,
 //     height: i32,
@@ -1279,7 +1279,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Read texture pixel data
 // #[inline]
-// pub fn rlReadTexturePixels(
+// pub unsafe fn rlReadTexturePixels(
 //     id: u32,
 //     width: i32,
 //     height: i32,
@@ -1292,7 +1292,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Read screen pixel data (color buffer)
 // #[inline]
-// pub fn rlReadScreenPixels(
+// pub unsafe fn rlReadScreenPixels(
 //     width: i32,
 //     height: i32,
 // ) -> *mut u8 {
@@ -1305,7 +1305,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load an empty framebuffer
 // #[inline]
-// pub fn rlLoadFramebuffer() -> u32 {
+// pub unsafe fn rlLoadFramebuffer() -> u32 {
 //     unsafe {
 //         sys::
 //     }
@@ -1313,7 +1313,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Attach texture/renderbuffer to a framebuffer
 // #[inline]
-// pub fn rlFramebufferAttach(
+// pub unsafe fn rlFramebufferAttach(
 //     fboId: u32,
 //     texId: u32,
 //     attachType: i32,
@@ -1327,7 +1327,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Verify framebuffer is complete
 // #[inline]
-// pub fn rlFramebufferComplete(
+// pub unsafe fn rlFramebufferComplete(
 //     id: u32,
 // ) -> bool {
 //     unsafe {
@@ -1337,7 +1337,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Delete framebuffer from GPU
 // #[inline]
-// pub fn rlUnloadFramebuffer(
+// pub unsafe fn rlUnloadFramebuffer(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -1349,7 +1349,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load shader from code strings
 // #[inline]
-// pub fn rlLoadShaderCode(
+// pub unsafe fn rlLoadShaderCode(
 //     vsCode: *const ::std::os::raw::c_char,
 //     fsCode: *const ::std::os::raw::c_char,
 // ) -> u32 {
@@ -1360,7 +1360,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Compile custom shader and return shader id (type: RL_VERTEX_SHADER, RL_FRAGMENT_SHADER, RL_COMPUTE_SHADER)
 // #[inline]
-// pub fn rlCompileShader(
+// pub unsafe fn rlCompileShader(
 //     shaderCode: *const ::std::os::raw::c_char,
 //     type_: i32,
 // ) -> u32 {
@@ -1371,7 +1371,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load custom shader program
 // #[inline]
-// pub fn rlLoadShaderProgram(
+// pub unsafe fn rlLoadShaderProgram(
 //     vShaderId: u32,
 //     fShaderId: u32,
 // ) -> u32 {
@@ -1382,7 +1382,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Unload shader program
 // #[inline]
-// pub fn rlUnloadShaderProgram(
+// pub unsafe fn rlUnloadShaderProgram(
 //     id: u32,
 // ) {
 //     unsafe {
@@ -1392,7 +1392,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get shader location uniform
 // #[inline]
-// pub fn rlGetLocationUniform(
+// pub unsafe fn rlGetLocationUniform(
 //     shaderId: u32,
 //     uniformName: *const ::std::os::raw::c_char,
 // ) -> i32 {
@@ -1403,7 +1403,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get shader location attribute
 // #[inline]
-// pub fn rlGetLocationAttrib(
+// pub unsafe fn rlGetLocationAttrib(
 //     shaderId: u32,
 //     attribName: *const ::std::os::raw::c_char,
 // ) -> i32 {
@@ -1414,7 +1414,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set shader value uniform
 // #[inline]
-// pub fn rlSetUniform(
+// pub unsafe fn rlSetUniform(
 //     locIndex: i32,
 //     value: *const ::std::os::raw::c_void,
 //     uniformType: i32,
@@ -1427,7 +1427,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set shader value matrix
 // #[inline]
-// pub fn rlSetUniformMatrix(
+// pub unsafe fn rlSetUniformMatrix(
 //     locIndex: i32,
 //     mat: sys::Matrix,
 // ) {
@@ -1438,7 +1438,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set shader value matrices
 // #[inline]
-// pub fn rlSetUniformMatrices(
+// pub unsafe fn rlSetUniformMatrices(
 //     locIndex: i32,
 //     mat: *const sys::Matrix,
 //     count: i32,
@@ -1450,7 +1450,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set shader value sampler
 // #[inline]
-// pub fn rlSetUniformSampler(
+// pub unsafe fn rlSetUniformSampler(
 //     locIndex: i32,
 //     textureId: u32,
 // ) {
@@ -1461,7 +1461,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set shader currently active (id and locations)
 // #[inline]
-// pub fn rlSetShader(
+// pub unsafe fn rlSetShader(
 //     id: u32,
 //     locs: *mut i32,
 // ) {
@@ -1474,7 +1474,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load compute shader program
 // #[inline]
-// pub fn rlLoadComputeShaderProgram(
+// pub unsafe fn rlLoadComputeShaderProgram(
 //     shaderId: u32,
 // ) -> u32 {
 //     unsafe {
@@ -1484,7 +1484,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Dispatch compute shader (equivalent to *draw* for graphics pipeline)
 // #[inline]
-// pub fn rlComputeShaderDispatch(
+// pub unsafe fn rlComputeShaderDispatch(
 //     groupX: u32,
 //     groupY: u32,
 //     groupZ: u32,
@@ -1498,7 +1498,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load shader storage buffer object (SSBO)
 // #[inline]
-// pub fn rlLoadShaderBuffer(
+// pub unsafe fn rlLoadShaderBuffer(
 //     size: u32,
 //     data: *const ::std::os::raw::c_void,
 //     usageHint: i32,
@@ -1510,7 +1510,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Unload shader storage buffer object (SSBO)
 // #[inline]
-// pub fn rlUnloadShaderBuffer(
+// pub unsafe fn rlUnloadShaderBuffer(
 //     ssboId: u32,
 // ) {
 //     unsafe {
@@ -1520,7 +1520,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Update SSBO buffer data
 // #[inline]
-// pub fn rlUpdateShaderBuffer(
+// pub unsafe fn rlUpdateShaderBuffer(
 //     id: u32,
 //     data: *const ::std::os::raw::c_void,
 //     dataSize: u32,
@@ -1533,7 +1533,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Bind SSBO buffer
 // #[inline]
-// pub fn rlBindShaderBuffer(
+// pub unsafe fn rlBindShaderBuffer(
 //     id: u32,
 //     index: u32,
 // ) {
@@ -1544,7 +1544,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Read SSBO buffer data (GPU->CPU)
 // #[inline]
-// pub fn rlReadShaderBuffer(
+// pub unsafe fn rlReadShaderBuffer(
 //     id: u32,
 //     dest: *mut ::std::os::raw::c_void,
 //     count: u32,
@@ -1557,7 +1557,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Copy SSBO data between buffers
 // #[inline]
-// pub fn rlCopyShaderBuffer(
+// pub unsafe fn rlCopyShaderBuffer(
 //     destId: u32,
 //     srcId: u32,
 //     destOffset: u32,
@@ -1571,7 +1571,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get SSBO buffer size
 // #[inline]
-// pub fn rlGetShaderBufferSize(
+// pub unsafe fn rlGetShaderBufferSize(
 //     id: u32,
 // ) -> u32 {
 //     unsafe {
@@ -1583,7 +1583,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Bind image texture
 // #[inline]
-// pub fn rlBindImageTexture(
+// pub unsafe fn rlBindImageTexture(
 //     id: u32,
 //     index: u32,
 //     format: i32,
@@ -1598,7 +1598,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get internal modelview matrix
 // #[inline]
-// pub fn rlGetMatrixModelview() -> sys::Matrix {
+// pub unsafe fn rlGetMatrixModelview() -> sys::Matrix {
 //     unsafe {
 //         sys::
 //     }
@@ -1606,7 +1606,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get internal projection matrix
 // #[inline]
-// pub fn rlGetMatrixProjection() -> sys::Matrix {
+// pub unsafe fn rlGetMatrixProjection() -> sys::Matrix {
 //     unsafe {
 //         sys::
 //     }
@@ -1614,7 +1614,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get internal accumulated transform matrix
 // #[inline]
-// pub fn rlGetMatrixTransform() -> sys::Matrix {
+// pub unsafe fn rlGetMatrixTransform() -> sys::Matrix {
 //     unsafe {
 //         sys::
 //     }
@@ -1622,7 +1622,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get internal projection matrix for stereo render (selected eye)
 // #[inline]
-// pub fn rlGetMatrixProjectionStereo(
+// pub unsafe fn rlGetMatrixProjectionStereo(
 //     eye: i32,
 // ) -> sys::Matrix {
 //     unsafe {
@@ -1632,7 +1632,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Get internal view offset matrix for stereo render (selected eye)
 // #[inline]
-// pub fn rlGetMatrixViewOffsetStereo(
+// pub unsafe fn rlGetMatrixViewOffsetStereo(
 //     eye: i32,
 // ) -> sys::Matrix {
 //     unsafe {
@@ -1642,7 +1642,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set a custom projection matrix (replaces internal projection matrix)
 // #[inline]
-// pub fn rlSetMatrixProjection(
+// pub unsafe fn rlSetMatrixProjection(
 //     proj: sys::Matrix,
 // ) {
 //     unsafe {
@@ -1652,7 +1652,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set a custom modelview matrix (replaces internal modelview matrix)
 // #[inline]
-// pub fn rlSetMatrixModelview(
+// pub unsafe fn rlSetMatrixModelview(
 //     view: sys::Matrix,
 // ) {
 //     unsafe {
@@ -1662,7 +1662,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set eyes projection matrices for stereo rendering
 // #[inline]
-// pub fn rlSetMatrixProjectionStereo(
+// pub unsafe fn rlSetMatrixProjectionStereo(
 //     right: sys::Matrix,
 //     left: sys::Matrix,
 // ) {
@@ -1673,7 +1673,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Set eyes view offsets matrices for stereo rendering
 // #[inline]
-// pub fn rlSetMatrixViewOffsetStereo(
+// pub unsafe fn rlSetMatrixViewOffsetStereo(
 //     right: sys::Matrix,
 //     left: sys::Matrix,
 // ) {
@@ -1686,7 +1686,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load and draw a cube
 // #[inline]
-// pub fn rlLoadDrawCube() {
+// pub unsafe fn rlLoadDrawCube() {
 //     unsafe {
 //         sys::
 //     }
@@ -1694,7 +1694,7 @@ pub fn rl_disable_framebuffer() {
 
 // /// Load and draw a quad
 // #[inline]
-// pub fn rlLoadDrawQuad() {
+// pub unsafe fn rlLoadDrawQuad() {
 //     unsafe {
 //         sys::
 //     }

@@ -4,7 +4,7 @@ use super::*;
 
 /// Initialize audio device and context
 #[inline]
-pub fn init_audio_device() {
+pub unsafe fn init_audio_device() {
     unsafe {
         sys::InitAudioDevice();
     }
@@ -12,7 +12,7 @@ pub fn init_audio_device() {
 
 /// Close the audio device and context
 #[inline]
-pub fn close_audio_device() {
+pub unsafe fn close_audio_device() {
     unsafe {
         sys::CloseAudioDevice()
     }
@@ -20,7 +20,7 @@ pub fn close_audio_device() {
 
 /// Check if audio device has been initialized successfully
 #[inline]
-pub fn is_audio_device_ready() -> bool {
+pub unsafe fn is_audio_device_ready() -> bool {
     unsafe {
         sys::IsAudioDeviceReady()
     }
@@ -28,7 +28,7 @@ pub fn is_audio_device_ready() -> bool {
 
 /// Set master volume (listener)
 #[inline]
-pub fn set_master_volume(
+pub unsafe fn set_master_volume(
     volume: f32,
 ) {
     unsafe {
@@ -40,7 +40,7 @@ pub fn set_master_volume(
 
 /// Get master volume (listener)
 #[inline]
-pub fn get_master_volume() -> f32 {
+pub unsafe fn get_master_volume() -> f32 {
     unsafe {
         sys::GetMasterVolume()
     }
@@ -50,7 +50,7 @@ pub fn get_master_volume() -> f32 {
 
 /// Load wave data from file
 #[inline]
-pub fn load_wave(
+pub unsafe fn load_wave(
     file_name: &CStr,
 ) -> sys::Wave {
     unsafe {
@@ -63,7 +63,7 @@ pub fn load_wave(
 /// Load wave from memory buffer, fileType refers to extension: i.e. ".wav"
 /// WARNING: File extension must be provided in lower-case
 #[inline]
-pub fn load_wave_from_memory(
+pub unsafe fn load_wave_from_memory(
     file_type: &CStr,
     file_data: &[u8],
 ) -> sys::Wave {
@@ -78,7 +78,7 @@ pub fn load_wave_from_memory(
 
 /// Checks if wave data is valid (data loaded and parameters)
 #[inline]
-pub fn is_wave_valid(
+pub unsafe fn is_wave_valid(
     wave: sys::Wave,
 ) -> bool {
     unsafe {
@@ -92,7 +92,7 @@ pub fn is_wave_valid(
 ///
 /// NOTE: The entire file is loaded to memory to be played (no-streaming)
 #[inline]
-pub fn load_sound(
+pub unsafe fn load_sound(
     file_name: &CStr,
 ) -> sys::Sound {
     unsafe {
@@ -106,7 +106,7 @@ pub fn load_sound(
 ///
 /// NOTE: Wave data must be unallocated manually
 #[inline]
-pub fn load_sound_from_wave(
+pub unsafe fn load_sound_from_wave(
     wave: sys::Wave,
 ) -> sys::Sound {
     unsafe {
@@ -120,7 +120,7 @@ pub fn load_sound_from_wave(
 ///
 /// NOTE: Wave data must be unallocated manually and will be shared across all clones
 #[inline]
-pub fn load_sound_alias(
+pub unsafe fn load_sound_alias(
     source: sys::Sound,
 ) -> sys::Sound {
     unsafe {
@@ -132,7 +132,7 @@ pub fn load_sound_alias(
 
 /// Checks if a sound is valid (data loaded and buffers initialized)
 #[inline]
-pub fn is_sound_valid(
+pub unsafe fn is_sound_valid(
     sound: sys::Sound,
 ) -> bool {
     unsafe {
@@ -144,7 +144,7 @@ pub fn is_sound_valid(
 
 /// Update sound buffer with new data
 #[inline]
-pub fn update_sound(
+pub unsafe fn update_sound(
     sound: sys::Sound,
     data: &[u8],
     sample_count: usize,
@@ -160,7 +160,7 @@ pub fn update_sound(
 
 /// Unload wave data
 #[inline]
-pub fn unload_wave(
+pub unsafe fn unload_wave(
     wave: sys::Wave,
 ) {
     unsafe {
@@ -172,7 +172,7 @@ pub fn unload_wave(
 
 /// Unload sound
 #[inline]
-pub fn unload_sound(
+pub unsafe fn unload_sound(
     sound: sys::Sound,
 ) {
     unsafe {
@@ -184,7 +184,7 @@ pub fn unload_sound(
 
 /// Unload a sound alias (does not deallocate sample data)
 #[inline]
-pub fn unload_sound_alias(
+pub unsafe fn unload_sound_alias(
     alias: sys::Sound,
 ) {
     unsafe {
@@ -196,7 +196,7 @@ pub fn unload_sound_alias(
 
 /// Export wave data to file, returns true on success
 #[inline]
-pub fn export_wave(
+pub unsafe fn export_wave(
     wave: sys::Wave,
     file_name: &CStr,
 ) -> bool {
@@ -210,7 +210,7 @@ pub fn export_wave(
 
 /// Export wave sample data to code (.h), returns true on success
 #[inline]
-pub fn export_wave_as_code(
+pub unsafe fn export_wave_as_code(
     wave: sys::Wave,
     file_name: &CStr,
 ) -> Result<(), ()> {
@@ -229,7 +229,7 @@ pub fn export_wave_as_code(
 
 /// Play a sound
 #[inline]
-pub fn play_sound(
+pub unsafe fn play_sound(
     sound: sys::Sound,
 ) {
     unsafe {
@@ -241,7 +241,7 @@ pub fn play_sound(
 
 /// Stop playing a sound
 #[inline]
-pub fn stop_sound(
+pub unsafe fn stop_sound(
     sound: sys::Sound,
 ) {
     unsafe {
@@ -253,7 +253,7 @@ pub fn stop_sound(
 
 /// Pause a sound
 #[inline]
-pub fn pause_sound(
+pub unsafe fn pause_sound(
     sound: sys::Sound,
 ) {
     unsafe {
@@ -265,7 +265,7 @@ pub fn pause_sound(
 
 /// Resume a paused sound
 #[inline]
-pub fn resume_sound(
+pub unsafe fn resume_sound(
     sound: sys::Sound,
 ) {
     unsafe {
@@ -277,7 +277,7 @@ pub fn resume_sound(
 
 /// Check if a sound is currently playing
 #[inline]
-pub fn is_sound_playing(
+pub unsafe fn is_sound_playing(
     sound: sys::Sound,
 ) -> bool {
     unsafe {
@@ -289,7 +289,7 @@ pub fn is_sound_playing(
 
 /// Set volume for a sound (1.0 is max level)
 #[inline]
-pub fn set_sound_volume(
+pub unsafe fn set_sound_volume(
     sound: sys::Sound,
     volume: f32,
 ) {
@@ -303,7 +303,7 @@ pub fn set_sound_volume(
 
 /// Set pitch for a sound (1.0 is base level)
 #[inline]
-pub fn set_sound_pitch(
+pub unsafe fn set_sound_pitch(
     sound: sys::Sound,
     pitch: f32,
 ) {
@@ -317,7 +317,7 @@ pub fn set_sound_pitch(
 
 /// Set pan for a sound (0.5 is center)
 #[inline]
-pub fn set_sound_pan(
+pub unsafe fn set_sound_pan(
     sound: sys::Sound,
     pan: f32,
 ) {
@@ -331,7 +331,7 @@ pub fn set_sound_pan(
 
 /// Copy a wave to a new wave
 #[inline]
-pub fn wave_copy(
+pub unsafe fn wave_copy(
     wave: sys::Wave,
 ) -> sys::Wave {
     unsafe {
@@ -343,7 +343,7 @@ pub fn wave_copy(
 
 /// Crop a wave to defined frames range
 #[inline]
-pub fn wave_crop(
+pub unsafe fn wave_crop(
     wave: &mut sys::Wave,
     init_frame: u32,
     final_frame: u32,
@@ -359,7 +359,7 @@ pub fn wave_crop(
 
 /// Convert wave data to desired format
 #[inline]
-pub fn wave_format(
+pub unsafe fn wave_format(
     wave: &mut sys::Wave,
     sample_rate: u32,
     sample_size: u32,
@@ -415,7 +415,7 @@ impl WaveSamples {
 ///
 /// NOTE 2: Sample data allocated should be freed with UnloadWaveSamples()
 #[inline]
-pub fn load_wave_samples(
+pub unsafe fn load_wave_samples(
     wave: sys::Wave,
 ) -> Option<WaveSamples> {
     unsafe {
@@ -430,7 +430,7 @@ pub fn load_wave_samples(
 
 /// Unload samples data loaded with LoadWaveSamples()
 #[inline]
-pub fn unload_wave_samples(
+pub unsafe fn unload_wave_samples(
     mut samples: WaveSamples,
 ) {
     unsafe {
@@ -444,7 +444,7 @@ pub fn unload_wave_samples(
 
 /// Load music stream from file
 #[inline]
-pub fn load_music_stream(
+pub unsafe fn load_music_stream(
     file_name: &CStr,
 ) -> sys::Music {
     unsafe {
@@ -458,7 +458,7 @@ pub fn load_music_stream(
 ///
 /// WARNING: File extension must be provided in lower-case
 #[inline]
-pub fn load_music_stream_from_memory(
+pub unsafe fn load_music_stream_from_memory(
     file_type: &CStr,
     data: &[u8],
 ) -> sys::Music {
@@ -473,7 +473,7 @@ pub fn load_music_stream_from_memory(
 
 /// Checks if a music stream is valid (context and buffers initialized)
 #[inline]
-pub fn is_music_valid(
+pub unsafe fn is_music_valid(
     music: sys::Music,
 ) -> bool {
     unsafe {
@@ -485,7 +485,7 @@ pub fn is_music_valid(
 
 /// Unload music stream
 #[inline]
-pub fn unload_music_stream(
+pub unsafe fn unload_music_stream(
     music: sys::Music,
 ) {
     unsafe {
@@ -497,7 +497,7 @@ pub fn unload_music_stream(
 
 /// Start music playing (open stream) from beginning
 #[inline]
-pub fn play_music_stream(
+pub unsafe fn play_music_stream(
     music: sys::Music,
 ) {
     unsafe {
@@ -509,7 +509,7 @@ pub fn play_music_stream(
 
 /// Check if music is playing
 #[inline]
-pub fn is_music_stream_playing(
+pub unsafe fn is_music_stream_playing(
     music: sys::Music,
 ) -> bool {
     unsafe {
@@ -523,7 +523,7 @@ pub fn is_music_stream_playing(
 ///
 /// Update (re-fill) music buffers if data already processed
 #[inline]
-pub fn update_music_stream(
+pub unsafe fn update_music_stream(
     music: sys::Music,
 ) {
     unsafe {
@@ -535,7 +535,7 @@ pub fn update_music_stream(
 
 /// Stop music playing (close stream)
 #[inline]
-pub fn stop_music_stream(
+pub unsafe fn stop_music_stream(
     music: sys::Music,
 ) {
     unsafe {
@@ -547,7 +547,7 @@ pub fn stop_music_stream(
 
 /// Pause music playing
 #[inline]
-pub fn pause_music_stream(
+pub unsafe fn pause_music_stream(
     music: sys::Music,
 ) {
     unsafe {
@@ -559,7 +559,7 @@ pub fn pause_music_stream(
 
 /// Resume playing paused music
 #[inline]
-pub fn resume_music_stream(
+pub unsafe fn resume_music_stream(
     music: sys::Music,
 ) {
     unsafe {
@@ -571,7 +571,7 @@ pub fn resume_music_stream(
 
 /// Seek music to a position (in seconds)
 #[inline]
-pub fn seek_music_stream(
+pub unsafe fn seek_music_stream(
     music: sys::Music,
     position: f32,
 ) {
@@ -585,7 +585,7 @@ pub fn seek_music_stream(
 
 /// Set volume for music (1.0 is max level)
 #[inline]
-pub fn set_music_volume(
+pub unsafe fn set_music_volume(
     music: sys::Music,
     volume: f32,
 ) {
@@ -599,7 +599,7 @@ pub fn set_music_volume(
 
 /// Set pitch for a music (1.0 is base level)
 #[inline]
-pub fn set_music_pitch(
+pub unsafe fn set_music_pitch(
     music: sys::Music,
     pitch: f32,
 ) {
@@ -613,7 +613,7 @@ pub fn set_music_pitch(
 
 /// Set pan for a music (0.5 is center)
 #[inline]
-pub fn set_music_pan(
+pub unsafe fn set_music_pan(
     music: sys::Music,
     pan: f32,
 ) {
@@ -627,7 +627,7 @@ pub fn set_music_pan(
 
 /// Get music time length (in seconds)
 #[inline]
-pub fn get_music_time_length(
+pub unsafe fn get_music_time_length(
     music: sys::Music,
 ) -> f32 {
     unsafe {
@@ -639,15 +639,15 @@ pub fn get_music_time_length(
 
 /// Get music time length
 #[inline]
-pub fn get_music_duration_length(
+pub unsafe fn get_music_duration_length(
     music: sys::Music,
 ) -> Duration {
-    Duration::from_secs_f32(get_music_time_length(music))
+    Duration::from_secs_f32(unsafe { get_music_time_length(music) })
 }
 
 /// Get current music time played (in seconds)
 #[inline]
-pub fn get_music_time_played(
+pub unsafe fn get_music_time_played(
     music: sys::Music,
 ) -> f32 {
     unsafe {
@@ -659,17 +659,17 @@ pub fn get_music_time_played(
 
 /// Get current music time played
 #[inline]
-pub fn get_music_duration_played(
+pub unsafe fn get_music_duration_played(
     music: sys::Music,
 ) -> Duration {
-    Duration::from_secs_f32(get_music_time_played(music))
+    Duration::from_secs_f32(unsafe { get_music_time_played(music) })
 }
 
 // AudioStream management functions
 
 /// Load audio stream (to stream raw audio pcm data)
 #[inline]
-pub fn load_audio_stream(
+pub unsafe fn load_audio_stream(
     sample_rate: u32,
     sample_size: u32,
     channels: u32,
@@ -685,7 +685,7 @@ pub fn load_audio_stream(
 
 /// Checks if an audio stream is valid (buffers initialized)
 #[inline]
-pub fn is_audio_stream_valid(
+pub unsafe fn is_audio_stream_valid(
     stream: sys::AudioStream,
 ) -> bool {
     unsafe {
@@ -697,7 +697,7 @@ pub fn is_audio_stream_valid(
 
 /// Unload audio stream and free memory
 #[inline]
-pub fn unload_audio_stream(
+pub unsafe fn unload_audio_stream(
     stream: sys::AudioStream,
 ) {
     unsafe {
@@ -713,7 +713,7 @@ pub fn unload_audio_stream(
 ///
 /// NOTE 2: To dequeue a buffer it needs to be processed: [`is_audio_stream_processed()`]
 #[inline]
-pub fn update_audio_stream(
+pub unsafe fn update_audio_stream(
     stream: sys::AudioStream,
     data: &[u8],
     frame_count: usize,
@@ -729,7 +729,7 @@ pub fn update_audio_stream(
 
 /// Check if any audio stream buffers requires refill
 #[inline]
-pub fn is_audio_stream_processed(
+pub unsafe fn is_audio_stream_processed(
     stream: sys::AudioStream,
 ) -> bool {
     unsafe {
@@ -741,7 +741,7 @@ pub fn is_audio_stream_processed(
 
 /// Play audio stream
 #[inline]
-pub fn play_audio_stream(
+pub unsafe fn play_audio_stream(
     stream: sys::AudioStream,
 ) {
     unsafe {
@@ -753,7 +753,7 @@ pub fn play_audio_stream(
 
 /// Pause audio stream
 #[inline]
-pub fn pause_audio_stream(
+pub unsafe fn pause_audio_stream(
     stream: sys::AudioStream,
 ) {
     unsafe {
@@ -765,7 +765,7 @@ pub fn pause_audio_stream(
 
 /// Resume audio stream
 #[inline]
-pub fn resume_audio_stream(
+pub unsafe fn resume_audio_stream(
     stream: sys::AudioStream,
 ) {
     unsafe {
@@ -777,7 +777,7 @@ pub fn resume_audio_stream(
 
 /// Check if audio stream is playing
 #[inline]
-pub fn is_audio_stream_playing(
+pub unsafe fn is_audio_stream_playing(
     stream: sys::AudioStream,
 ) -> bool {
     unsafe {
@@ -789,7 +789,7 @@ pub fn is_audio_stream_playing(
 
 /// Stop audio stream
 #[inline]
-pub fn stop_audio_stream(
+pub unsafe fn stop_audio_stream(
     stream: sys::AudioStream,
 ) {
     unsafe {
@@ -801,7 +801,7 @@ pub fn stop_audio_stream(
 
 /// Set volume for audio stream (1.0 is max level)
 #[inline]
-pub fn set_audio_stream_volume(
+pub unsafe fn set_audio_stream_volume(
     stream: sys::AudioStream,
     volume: f32,
 ) {
@@ -815,7 +815,7 @@ pub fn set_audio_stream_volume(
 
 /// Set pitch for audio stream (1.0 is base level)
 #[inline]
-pub fn set_audio_stream_pitch(
+pub unsafe fn set_audio_stream_pitch(
     stream: sys::AudioStream,
     pitch: f32,
 ) {
@@ -829,7 +829,7 @@ pub fn set_audio_stream_pitch(
 
 /// Set pan for audio stream (0.5 is centered)
 #[inline]
-pub fn set_audio_stream_pan(
+pub unsafe fn set_audio_stream_pan(
     stream: sys::AudioStream,
     pan: f32,
 ) {
@@ -843,7 +843,7 @@ pub fn set_audio_stream_pan(
 
 /// Default size for new audio streams
 #[inline]
-pub fn set_audio_stream_buffer_size_default(
+pub unsafe fn set_audio_stream_buffer_size_default(
     size: usize,
 ) {
     unsafe {
@@ -855,7 +855,7 @@ pub fn set_audio_stream_buffer_size_default(
 
 /// Audio thread callback to request new data
 #[inline]
-pub fn set_audio_stream_callback(
+pub unsafe fn set_audio_stream_callback(
     stream: sys::AudioStream,
     callback: sys::AudioCallback,
 ) {
@@ -874,7 +874,7 @@ pub fn set_audio_stream_callback(
 /// The new processor must be added at the end. As there aren't supposed to be a lot of processors attached to
 /// a given stream, we iterate through the list to find the end. That way we don't need a pointer to the last element
 #[inline]
-pub fn attach_audio_stream_processor(
+pub unsafe fn attach_audio_stream_processor(
     stream: sys::AudioStream,
     processor: sys::AudioCallback,
 ) {
@@ -888,7 +888,7 @@ pub fn attach_audio_stream_processor(
 
 /// Detach audio stream processor from stream (Remove processor from audio stream)
 #[inline]
-pub fn detach_audio_stream_processor(
+pub unsafe fn detach_audio_stream_processor(
     stream: sys::AudioStream,
     processor: sys::AudioCallback,
 ) {
@@ -902,12 +902,12 @@ pub fn detach_audio_stream_processor(
 
 /// Attach audio stream processor to the entire audio pipeline, receives frames x 2 samples as 'float' (stereo)
 ///
-// Order of processors is important
-
-// Works the same way as {Attach,Detach}AudioStreamProcessor() functions, except
-// these two work on the already mixed output just before sending it to the sound hardware
+/// Order of processors is important
+///
+/// Works the same way as {Attach,Detach}AudioStreamProcessor() functions, except
+/// these two work on the already mixed output just before sending it to the sound hardware
 #[inline]
-pub fn attach_audio_mixed_processor(
+pub unsafe fn attach_audio_mixed_processor(
     processor: sys::AudioCallback,
 ) {
     unsafe {
@@ -919,7 +919,7 @@ pub fn attach_audio_mixed_processor(
 
 /// Detach audio stream processor from the entire audio pipeline (Remove processor from audio pipeline)
 #[inline]
-pub fn detach_audio_mixed_processor(
+pub unsafe fn detach_audio_mixed_processor(
     processor: sys::AudioCallback,
 ) {
     unsafe {

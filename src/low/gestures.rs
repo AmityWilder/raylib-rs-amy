@@ -2,7 +2,7 @@ use super::*;
 
 /// Enable only desired gestures to be detected
 #[inline]
-pub fn set_gestures_enabled(
+pub unsafe fn set_gestures_enabled(
     flags: sys::Gesture,
 ) {
     unsafe {
@@ -15,7 +15,7 @@ pub fn set_gestures_enabled(
 
 /// Check if a gesture have been detected
 #[inline]
-pub fn is_gesture_detected(
+pub unsafe fn is_gesture_detected(
     gesture: sys::Gesture,
 ) -> bool {
     unsafe {
@@ -28,7 +28,7 @@ pub fn is_gesture_detected(
 
 /// Get latest detected gesture
 #[inline]
-pub fn get_gesture_detected() -> sys::Gesture {
+pub unsafe fn get_gesture_detected() -> sys::Gesture {
     unsafe {
         sys::Gesture(
             #[allow(clippy::unnecessary_cast, reason = "bindgen generates bitfields as i32 on some systems and u32 on others")]
@@ -41,7 +41,7 @@ pub fn get_gesture_detected() -> sys::Gesture {
 ///
 /// NOTE: time is calculated on current gesture HOLD
 #[inline]
-pub fn get_gesture_hold_duration() -> f32 {
+pub unsafe fn get_gesture_hold_duration() -> f32 {
     unsafe {
         sys::GetGestureHoldDuration()
     }
@@ -52,14 +52,14 @@ pub fn get_gesture_hold_duration() -> f32 {
 /// NOTE: time is calculated on current gesture HOLD
 #[inline]
 pub fn get_gesture_hold_time() -> Duration {
-    Duration::from_secs_f32(get_gesture_hold_duration())
+    Duration::from_secs_f32(unsafe { get_gesture_hold_duration() })
 }
 
 /// Get gesture drag vector (between initial touch point to current)
 ///
 /// NOTE: drag vector is calculated on one touch points `TOUCH_ACTION_MOVE`
 #[inline]
-pub fn get_gesture_drag_vector() -> sys::Vector2 {
+pub unsafe fn get_gesture_drag_vector() -> sys::Vector2 {
     unsafe {
         sys::GetGestureDragVector()
     }
@@ -71,7 +71,7 @@ pub fn get_gesture_drag_vector() -> sys::Vector2 {
 ///
 /// NOTE: drag angle is calculated on one touch points `TOUCH_ACTION_UP`
 #[inline]
-pub fn get_gesture_drag_angle() -> f32 {
+pub unsafe fn get_gesture_drag_angle() -> f32 {
     unsafe {
         sys::GetGestureDragAngle()
     }
@@ -81,7 +81,7 @@ pub fn get_gesture_drag_angle() -> f32 {
 ///
 /// NOTE: Pinch distance is calculated on two touch points `TOUCH_ACTION_MOVE`
 #[inline]
-pub fn get_gesture_pinch_vector() -> sys::Vector2 {
+pub unsafe fn get_gesture_pinch_vector() -> sys::Vector2 {
     unsafe {
         sys::GetGesturePinchVector()
     }
@@ -93,7 +93,7 @@ pub fn get_gesture_pinch_vector() -> sys::Vector2 {
 ///
 /// NOTE: pinch angle is calculated on two touch points `TOUCH_ACTION_MOVE`
 #[inline]
-pub fn get_gesture_pinch_angle() -> f32 {
+pub unsafe fn get_gesture_pinch_angle() -> f32 {
     unsafe {
         sys::GetGesturePinchAngle()
     }
@@ -101,7 +101,7 @@ pub fn get_gesture_pinch_angle() -> f32 {
 
 /// Process gesture event and translate it into gestures
 #[inline]
-pub fn process_gesture_event(
+pub unsafe fn process_gesture_event(
     event: sys::GestureEvent,
 ) {
     unsafe {
@@ -115,7 +115,7 @@ pub fn process_gesture_event(
 ///
 /// NOTE: Gestures are processed through system callbacks on touch events
 #[inline]
-pub fn update_gestures() {
+pub unsafe fn update_gestures() {
     unsafe {
         sys::UpdateGestures();
     }

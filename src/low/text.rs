@@ -4,7 +4,7 @@ use super::*;
 
 /// Get the default Font
 #[inline]
-pub fn get_font_default() -> sys::Font {
+pub unsafe fn get_font_default() -> sys::Font {
     unsafe {
         sys::GetFontDefault()
     }
@@ -12,7 +12,7 @@ pub fn get_font_default() -> sys::Font {
 
 /// Load font from file into GPU memory (VRAM)
 #[inline]
-pub fn load_font(
+pub unsafe fn load_font(
     file_name: &CStr,
 ) -> sys::Font {
     unsafe {
@@ -24,7 +24,7 @@ pub fn load_font(
 
 /// Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character set, font size is provided in pixels height
 #[inline]
-pub fn load_font_ex(
+pub unsafe fn load_font_ex(
     file_name: &CStr,
     font_size: u32,
     codepoints: &[char],
@@ -41,7 +41,7 @@ pub fn load_font_ex(
 
 /// Load font from Image (XNA style)
 #[inline]
-pub fn load_font_from_image(
+pub unsafe fn load_font_from_image(
     image: sys::Image,
     key: sys::Color,
     first_char: char,
@@ -57,7 +57,7 @@ pub fn load_font_from_image(
 
 /// Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
 #[inline]
-pub fn load_font_from_memory(
+pub unsafe fn load_font_from_memory(
     file_type: &CStr,
     file_data: &[u8],
     font_size: u32,
@@ -77,7 +77,7 @@ pub fn load_font_from_memory(
 
 /// Check if a font is valid (font data loaded, WARNING: GPU texture not checked)
 #[inline]
-pub fn is_font_valid(
+pub unsafe fn is_font_valid(
     font: sys::Font,
 ) -> bool {
     unsafe {
@@ -89,7 +89,7 @@ pub fn is_font_valid(
 
 /// Load font data for further use
 #[inline]
-pub fn load_font_data(
+pub unsafe fn load_font_data(
     file_data: &[u8],
     font_size: i32,
     codepoints: &[char],
@@ -143,7 +143,7 @@ impl GlyphRecs {
 
 /// Generate image font atlas using chars info
 #[inline]
-pub fn gen_image_font_atlas(
+pub unsafe fn gen_image_font_atlas(
     glyphs: &[sys::GlyphInfo],
     font_size: u32,
     padding: i32,
@@ -165,7 +165,7 @@ pub fn gen_image_font_atlas(
 
 /// Unload font chars info data (RAM)
 #[inline]
-pub fn unload_font_data(
+pub unsafe fn unload_font_data(
     glyphs: &mut [sys::GlyphInfo],
 ) {
     unsafe {
@@ -178,7 +178,7 @@ pub fn unload_font_data(
 
 /// Unload font from GPU memory (VRAM)
 #[inline]
-pub fn unload_font(
+pub unsafe fn unload_font(
     font: sys::Font,
 ) {
     unsafe {
@@ -190,7 +190,7 @@ pub fn unload_font(
 
 /// Export font as code file, returns true on success
 #[inline]
-pub fn export_font_as_code(
+pub unsafe fn export_font_as_code(
     font: sys::Font,
     file_name: &CStr,
 ) -> bool {
@@ -206,7 +206,7 @@ pub fn export_font_as_code(
 
 /// Draw current FPS
 #[inline]
-pub fn draw_fps(
+pub unsafe fn draw_fps(
     pos_x: i32,
     pos_y: i32,
 ) {
@@ -220,7 +220,7 @@ pub fn draw_fps(
 
 /// Draw text (using default font)
 #[inline]
-pub fn draw_text(
+pub unsafe fn draw_text(
     text: &CStr,
     pos_x: i32,
     pos_y: i32,
@@ -240,7 +240,7 @@ pub fn draw_text(
 
 /// Draw text using font and additional parameters
 #[inline]
-pub fn draw_text_ex(
+pub unsafe fn draw_text_ex(
     font: sys::Font,
     text: &CStr,
     position: sys::Vector2,
@@ -263,7 +263,7 @@ pub fn draw_text_ex(
 /// Draw text using Font and pro parameters (rotation)
 #[allow(clippy::too_many_arguments, reason = "dont care")]
 #[inline]
-pub fn draw_text_pro(
+pub unsafe fn draw_text_pro(
     font: sys::Font,
     text: &CStr,
     position: sys::Vector2,
@@ -289,7 +289,7 @@ pub fn draw_text_pro(
 
 /// Draw one character (codepoint)
 #[inline]
-pub fn draw_text_codepoint(
+pub unsafe fn draw_text_codepoint(
     font: sys::Font,
     codepoint: i32,
     position: sys::Vector2,
@@ -309,7 +309,7 @@ pub fn draw_text_codepoint(
 
 /// Draw multiple character (codepoint)
 #[inline]
-pub fn draw_text_codepoints(
+pub unsafe fn draw_text_codepoints(
     font: sys::Font,
     codepoints: &[char],
     position: sys::Vector2,
@@ -334,7 +334,7 @@ pub fn draw_text_codepoints(
 
 /// Set vertical line spacing when drawing with line-breaks
 #[inline]
-pub fn set_text_line_spacing(
+pub unsafe fn set_text_line_spacing(
     spacing: i32,
 ) {
     unsafe {
@@ -346,7 +346,7 @@ pub fn set_text_line_spacing(
 
 /// Measure string width for default font
 #[inline]
-pub fn measure_text(
+pub unsafe fn measure_text(
     text: &CStr,
     font_size: u32,
 ) -> i32 {
@@ -360,7 +360,7 @@ pub fn measure_text(
 
 /// Measure string size for Font
 #[inline]
-pub fn measure_text_ex(
+pub unsafe fn measure_text_ex(
     font: sys::Font,
     text: &CStr,
     font_size: f32,
@@ -378,7 +378,7 @@ pub fn measure_text_ex(
 
 /// Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
 #[inline]
-pub fn get_glyph_index(
+pub unsafe fn get_glyph_index(
     font: sys::Font,
     codepoint: char,
 ) -> usize {
@@ -392,7 +392,7 @@ pub fn get_glyph_index(
 
 /// Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
 #[inline]
-pub fn get_glyph_info(
+pub unsafe fn get_glyph_info(
     font: sys::Font,
     codepoint: char,
 ) -> sys::GlyphInfo {
@@ -406,7 +406,7 @@ pub fn get_glyph_info(
 
 /// Get glyph rectangle in font atlas for a codepoint (unicode character), fallback to '?' if not found
 #[inline]
-pub fn get_glyph_atlas_rec(
+pub unsafe fn get_glyph_atlas_rec(
     font: sys::Font,
     codepoint: char,
 ) -> sys::Rectangle {
@@ -436,7 +436,7 @@ impl RlAllocator<str> for LoadUTF8Allocator {
 ///
 /// WARNING: Allocated memory must be manually freed
 #[inline]
-pub fn load_utf8(
+pub unsafe fn load_utf8(
     codepoints: &[char],
 ) -> Option<RlString<LoadUTF8Allocator>> {
     unsafe {
@@ -455,7 +455,7 @@ pub fn load_utf8(
 
 /// Unload UTF-8 text encoded from codepoints array
 #[inline]
-pub fn unload_utf8(
+pub unsafe fn unload_utf8(
     text: RlString<LoadUTF8Allocator>,
 ) {
     drop(text);
@@ -477,7 +477,7 @@ impl RlAllocator<[char]> for LoadCodepointsAllocator {
 ///
 /// NOTE: Despite being a Rust `&str`, the `text` parameter must be nul-terminated
 #[inline]
-pub fn load_codepoints(
+pub unsafe fn load_codepoints(
     text: &str,
 ) -> Option<RlCodepoints<LoadCodepointsAllocator>> {
     assert!(text.ends_with('\0'), "must be nul-terminated");
@@ -497,7 +497,7 @@ pub fn load_codepoints(
 
 /// Unload codepoints data from memory
 #[inline]
-pub fn unload_codepoints(
+pub unsafe fn unload_codepoints(
     codepoints: RlCodepoints<LoadCodepointsAllocator>,
 ) {
     drop(codepoints);
@@ -505,7 +505,7 @@ pub fn unload_codepoints(
 
 /// Get total number of codepoints in a UTF-8 encoded string
 #[inline]
-pub fn get_codepoint_count(
+pub unsafe fn get_codepoint_count(
     text: &CStr,
 ) -> usize {
     unsafe {
@@ -522,7 +522,7 @@ pub fn get_codepoint_count(
 /// NOTE: The standard says U+FFFD should be returned in case of errors
 /// but that character is not supported by the default font in raylib
 #[inline]
-pub fn get_codepoint(
+pub unsafe fn get_codepoint(
     text: &CStr,
 ) -> (char, usize) {
     let mut codepoint_size = MaybeUninit::uninit();
@@ -537,7 +537,7 @@ pub fn get_codepoint(
 
 /// Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
 #[inline]
-pub fn get_codepoint_next(
+pub unsafe fn get_codepoint_next(
     text: &CStr,
 ) -> (char, usize) {
     let mut codepoint_size = MaybeUninit::uninit();
@@ -552,7 +552,7 @@ pub fn get_codepoint_next(
 
 /// Get previous codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
 #[inline]
-pub fn get_codepoint_previous(
+pub unsafe fn get_codepoint_previous(
     text: &CStr,
 ) -> (char, usize) {
     let mut codepoint_size = MaybeUninit::uninit();
@@ -569,7 +569,7 @@ pub fn get_codepoint_previous(
 ///
 /// NOTE: It uses a static array to store UTF-8 bytes
 #[inline]
-pub fn codepoint_to_utf8(
+pub unsafe fn codepoint_to_utf8(
     codepoint: char,
 ) -> ([u8; 4], usize) {
     let mut utf8_size = MaybeUninit::uninit();
@@ -589,7 +589,7 @@ pub fn codepoint_to_utf8(
 
 /// Copy one string to another, returns bytes copied
 #[inline]
-pub fn text_copy(
+pub unsafe fn text_copy(
     dst: &mut CStr,
     src: &CStr,
 ) -> usize {
@@ -604,7 +604,7 @@ pub fn text_copy(
 
 /// Check if two text string are equal
 #[inline]
-pub fn text_is_equal(
+pub unsafe fn text_is_equal(
     text1: &CStr,
     text2: &CStr,
 ) -> bool {
@@ -618,7 +618,7 @@ pub fn text_is_equal(
 
 /// Get text length, checks for '\0' ending
 #[inline]
-pub fn text_length(
+pub unsafe fn text_length(
     text: &CStr,
 ) -> u32 {
     unsafe {
@@ -631,7 +631,7 @@ pub fn text_length(
 // variadic does not convert to rust
 // /// Text formatting with variables (sprintf() style)
 // #[inline]
-// pub fn TextFormat(
+// pub unsafe fn TextFormat(
 //     text: *const ::std::os::raw::c_char,
 //     ...
 // ) -> *const ::std::os::raw::c_char;
@@ -641,7 +641,7 @@ define_buffer_handle!(TextSubtextHandle);
 impl TextSubtextHandle {
     /// Get a piece of a text string
     #[inline]
-    pub fn text_subtext<'a>(
+    pub unsafe fn text_subtext<'a>(
         &'a mut self,
         text: &CStr,
         position: usize,
@@ -659,7 +659,7 @@ impl TextSubtextHandle {
 
 /// Replace text string (WARNING: memory must be freed!)
 #[inline]
-pub fn text_replace(
+pub unsafe fn text_replace(
     text: &CStr,
     replace: &CStr,
     by: &CStr,
@@ -678,7 +678,7 @@ pub fn text_replace(
 
 /// Insert text in a position (WARNING: memory must be freed!)
 #[inline]
-pub fn text_insert(
+pub unsafe fn text_insert(
     text: &CStr,
     insert: &CStr,
     position: usize,
@@ -700,7 +700,7 @@ define_buffer_handle!(TextJoinHandle);
 impl TextJoinHandle {
     /// Join text strings with delimiter
     #[inline]
-    pub fn text_join<'a>(
+    pub unsafe fn text_join<'a>(
         &'a mut self,
         text_list: &[&c_char],
         count: i32,
@@ -727,7 +727,7 @@ impl TextSplitHandle {
     ///      1. Maximum number of possible split strings is set by MAX_TEXTSPLIT_COUNT
     ///      2. Maximum size of text to split is MAX_TEXT_BUFFER_LENGTH
     #[inline]
-    pub fn text_split<'a>(
+    pub unsafe fn text_split<'a>(
         &'a mut self,
         text: &CStr,
         delimiter: c_char,
@@ -748,7 +748,7 @@ impl TextSplitHandle {
 ///
 /// WARNING: It's up to the user to make sure appended text does not overflow the buffer!
 #[inline]
-pub fn text_append<'a>(
+pub unsafe fn text_append<'a>(
     text: &'a mut [c_char],
     append: &CStr,
     position: &mut usize,
@@ -773,7 +773,7 @@ pub struct TextNotFoundError(());
 
 /// Find first text occurrence within a string
 #[inline]
-pub fn text_find_index(
+pub unsafe fn text_find_index(
     text: &CStr,
     find: &CStr,
 ) -> Result<usize, TextNotFoundError> {
@@ -811,7 +811,7 @@ impl TextToUpperHandle {
     /// WARNING: Limited functionality, only basic characters set
     /// TODO: Support UTF-8 diacritics to upper-case, check codepoints
     #[inline]
-    pub fn text_to_upper<'a>(
+    pub unsafe fn text_to_upper<'a>(
         &'a mut self,
         text: &CStr,
     ) -> &'a CStr {
@@ -830,7 +830,7 @@ impl TextToLowerHandle {
     ///
     /// WARNING: Limited functionality, only basic characters set
     #[inline]
-    pub fn text_to_lower<'a>(
+    pub unsafe fn text_to_lower<'a>(
         &'a mut self,
         text: &CStr,
     ) -> &'a CStr {
@@ -849,7 +849,7 @@ impl TextToPascalHandle {
     ///
     /// WARNING: Limited functionality, only basic characters set
     #[inline]
-    pub fn text_to_pascal<'a>(
+    pub unsafe fn text_to_pascal<'a>(
         &'a mut self,
         text: &CStr,
     ) -> &'a CStr {
@@ -868,7 +868,7 @@ impl TextToSnakeHandle {
     ///
     /// WARNING: Limited functionality, only basic characters set
     #[inline]
-    pub fn text_to_snake<'a>(
+    pub unsafe fn text_to_snake<'a>(
         &'a mut self,
         text: &CStr,
     ) -> &'a CStr {
@@ -887,7 +887,7 @@ impl TextToCamelHandle {
     ///
     /// WARNING: Limited functionality, only basic characters set
     #[inline]
-    pub fn text_to_camel<'a>(
+    pub unsafe fn text_to_camel<'a>(
         &'a mut self,
         text: &CStr,
     ) -> &'a CStr {
@@ -901,7 +901,7 @@ impl TextToCamelHandle {
 
 /// Get integer value from text
 #[inline]
-pub fn text_to_integer(
+pub unsafe fn text_to_integer(
     text: &CStr,
 ) -> i32 {
     unsafe {
@@ -915,7 +915,7 @@ pub fn text_to_integer(
 ///
 /// WARNING: Only '.' character is understood as decimal point
 #[inline]
-pub fn text_to_float(
+pub unsafe fn text_to_float(
     text: &CStr,
 ) -> f32 {
     unsafe {

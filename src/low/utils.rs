@@ -2,7 +2,7 @@ use super::*;
 
 /// Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
 #[inline]
-pub fn trace_log(
+pub unsafe fn trace_log(
     log_level: sys::TraceLogLevel,
     args: std::fmt::Arguments<'_>,
 ) -> Result<(), NulError> {
@@ -28,7 +28,7 @@ macro_rules! trace_log {
 
 /// Set the current threshold (minimum) log level
 #[inline]
-pub fn set_trace_log_level(
+pub unsafe fn set_trace_log_level(
     log_level: sys::TraceLogLevel,
 ) {
     unsafe {
@@ -46,7 +46,7 @@ pub fn set_trace_log_level(
 /// - [`mem_realloc`]
 /// - [`mem_free`]
 #[inline]
-pub fn mem_alloc(
+pub unsafe fn mem_alloc(
     size: usize,
 ) -> Option<NonNull<c_void>> {
     NonNull::new(unsafe {
@@ -113,7 +113,7 @@ pub unsafe fn mem_free(
 
 /// Set custom trace log
 #[inline]
-pub fn set_trace_log_callback(
+pub unsafe fn set_trace_log_callback(
     callback: sys::TraceLogCallback,
 ) {
     unsafe {
@@ -125,7 +125,7 @@ pub fn set_trace_log_callback(
 
 /// Set custom file binary data loader
 #[inline]
-pub fn set_load_file_data_callback(
+pub unsafe fn set_load_file_data_callback(
     callback: sys::LoadFileDataCallback,
 ) {
     unsafe {
@@ -137,7 +137,7 @@ pub fn set_load_file_data_callback(
 
 /// Set custom file binary data saver
 #[inline]
-pub fn set_save_file_data_callback(
+pub unsafe fn set_save_file_data_callback(
     callback: sys::SaveFileDataCallback,
 ) {
     unsafe {
@@ -149,7 +149,7 @@ pub fn set_save_file_data_callback(
 
 /// Set custom file text data loader
 #[inline]
-pub fn set_load_file_text_callback(
+pub unsafe fn set_load_file_text_callback(
     callback: sys::LoadFileTextCallback,
 ) {
     unsafe {
@@ -161,7 +161,7 @@ pub fn set_load_file_text_callback(
 
 /// Set custom file text data saver
 #[inline]
-pub fn set_save_file_text_callback(
+pub unsafe fn set_save_file_text_callback(
     callback: sys::SaveFileTextCallback,
 ) {
     unsafe {
@@ -206,7 +206,7 @@ impl DerefMut for FileData {
 
 /// Load file data as byte array (read)
 #[inline]
-pub fn load_file_data(
+pub unsafe fn load_file_data(
     file_name: &CStr,
 ) -> Option<FileData> {
     let mut len = MaybeUninit::uninit();
@@ -227,7 +227,7 @@ pub fn load_file_data(
 
 /// Unload file data allocated by [`load_file_data()`]
 #[inline]
-pub fn unload_file_data(
+pub unsafe fn unload_file_data(
     data: FileData,
 ) {
     unsafe {
@@ -239,7 +239,7 @@ pub fn unload_file_data(
 
 /// Save data to file from byte array (write)
 #[inline]
-pub fn save_file_data(
+pub unsafe fn save_file_data(
     file_name: &CStr,
     data: &mut [u8],
 ) -> Result<(), ()> {
@@ -259,7 +259,7 @@ pub fn save_file_data(
 
 /// Export data to code (.h)
 #[inline]
-pub fn export_data_as_code(
+pub unsafe fn export_data_as_code(
     data: &[u8],
     file_name: &CStr,
 ) -> Result<(), ()> {
@@ -291,7 +291,7 @@ impl Deref for FileText {
 
 /// Load text data from file (read)
 #[inline]
-pub fn load_file_text(
+pub unsafe fn load_file_text(
     file_name: &CStr,
 ) -> Option<FileText> {
     let ptr = unsafe {
@@ -312,7 +312,7 @@ pub fn load_file_text(
 
 /// Unload file text data allocated by [`load_file_text()`]
 #[inline]
-pub fn unload_file_text(
+pub unsafe fn unload_file_text(
     mut text: FileText,
 ) {
     unsafe {
@@ -324,7 +324,7 @@ pub fn unload_file_text(
 
 /// Save text data to file (write)
 #[inline]
-pub fn save_file_text(
+pub unsafe fn save_file_text(
     file_name: &CStr,
     text: &CStr,
 ) -> Result<(), ()> {

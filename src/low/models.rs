@@ -5,7 +5,7 @@ use super::*;
 /// Draw a line in 3D world space
 #[allow(non_snake_case)]
 #[inline]
-pub fn draw_line3D(
+pub unsafe fn draw_line3D(
     start_pos: sys::Vector3,
     end_pos: sys::Vector3,
     color: sys::Color,
@@ -22,7 +22,7 @@ pub fn draw_line3D(
 /// Draw a point in 3D space, actually a small line
 #[allow(non_snake_case)]
 #[inline]
-pub fn draw_point3D(
+pub unsafe fn draw_point3D(
     position: sys::Vector3,
     color: sys::Color,
 ) {
@@ -37,7 +37,7 @@ pub fn draw_point3D(
 /// Draw a circle in 3D world space
 #[allow(non_snake_case)]
 #[inline]
-pub fn draw_circle3D(
+pub unsafe fn draw_circle3D(
     center: sys::Vector3,
     radius: f32,
     rotation_axis: sys::Vector3,
@@ -58,7 +58,7 @@ pub fn draw_circle3D(
 /// Draw a color-filled triangle (vertex in counter-clockwise order!)
 #[allow(non_snake_case)]
 #[inline]
-pub fn draw_triangle3D(
+pub unsafe fn draw_triangle3D(
     v1: sys::Vector3,
     v2: sys::Vector3,
     v3: sys::Vector3,
@@ -77,7 +77,7 @@ pub fn draw_triangle3D(
 /// Draw a triangle strip defined by points
 #[allow(non_snake_case)]
 #[inline]
-pub fn draw_triangle_strip3D(
+pub unsafe fn draw_triangle_strip3D(
     points: &[sys::Vector3],
     color: sys::Color,
 ) {
@@ -92,7 +92,7 @@ pub fn draw_triangle_strip3D(
 
 /// Draw cube
 #[inline]
-pub fn draw_cube(
+pub unsafe fn draw_cube(
     position: sys::Vector3,
     width: f32,
     height: f32,
@@ -112,7 +112,7 @@ pub fn draw_cube(
 
 /// Draw cube (Vector version)
 #[inline]
-pub fn draw_cube_v(
+pub unsafe fn draw_cube_v(
     position: sys::Vector3,
     size: sys::Vector3,
     color: sys::Color,
@@ -128,7 +128,7 @@ pub fn draw_cube_v(
 
 /// Draw cube wires
 #[inline]
-pub fn draw_cube_wires(
+pub unsafe fn draw_cube_wires(
     position: sys::Vector3,
     width: f32,
     height: f32,
@@ -148,7 +148,7 @@ pub fn draw_cube_wires(
 
 /// Draw cube wires (Vector version)
 #[inline]
-pub fn draw_cube_wires_v(
+pub unsafe fn draw_cube_wires_v(
     position: sys::Vector3,
     size: sys::Vector3,
     color: sys::Color,
@@ -164,7 +164,7 @@ pub fn draw_cube_wires_v(
 
 /// Draw sphere
 #[inline]
-pub fn draw_sphere(
+pub unsafe fn draw_sphere(
     center_pos: sys::Vector3,
     radius: f32,
     color: sys::Color,
@@ -180,7 +180,7 @@ pub fn draw_sphere(
 
 /// Draw sphere with extended parameters
 #[inline]
-pub fn draw_sphere_ex(
+pub unsafe fn draw_sphere_ex(
     center_pos: sys::Vector3,
     radius: f32,
     rings: u32,
@@ -200,7 +200,7 @@ pub fn draw_sphere_ex(
 
 /// Draw sphere wires
 #[inline]
-pub fn draw_sphere_wires(
+pub unsafe fn draw_sphere_wires(
     center_pos: sys::Vector3,
     radius: f32,
     rings: u32,
@@ -220,7 +220,7 @@ pub fn draw_sphere_wires(
 
 /// Draw a cylinder/cone
 #[inline]
-pub fn draw_cylinder(
+pub unsafe fn draw_cylinder(
     position: sys::Vector3,
     radius_top: f32,
     radius_bottom: f32,
@@ -242,7 +242,7 @@ pub fn draw_cylinder(
 
 /// Draw a cylinder with base at start_pos and top at end_pos
 #[inline]
-pub fn draw_cylinder_ex(
+pub unsafe fn draw_cylinder_ex(
     start_pos: sys::Vector3,
     end_pos: sys::Vector3,
     start_radius: f32,
@@ -264,7 +264,7 @@ pub fn draw_cylinder_ex(
 
 /// Draw a cylinder/cone wires
 #[inline]
-pub fn draw_cylinder_wires(
+pub unsafe fn draw_cylinder_wires(
     position: sys::Vector3,
     radius_top: f32,
     radius_bottom: f32,
@@ -286,7 +286,7 @@ pub fn draw_cylinder_wires(
 
 /// Draw a cylinder wires with base at start_pos and top at end_pos
 #[inline]
-pub fn draw_cylinder_wires_ex(
+pub unsafe fn draw_cylinder_wires_ex(
     start_pos: sys::Vector3,
     end_pos: sys::Vector3,
     start_radius: f32,
@@ -308,7 +308,7 @@ pub fn draw_cylinder_wires_ex(
 
 /// Draw a capsule with the center of its sphere caps at start_pos and end_pos
 #[inline]
-pub fn draw_capsule(
+pub unsafe fn draw_capsule(
     start_pos: sys::Vector3,
     end_pos: sys::Vector3,
     radius: f32,
@@ -330,7 +330,7 @@ pub fn draw_capsule(
 
 /// Draw capsule wireframe with the center of its sphere caps at start_pos and end_pos
 #[inline]
-pub fn draw_capsule_wires(
+pub unsafe fn draw_capsule_wires(
     start_pos: sys::Vector3,
     end_pos: sys::Vector3,
     radius: f32,
@@ -352,7 +352,7 @@ pub fn draw_capsule_wires(
 
 /// Draw a plane XZ
 #[inline]
-pub fn draw_plane(
+pub unsafe fn draw_plane(
     center_pos: sys::Vector3,
     size: sys::Vector2,
     color: sys::Color,
@@ -368,7 +368,7 @@ pub fn draw_plane(
 
 /// Draw a ray line
 #[inline]
-pub fn draw_ray(
+pub unsafe fn draw_ray(
     ray: sys::Ray,
     color: sys::Color,
 ) {
@@ -382,7 +382,7 @@ pub fn draw_ray(
 
 /// Draw a grid (centered at (0, 0, 0))
 #[inline]
-pub fn draw_grid(
+pub unsafe fn draw_grid(
     slices: u32,
     spacing: f32,
 ) {
@@ -402,7 +402,7 @@ pub fn draw_grid(
 
 // /// Load model from files (meshes and materials)
 // #[inline]
-// pub fn LoadModel(
+// pub unsafe fn LoadModel(
 //     fileName: *const ::std::os::raw::c_char,
 // ) -> sys::Model {
 //     unsafe {
@@ -412,7 +412,7 @@ pub fn draw_grid(
 
 // /// Load model from generated mesh (default material)
 // #[inline]
-// pub fn LoadModelFromMesh(
+// pub unsafe fn LoadModelFromMesh(
 //     mesh: sys::Mesh,
 // ) -> sys::Model {
 //     unsafe {
@@ -422,7 +422,7 @@ pub fn draw_grid(
 
 // /// Check if a model is valid (loaded in GPU, VAO/VBOs)
 // #[inline]
-// pub fn IsModelValid(
+// pub unsafe fn IsModelValid(
 //     model: sys::Model,
 // ) -> bool {
 //     unsafe {
@@ -432,7 +432,7 @@ pub fn draw_grid(
 
 // /// Unload model (including meshes) from memory (RAM and/or VRAM)
 // #[inline]
-// pub fn UnloadModel(
+// pub unsafe fn UnloadModel(
 //     model: sys::Model,
 // ) {
 //     unsafe {
@@ -442,7 +442,7 @@ pub fn draw_grid(
 
 // /// Compute model bounding box limits (considers all meshes)
 // #[inline]
-// pub fn GetModelBoundingBox(
+// pub unsafe fn GetModelBoundingBox(
 //     model: sys::Model,
 // ) -> sys::BoundingBox {
 //     unsafe {
@@ -454,7 +454,7 @@ pub fn draw_grid(
 
 // /// Draw a model (with texture if set)
 // #[inline]
-// pub fn DrawModel(
+// pub unsafe fn DrawModel(
 //     model: sys::Model,
 //     position: sys::Vector3,
 //     scale: f32,
@@ -467,7 +467,7 @@ pub fn draw_grid(
 
 // /// Draw a model with extended parameters
 // #[inline]
-// pub fn DrawModelEx(
+// pub unsafe fn DrawModelEx(
 //     model: sys::Model,
 //     position: sys::Vector3,
 //     rotationAxis: sys::Vector3,
@@ -482,7 +482,7 @@ pub fn draw_grid(
 
 // /// Draw a model wires (with texture if set)
 // #[inline]
-// pub fn DrawModelWires(
+// pub unsafe fn DrawModelWires(
 //     model: sys::Model,
 //     position: sys::Vector3,
 //     scale: f32,
@@ -495,7 +495,7 @@ pub fn draw_grid(
 
 // /// Draw a model wires (with texture if set) with extended parameters
 // #[inline]
-// pub fn DrawModelWiresEx(
+// pub unsafe fn DrawModelWiresEx(
 //     model: sys::Model,
 //     position: sys::Vector3,
 //     rotationAxis: sys::Vector3,
@@ -510,7 +510,7 @@ pub fn draw_grid(
 
 // /// Draw a model as points
 // #[inline]
-// pub fn DrawModelPoints(
+// pub unsafe fn DrawModelPoints(
 //     model: sys::Model,
 //     position: sys::Vector3,
 //     scale: f32,
@@ -523,7 +523,7 @@ pub fn draw_grid(
 
 // /// Draw a model as points with extended parameters
 // #[inline]
-// pub fn DrawModelPointsEx(
+// pub unsafe fn DrawModelPointsEx(
 //     model: sys::Model,
 //     position: sys::Vector3,
 //     rotationAxis: sys::Vector3,
@@ -538,7 +538,7 @@ pub fn draw_grid(
 
 // /// Draw bounding box (wires)
 // #[inline]
-// pub fn DrawBoundingBox(
+// pub unsafe fn DrawBoundingBox(
 //     box_: sys::BoundingBox,
 //     color: sys::Color,
 // ) {
@@ -549,7 +549,7 @@ pub fn draw_grid(
 
 // /// Draw a billboard texture
 // #[inline]
-// pub fn DrawBillboard(
+// pub unsafe fn DrawBillboard(
 //     camera: sys::Camera,
 //     texture: sys::Texture2D,
 //     position: sys::Vector3,
@@ -563,7 +563,7 @@ pub fn draw_grid(
 
 // /// Draw a billboard texture defined by source
 // #[inline]
-// pub fn DrawBillboardRec(
+// pub unsafe fn DrawBillboardRec(
 //     camera: sys::Camera,
 //     texture: sys::Texture2D,
 //     source: sys::Rectangle,
@@ -578,7 +578,7 @@ pub fn draw_grid(
 
 // /// Draw a billboard texture defined by source and rotation
 // #[inline]
-// pub fn DrawBillboardPro(
+// pub unsafe fn DrawBillboardPro(
 //     camera: sys::Camera,
 //     texture: sys::Texture2D,
 //     source: sys::Rectangle,
@@ -598,7 +598,7 @@ pub fn draw_grid(
 
 // /// Upload mesh vertex data in GPU and provide VAO/VBO ids
 // #[inline]
-// pub fn UploadMesh(
+// pub unsafe fn UploadMesh(
 //     mesh: *mut sys::Mesh,
 //     dynamic: bool,
 // ) {
@@ -609,7 +609,7 @@ pub fn draw_grid(
 
 // /// Update mesh vertex data in GPU for a specific buffer index
 // #[inline]
-// pub fn UpdateMeshBuffer(
+// pub unsafe fn UpdateMeshBuffer(
 //     mesh: sys::Mesh,
 //     index: i32,
 //     data: *const ::std::os::raw::c_void,
@@ -623,7 +623,7 @@ pub fn draw_grid(
 
 // /// Unload mesh data from CPU and GPU
 // #[inline]
-// pub fn UnloadMesh(
+// pub unsafe fn UnloadMesh(
 //     mesh: sys::Mesh,
 // ) {
 //     unsafe {
@@ -633,7 +633,7 @@ pub fn draw_grid(
 
 // /// Draw a 3d mesh with material and transform
 // #[inline]
-// pub fn DrawMesh(
+// pub unsafe fn DrawMesh(
 //     mesh: sys::Mesh,
 //     material: sys::Material,
 //     transform: sys::Matrix,
@@ -645,7 +645,7 @@ pub fn draw_grid(
 
 // /// Draw multiple mesh instances with material and different transforms
 // #[inline]
-// pub fn DrawMeshInstanced(
+// pub unsafe fn DrawMeshInstanced(
 //     mesh: sys::Mesh,
 //     material: sys::Material,
 //     transforms: *const sys::Matrix,
@@ -658,7 +658,7 @@ pub fn draw_grid(
 
 // /// Compute mesh bounding box limits
 // #[inline]
-// pub fn GetMeshBoundingBox(
+// pub unsafe fn GetMeshBoundingBox(
 //     mesh: sys::Mesh,
 // ) -> sys::BoundingBox {
 //     unsafe {
@@ -668,7 +668,7 @@ pub fn draw_grid(
 
 // /// Compute mesh tangents
 // #[inline]
-// pub fn GenMeshTangents(
+// pub unsafe fn GenMeshTangents(
 //     mesh: *mut sys::Mesh,
 // ) {
 //     unsafe {
@@ -678,7 +678,7 @@ pub fn draw_grid(
 
 // /// Export mesh data to file, returns true on success
 // #[inline]
-// pub fn ExportMesh(
+// pub unsafe fn ExportMesh(
 //     mesh: sys::Mesh,
 //     fileName: *const ::std::os::raw::c_char,
 // ) -> bool {
@@ -689,7 +689,7 @@ pub fn draw_grid(
 
 // /// Export mesh as code file (.h) defining multiple arrays of vertex attributes
 // #[inline]
-// pub fn ExportMeshAsCode(
+// pub unsafe fn ExportMeshAsCode(
 //     mesh: sys::Mesh,
 //     fileName: *const ::std::os::raw::c_char,
 // ) -> bool {
@@ -702,7 +702,7 @@ pub fn draw_grid(
 
 // /// Generate polygonal mesh
 // #[inline]
-// pub fn GenMeshPoly(
+// pub unsafe fn GenMeshPoly(
 //     sides: i32,
 //     radius: f32,
 // ) -> sys::Mesh {
@@ -713,7 +713,7 @@ pub fn draw_grid(
 
 // /// Generate plane mesh (with subdivisions)
 // #[inline]
-// pub fn GenMeshPlane(
+// pub unsafe fn GenMeshPlane(
 //     width: f32,
 //     length: f32,
 //     resX: i32,
@@ -726,7 +726,7 @@ pub fn draw_grid(
 
 // /// Generate cuboid mesh
 // #[inline]
-// pub fn GenMeshCube(
+// pub unsafe fn GenMeshCube(
 //     width: f32,
 //     height: f32,
 //     length: f32,
@@ -738,7 +738,7 @@ pub fn draw_grid(
 
 // /// Generate sphere mesh (standard sphere)
 // #[inline]
-// pub fn GenMeshSphere(
+// pub unsafe fn GenMeshSphere(
 //     radius: f32,
 //     rings: i32,
 //     slices: i32,
@@ -750,7 +750,7 @@ pub fn draw_grid(
 
 // /// Generate half-sphere mesh (no bottom cap)
 // #[inline]
-// pub fn GenMeshHemiSphere(
+// pub unsafe fn GenMeshHemiSphere(
 //     radius: f32,
 //     rings: i32,
 //     slices: i32,
@@ -762,7 +762,7 @@ pub fn draw_grid(
 
 // /// Generate cylinder mesh
 // #[inline]
-// pub fn GenMeshCylinder(
+// pub unsafe fn GenMeshCylinder(
 //     radius: f32,
 //     height: f32,
 //     slices: i32,
@@ -774,7 +774,7 @@ pub fn draw_grid(
 
 // /// Generate cone/pyramid mesh
 // #[inline]
-// pub fn GenMeshCone(
+// pub unsafe fn GenMeshCone(
 //     radius: f32,
 //     height: f32,
 //     slices: i32,
@@ -786,7 +786,7 @@ pub fn draw_grid(
 
 // /// Generate torus mesh
 // #[inline]
-// pub fn GenMeshTorus(
+// pub unsafe fn GenMeshTorus(
 //     radius: f32,
 //     size: f32,
 //     radSeg: i32,
@@ -799,7 +799,7 @@ pub fn draw_grid(
 
 // /// Generate trefoil knot mesh
 // #[inline]
-// pub fn GenMeshKnot(
+// pub unsafe fn GenMeshKnot(
 //     radius: f32,
 //     size: f32,
 //     radSeg: i32,
@@ -812,7 +812,7 @@ pub fn draw_grid(
 
 // /// Generate heightmap mesh from image data
 // #[inline]
-// pub fn GenMeshHeightmap(
+// pub unsafe fn GenMeshHeightmap(
 //     heightmap: sys::Image,
 //     size: sys::Vector3,
 // ) -> sys::Mesh {
@@ -823,7 +823,7 @@ pub fn draw_grid(
 
 // /// Generate cubes-based map mesh from image data
 // #[inline]
-// pub fn GenMeshCubicmap(
+// pub unsafe fn GenMeshCubicmap(
 //     cubicmap: sys::Image,
 //     cubeSize: sys::Vector3,
 // ) -> sys::Mesh {
@@ -836,7 +836,7 @@ pub fn draw_grid(
 
 // /// Load materials from model file
 // #[inline]
-// pub fn LoadMaterials(
+// pub unsafe fn LoadMaterials(
 //     fileName: *const ::std::os::raw::c_char,
 //     materialCount: *mut i32,
 // ) -> *mut sys::Material {
@@ -847,7 +847,7 @@ pub fn draw_grid(
 
 // /// Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
 // #[inline]
-// pub fn LoadMaterialDefault() -> sys::Material {
+// pub unsafe fn LoadMaterialDefault() -> sys::Material {
 //     unsafe {
 //         sys::
 //     }
@@ -855,7 +855,7 @@ pub fn draw_grid(
 
 // /// Check if a material is valid (shader assigned, map textures loaded in GPU)
 // #[inline]
-// pub fn IsMaterialValid(
+// pub unsafe fn IsMaterialValid(
 //     material: sys::Material,
 // ) -> bool {
 //     unsafe {
@@ -865,7 +865,7 @@ pub fn draw_grid(
 
 // /// Unload material from GPU memory (VRAM)
 // #[inline]
-// pub fn UnloadMaterial(
+// pub unsafe fn UnloadMaterial(
 //     material: sys::Material,
 // ) {
 //     unsafe {
@@ -875,7 +875,7 @@ pub fn draw_grid(
 
 // /// Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
 // #[inline]
-// pub fn SetMaterialTexture(
+// pub unsafe fn SetMaterialTexture(
 //     material: *mut sys::Material,
 //     mapType: i32,
 //     texture: sys::Texture2D,
@@ -887,7 +887,7 @@ pub fn draw_grid(
 
 // /// Set material for a mesh
 // #[inline]
-// pub fn SetModelMeshMaterial(
+// pub unsafe fn SetModelMeshMaterial(
 //     model: *mut sys::Model,
 //     meshId: i32,
 //     materialId: i32,
@@ -901,7 +901,7 @@ pub fn draw_grid(
 
 // /// Load model animations from file
 // #[inline]
-// pub fn LoadModelAnimations(
+// pub unsafe fn LoadModelAnimations(
 //     fileName: *const ::std::os::raw::c_char,
 //     animCount: *mut i32,
 // ) -> *mut sys::ModelAnimation {
@@ -912,7 +912,7 @@ pub fn draw_grid(
 
 // /// Update model animation pose (CPU)
 // #[inline]
-// pub fn UpdateModelAnimation(
+// pub unsafe fn UpdateModelAnimation(
 //     model: sys::Model,
 //     anim: sys::ModelAnimation,
 //     frame: i32,
@@ -924,7 +924,7 @@ pub fn draw_grid(
 
 // /// Update model animation mesh bone matrices (GPU skinning)
 // #[inline]
-// pub fn UpdateModelAnimationBones(
+// pub unsafe fn UpdateModelAnimationBones(
 //     model: sys::Model,
 //     anim: sys::ModelAnimation,
 //     frame: i32,
@@ -936,7 +936,7 @@ pub fn draw_grid(
 
 // /// Unload animation data
 // #[inline]
-// pub fn UnloadModelAnimation(
+// pub unsafe fn UnloadModelAnimation(
 //     anim: sys::ModelAnimation,
 // ) {
 //     unsafe {
@@ -946,7 +946,7 @@ pub fn draw_grid(
 
 // /// Unload animation array data
 // #[inline]
-// pub fn UnloadModelAnimations(
+// pub unsafe fn UnloadModelAnimations(
 //     animations: *mut sys::ModelAnimation,
 //     animCount: i32,
 // ) {
@@ -957,7 +957,7 @@ pub fn draw_grid(
 
 // /// Check model animation skeleton match
 // #[inline]
-// pub fn IsModelAnimationValid(
+// pub unsafe fn IsModelAnimationValid(
 //     model: sys::Model,
 //     anim: sys::ModelAnimation,
 // ) -> bool {
@@ -970,7 +970,7 @@ pub fn draw_grid(
 
 // /// Check collision between two spheres
 // #[inline]
-// pub fn CheckCollisionSpheres(
+// pub unsafe fn CheckCollisionSpheres(
 //     center1: sys::Vector3,
 //     radius1: f32,
 //     center2: sys::Vector3,
@@ -983,7 +983,7 @@ pub fn draw_grid(
 
 // /// Check collision between two bounding boxes
 // #[inline]
-// pub fn CheckCollisionBoxes(
+// pub unsafe fn CheckCollisionBoxes(
 //     box1: sys::BoundingBox,
 //     box2: sys::BoundingBox,
 // ) -> bool {
@@ -994,7 +994,7 @@ pub fn draw_grid(
 
 // /// Check collision between box and sphere
 // #[inline]
-// pub fn CheckCollisionBoxSphere(
+// pub unsafe fn CheckCollisionBoxSphere(
 //     box_: sys::BoundingBox,
 //     center: sys::Vector3,
 //     radius: f32,
@@ -1006,7 +1006,7 @@ pub fn draw_grid(
 
 // /// Get collision info between ray and sphere
 // #[inline]
-// pub fn GetRayCollisionSphere(
+// pub unsafe fn GetRayCollisionSphere(
 //     ray: sys::Ray,
 //     center: sys::Vector3,
 //     radius: f32,
@@ -1018,7 +1018,7 @@ pub fn draw_grid(
 
 // /// Get collision info between ray and box
 // #[inline]
-// pub fn GetRayCollisionBox(
+// pub unsafe fn GetRayCollisionBox(
 //     ray: sys::Ray,
 //     box_: sys::BoundingBox,
 // ) -> sys::RayCollision {
@@ -1029,7 +1029,7 @@ pub fn draw_grid(
 
 // /// Get collision info between ray and mesh
 // #[inline]
-// pub fn GetRayCollisionMesh(
+// pub unsafe fn GetRayCollisionMesh(
 //     ray: sys::Ray,
 //     mesh: sys::Mesh,
 //     transform: sys::Matrix,
@@ -1041,7 +1041,7 @@ pub fn draw_grid(
 
 // /// Get collision info between ray and triangle
 // #[inline]
-// pub fn GetRayCollisionTriangle(
+// pub unsafe fn GetRayCollisionTriangle(
 //     ray: sys::Ray,
 //     p1: sys::Vector3,
 //     p2: sys::Vector3,
@@ -1054,7 +1054,7 @@ pub fn draw_grid(
 
 // /// Get collision info between ray and quad
 // #[inline]
-// pub fn GetRayCollisionQuad(
+// pub unsafe fn GetRayCollisionQuad(
 //     ray: sys::Ray,
 //     p1: sys::Vector3,
 //     p2: sys::Vector3,

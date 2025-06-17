@@ -18,7 +18,7 @@ pub mod sys;
 
 /// Initialize window and OpenGL context
 #[inline]
-pub fn init_window(
+pub unsafe fn init_window(
     width: u32,
     height: u32,
     title: &CStr,
@@ -34,7 +34,7 @@ pub fn init_window(
 
 /// Close window and unload OpenGL context
 #[inline]
-pub fn close_window() {
+pub unsafe fn close_window() {
     unsafe {
         sys::CloseWindow();
     }
@@ -42,7 +42,7 @@ pub fn close_window() {
 
 /// Check if application should close ([`sys::KeyboardKey::KEY_ESCAPE`] pressed or windows close icon clicked)
 #[inline]
-pub fn window_should_close() -> bool {
+pub unsafe fn window_should_close() -> bool {
     unsafe {
         sys::WindowShouldClose()
     }
@@ -50,7 +50,7 @@ pub fn window_should_close() -> bool {
 
 /// Check if window has been initialized successfully
 #[inline]
-pub fn is_window_ready() -> bool {
+pub unsafe fn is_window_ready() -> bool {
     unsafe {
         sys::IsWindowReady()
     }
@@ -58,7 +58,7 @@ pub fn is_window_ready() -> bool {
 
 /// Check if window is currently fullscreen
 #[inline]
-pub fn is_window_fullscreen() -> bool {
+pub unsafe fn is_window_fullscreen() -> bool {
     unsafe {
         sys::IsWindowFullscreen()
     }
@@ -66,7 +66,7 @@ pub fn is_window_fullscreen() -> bool {
 
 /// Check if window is currently hidden
 #[inline]
-pub fn is_window_hidden() -> bool {
+pub unsafe fn is_window_hidden() -> bool {
     unsafe {
         sys::IsWindowHidden()
     }
@@ -74,7 +74,7 @@ pub fn is_window_hidden() -> bool {
 
 /// Check if window is currently minimized
 #[inline]
-pub fn is_window_minimized() -> bool {
+pub unsafe fn is_window_minimized() -> bool {
     unsafe {
         sys::IsWindowMinimized()
     }
@@ -82,7 +82,7 @@ pub fn is_window_minimized() -> bool {
 
 /// Check if window is currently maximized
 #[inline]
-pub fn is_window_maximized() -> bool {
+pub unsafe fn is_window_maximized() -> bool {
     unsafe {
         sys::IsWindowMaximized()
     }
@@ -90,7 +90,7 @@ pub fn is_window_maximized() -> bool {
 
 /// Check if window is currently focused
 #[inline]
-pub fn is_window_focused() -> bool {
+pub unsafe fn is_window_focused() -> bool {
     unsafe {
         sys::IsWindowFocused()
     }
@@ -98,7 +98,7 @@ pub fn is_window_focused() -> bool {
 
 /// Check if window has been resized last frame
 #[inline]
-pub fn is_window_resized() -> bool {
+pub unsafe fn is_window_resized() -> bool {
     unsafe {
         sys::IsWindowResized()
     }
@@ -106,7 +106,7 @@ pub fn is_window_resized() -> bool {
 
 /// Check if one specific window flag is enabled
 #[inline]
-pub fn is_window_state(
+pub unsafe fn is_window_state(
     flag: sys::ConfigFlags,
 ) -> bool {
     unsafe {
@@ -119,7 +119,7 @@ pub fn is_window_state(
 
 /// Set window configuration state using flags
 #[inline]
-pub fn set_window_state(
+pub unsafe fn set_window_state(
     flags: sys::ConfigFlags,
 ) {
     unsafe {
@@ -132,7 +132,7 @@ pub fn set_window_state(
 
 /// Clear window configuration state flags
 #[inline]
-pub fn clear_window_state(
+pub unsafe fn clear_window_state(
     flags: sys::ConfigFlags,
 ) {
     unsafe {
@@ -145,7 +145,7 @@ pub fn clear_window_state(
 
 /// Toggle window state: fullscreen/windowed, resizes monitor to match window resolution
 #[inline]
-pub fn toggle_fullscreen() {
+pub unsafe fn toggle_fullscreen() {
     unsafe {
         sys::ToggleFullscreen();
     }
@@ -153,7 +153,7 @@ pub fn toggle_fullscreen() {
 
 /// Toggle window state: borderless windowed, resizes window to match monitor resolution
 #[inline]
-pub fn toggle_borderless_windowed() {
+pub unsafe fn toggle_borderless_windowed() {
     unsafe {
         sys::ToggleBorderlessWindowed();
     }
@@ -161,7 +161,7 @@ pub fn toggle_borderless_windowed() {
 
 /// Set window state: maximized, if resizable
 #[inline]
-pub fn maximize_window() {
+pub unsafe fn maximize_window() {
     unsafe {
         sys::MaximizeWindow();
     }
@@ -169,7 +169,7 @@ pub fn maximize_window() {
 
 /// Set window state: minimized, if resizable
 #[inline]
-pub fn minimize_window() {
+pub unsafe fn minimize_window() {
     unsafe {
         sys::MinimizeWindow();
     }
@@ -177,7 +177,7 @@ pub fn minimize_window() {
 
 /// Restore window from being minimized/maximized
 #[inline]
-pub fn restore_window() {
+pub unsafe fn restore_window() {
     unsafe {
         sys::RestoreWindow();
     }
@@ -185,7 +185,7 @@ pub fn restore_window() {
 
 /// Set icon for window (single image, RGBA 32bit)
 #[inline]
-pub fn set_window_icon(
+pub unsafe fn set_window_icon(
     image: sys::Image,
 ) {
     unsafe {
@@ -197,7 +197,7 @@ pub fn set_window_icon(
 
 /// Set icon for window (multiple images, RGBA 32bit)
 #[inline]
-pub fn set_window_icons(
+pub unsafe fn set_window_icons(
     images: &[sys::Image],
 ) {
     unsafe {
@@ -212,7 +212,7 @@ pub fn set_window_icons(
 
 /// Set title for window
 #[inline]
-pub fn set_window_title(
+pub unsafe fn set_window_title(
     title: &CStr,
 ) {
     unsafe {
@@ -224,7 +224,7 @@ pub fn set_window_title(
 
 /// Set window position on screen
 #[inline]
-pub fn set_window_position(
+pub unsafe fn set_window_position(
     x: i32,
     y: i32,
 ) {
@@ -238,7 +238,7 @@ pub fn set_window_position(
 
 /// Set monitor for the current window
 #[inline]
-pub fn set_window_monitor(
+pub unsafe fn set_window_monitor(
     monitor: usize,
 ) {
     unsafe {
@@ -250,7 +250,7 @@ pub fn set_window_monitor(
 
 /// Set window minimum dimensions (for [`sys::ConfigFlags::FLAG_WINDOW_RESIZABLE`])
 #[inline]
-pub fn set_window_min_size(
+pub unsafe fn set_window_min_size(
     width: u32,
     height: u32,
 ) {
@@ -264,7 +264,7 @@ pub fn set_window_min_size(
 
 /// Set window maximum dimensions (for [`sys::ConfigFlags::FLAG_WINDOW_RESIZABLE`])
 #[inline]
-pub fn set_window_max_size(
+pub unsafe fn set_window_max_size(
     width: u32,
     height: u32,
 ) {
@@ -278,7 +278,7 @@ pub fn set_window_max_size(
 
 /// Set window dimensions
 #[inline]
-pub fn set_window_size(
+pub unsafe fn set_window_size(
     width: u32,
     height: u32,
 ) {
@@ -292,7 +292,7 @@ pub fn set_window_size(
 
 /// Set window opacity [0.0..=1.0]
 #[inline]
-pub fn set_window_opacity(
+pub unsafe fn set_window_opacity(
     opacity: f32,
 ) {
     assert!(0.0 <= opacity && opacity <= 1.0,
@@ -307,7 +307,7 @@ pub fn set_window_opacity(
 
 /// Set window focused
 #[inline]
-pub fn set_window_focused() {
+pub unsafe fn set_window_focused() {
     unsafe {
         sys::SetWindowFocused();
     }
@@ -333,7 +333,7 @@ impl<'a> NativeWindowHandle<'a> {
 
 /// Get native window handle
 #[inline]
-pub fn get_window_handle<'a>() -> Option<NativeWindowHandle<'a>> {
+pub unsafe fn get_window_handle<'a>() -> Option<NativeWindowHandle<'a>> {
     NonNull::new(unsafe {
         sys::GetWindowHandle()
     })
@@ -345,7 +345,7 @@ pub fn get_window_handle<'a>() -> Option<NativeWindowHandle<'a>> {
 
 /// Get current screen width
 #[inline]
-pub fn get_screen_width() -> u32 {
+pub unsafe fn get_screen_width() -> u32 {
     unsafe {
         sys::GetScreenWidth()
     }.try_into().unwrap()
@@ -353,7 +353,7 @@ pub fn get_screen_width() -> u32 {
 
 /// Get current screen height
 #[inline]
-pub fn get_screen_height() -> u32 {
+pub unsafe fn get_screen_height() -> u32 {
     unsafe {
         sys::GetScreenHeight()
     }.try_into().unwrap()
@@ -361,7 +361,7 @@ pub fn get_screen_height() -> u32 {
 
 /// Get current render width (it considers HiDPI)
 #[inline]
-pub fn get_render_width() -> u32 {
+pub unsafe fn get_render_width() -> u32 {
     unsafe {
         sys::GetRenderWidth()
     }.try_into().unwrap()
@@ -369,7 +369,7 @@ pub fn get_render_width() -> u32 {
 
 /// Get current render height (it considers HiDPI)
 #[inline]
-pub fn get_render_height() -> u32 {
+pub unsafe fn get_render_height() -> u32 {
     unsafe {
         sys::GetRenderHeight()
     }.try_into().unwrap()
@@ -377,7 +377,7 @@ pub fn get_render_height() -> u32 {
 
 /// Get number of connected monitors
 #[inline]
-pub fn get_monitor_count() -> usize {
+pub unsafe fn get_monitor_count() -> usize {
     unsafe {
         sys::GetMonitorCount()
     }.try_into().unwrap()
@@ -385,7 +385,7 @@ pub fn get_monitor_count() -> usize {
 
 /// Get current monitor where window is placed
 #[inline]
-pub fn get_current_monitor() -> Result<usize, usize> {
+pub unsafe fn get_current_monitor() -> Result<usize, usize> {
     let idx = unsafe {
         sys::GetCurrentMonitor()
     };
@@ -398,7 +398,7 @@ pub fn get_current_monitor() -> Result<usize, usize> {
 
 /// Get specified monitor position
 #[inline]
-pub fn get_monitor_position(
+pub unsafe fn get_monitor_position(
     monitor: usize,
 ) -> sys::Vector2 {
     unsafe {
@@ -410,7 +410,7 @@ pub fn get_monitor_position(
 
 /// Get specified monitor width (current video mode used by monitor)
 #[inline]
-pub fn get_monitor_width(
+pub unsafe fn get_monitor_width(
     monitor: usize,
 ) -> u32 {
     unsafe {
@@ -422,7 +422,7 @@ pub fn get_monitor_width(
 
 /// Get specified monitor height (current video mode used by monitor)
 #[inline]
-pub fn get_monitor_height(
+pub unsafe fn get_monitor_height(
     monitor: usize,
 ) -> u32 {
     unsafe {
@@ -434,7 +434,7 @@ pub fn get_monitor_height(
 
 /// Get specified monitor physical width in millimetres
 #[inline]
-pub fn get_monitor_physical_width(
+pub unsafe fn get_monitor_physical_width(
     monitor: usize,
 ) -> u32 {
     unsafe {
@@ -446,7 +446,7 @@ pub fn get_monitor_physical_width(
 
 /// Get specified monitor physical height in millimetres
 #[inline]
-pub fn get_monitor_physical_height(
+pub unsafe fn get_monitor_physical_height(
     monitor: usize,
 ) -> u32 {
     unsafe {
@@ -458,7 +458,7 @@ pub fn get_monitor_physical_height(
 
 /// Get specified monitor refresh rate
 #[inline]
-pub fn get_monitor_refresh_rate(
+pub unsafe fn get_monitor_refresh_rate(
     monitor: usize,
 ) -> u32 {
     unsafe {
@@ -470,7 +470,7 @@ pub fn get_monitor_refresh_rate(
 
 /// Get window position XY on monitor
 #[inline]
-pub fn get_window_position() -> sys::Vector2 {
+pub unsafe fn get_window_position() -> sys::Vector2 {
     unsafe {
         sys::GetWindowPosition()
     }
@@ -478,7 +478,7 @@ pub fn get_window_position() -> sys::Vector2 {
 
 /// Get window scale DPI factor
 #[inline]
-pub fn get_window_scale_dpi() -> sys::Vector2 {
+pub unsafe fn get_window_scale_dpi() -> sys::Vector2 {
     unsafe {
         sys::GetWindowScaleDPI()
     }
@@ -486,7 +486,7 @@ pub fn get_window_scale_dpi() -> sys::Vector2 {
 
 /// Get the human-readable, UTF-8 encoded name of the specified monitor
 #[inline]
-pub fn get_monitor_name<'a>(
+pub unsafe fn get_monitor_name<'a>(
     monitor: usize,
 ) -> Option<&'a CStr> {
     let ptr = unsafe {
@@ -505,7 +505,7 @@ pub fn get_monitor_name<'a>(
 
 /// Set clipboard text content
 #[inline]
-pub fn set_clipboard_text(
+pub unsafe fn set_clipboard_text(
     text: &CStr,
 ) {
     unsafe {
@@ -517,7 +517,7 @@ pub fn set_clipboard_text(
 
 /// Get clipboard text content
 #[inline]
-pub fn get_clipboard_text<'a>() -> Option<&'a CStr> {
+pub unsafe fn get_clipboard_text<'a>() -> Option<&'a CStr> {
     let ptr = unsafe {
         sys::GetClipboardText()
     };
@@ -532,7 +532,7 @@ pub fn get_clipboard_text<'a>() -> Option<&'a CStr> {
 
 /// Get clipboard image content
 #[inline]
-pub fn get_clipboard_image() -> sys::Image {
+pub unsafe fn get_clipboard_image() -> sys::Image {
     unsafe {
         sys::GetClipboardImage()
     }
@@ -540,7 +540,7 @@ pub fn get_clipboard_image() -> sys::Image {
 
 /// Enable waiting for events on EndDrawing(), no automatic event polling
 #[inline]
-pub fn enable_event_waiting() {
+pub unsafe fn enable_event_waiting() {
     unsafe {
         sys::EnableEventWaiting();
     }
@@ -548,7 +548,7 @@ pub fn enable_event_waiting() {
 
 /// Disable waiting for events on EndDrawing(), automatic events polling
 #[inline]
-pub fn disable_event_waiting() {
+pub unsafe fn disable_event_waiting() {
     unsafe {
         sys::DisableEventWaiting();
     }
@@ -558,7 +558,7 @@ pub fn disable_event_waiting() {
 
 /// Shows cursor
 #[inline]
-pub fn show_cursor() {
+pub unsafe fn show_cursor() {
     unsafe {
         sys::ShowCursor();
     }
@@ -566,7 +566,7 @@ pub fn show_cursor() {
 
 /// Hides cursor
 #[inline]
-pub fn hide_cursor() {
+pub unsafe fn hide_cursor() {
     unsafe {
         sys::HideCursor();
     }
@@ -574,7 +574,7 @@ pub fn hide_cursor() {
 
 /// Check if cursor is not visible
 #[inline]
-pub fn is_cursor_hidden() -> bool {
+pub unsafe fn is_cursor_hidden() -> bool {
     unsafe {
         sys::IsCursorHidden()
     }
@@ -582,7 +582,7 @@ pub fn is_cursor_hidden() -> bool {
 
 /// Enables cursor (unlock cursor)
 #[inline]
-pub fn enable_cursor() {
+pub unsafe fn enable_cursor() {
     unsafe {
         sys::EnableCursor();
     }
@@ -590,7 +590,7 @@ pub fn enable_cursor() {
 
 /// Disables cursor (lock cursor)
 #[inline]
-pub fn disable_cursor() {
+pub unsafe fn disable_cursor() {
     unsafe {
         sys::DisableCursor();
     }
@@ -598,7 +598,7 @@ pub fn disable_cursor() {
 
 /// Check if cursor is on the screen
 #[inline]
-pub fn is_cursor_on_screen() -> bool {
+pub unsafe fn is_cursor_on_screen() -> bool {
     unsafe {
         sys::IsCursorOnScreen()
     }
@@ -608,7 +608,7 @@ pub fn is_cursor_on_screen() -> bool {
 
 /// Set background color (framebuffer clear color)
 #[inline]
-pub fn clear_background(
+pub unsafe fn clear_background(
     color: sys::Color,
 ) {
     unsafe {
@@ -620,7 +620,7 @@ pub fn clear_background(
 
 /// Setup canvas (framebuffer) to start drawing
 #[inline]
-pub fn begin_drawing() {
+pub unsafe fn begin_drawing() {
     unsafe {
         sys::BeginDrawing();
     }
@@ -628,7 +628,7 @@ pub fn begin_drawing() {
 
 /// End canvas drawing and swap buffers (double buffering)
 #[inline]
-pub fn end_drawing() {
+pub unsafe fn end_drawing() {
     unsafe {
         sys::EndDrawing();
     }
@@ -637,7 +637,7 @@ pub fn end_drawing() {
 /// Begin 2D mode with custom camera (2D)
 #[allow(non_snake_case)]
 #[inline]
-pub fn begin_mode2D(
+pub unsafe fn begin_mode2D(
     camera: sys::Camera2D,
 ) {
     unsafe {
@@ -650,7 +650,7 @@ pub fn begin_mode2D(
 /// Ends 2D mode with custom camera
 #[allow(non_snake_case)]
 #[inline]
-pub fn end_mode2D() {
+pub unsafe fn end_mode2D() {
     unsafe {
         sys::EndMode2D();
     }
@@ -659,7 +659,7 @@ pub fn end_mode2D() {
 /// Begin 3D mode with custom camera (3D)
 #[allow(non_snake_case)]
 #[inline]
-pub fn begin_mode3D(
+pub unsafe fn begin_mode3D(
     camera: sys::Camera3D,
 ) {
     unsafe {
@@ -672,7 +672,7 @@ pub fn begin_mode3D(
 /// Ends 3D mode and returns to default 2D orthographic mode
 #[allow(non_snake_case)]
 #[inline]
-pub fn end_mode3D() {
+pub unsafe fn end_mode3D() {
     unsafe {
         sys::EndMode3D();
     }
@@ -680,7 +680,7 @@ pub fn end_mode3D() {
 
 /// Begin drawing to render texture
 #[inline]
-pub fn begin_texture_mode(
+pub unsafe fn begin_texture_mode(
     target: sys::RenderTexture2D,
 ) {
     unsafe {
@@ -692,7 +692,7 @@ pub fn begin_texture_mode(
 
 /// Ends drawing to render texture
 #[inline]
-pub fn end_texture_mode() {
+pub unsafe fn end_texture_mode() {
     unsafe {
         sys::EndTextureMode();
     }
@@ -700,7 +700,7 @@ pub fn end_texture_mode() {
 
 /// Begin custom shader drawing
 #[inline]
-pub fn begin_shader_mode(
+pub unsafe fn begin_shader_mode(
     shader: sys::Shader,
 ) {
     unsafe {
@@ -712,7 +712,7 @@ pub fn begin_shader_mode(
 
 /// End custom shader drawing (use default shader)
 #[inline]
-pub fn end_shader_mode() {
+pub unsafe fn end_shader_mode() {
     unsafe {
         sys::EndShaderMode();
     }
@@ -720,7 +720,7 @@ pub fn end_shader_mode() {
 
 /// Begin blending mode (alpha, additive, multiplied, subtract, custom)
 #[inline]
-pub fn begin_blend_mode(
+pub unsafe fn begin_blend_mode(
     mode: sys::BlendMode,
 ) {
     unsafe {
@@ -732,7 +732,7 @@ pub fn begin_blend_mode(
 
 /// End blending mode (reset to default: alpha blending)
 #[inline]
-pub fn end_blend_mode() {
+pub unsafe fn end_blend_mode() {
     unsafe {
         sys::EndBlendMode();
     }
@@ -740,7 +740,7 @@ pub fn end_blend_mode() {
 
 /// Begin scissor mode (define screen area for following drawing)
 #[inline]
-pub fn begin_scissor_mode(
+pub unsafe fn begin_scissor_mode(
     x: i32,
     y: i32,
     width: i32,
@@ -758,7 +758,7 @@ pub fn begin_scissor_mode(
 
 /// End scissor mode
 #[inline]
-pub fn end_scissor_mode() {
+pub unsafe fn end_scissor_mode() {
     unsafe {
         sys::EndScissorMode();
     }
@@ -766,7 +766,7 @@ pub fn end_scissor_mode() {
 
 /// Begin stereo rendering (requires VR simulator)
 #[inline]
-pub fn begin_vr_stereo_mode(
+pub unsafe fn begin_vr_stereo_mode(
     config: sys::VrStereoConfig,
 ) {
     unsafe {
@@ -778,7 +778,7 @@ pub fn begin_vr_stereo_mode(
 
 /// End stereo rendering (requires VR simulator)
 #[inline]
-pub fn end_vr_stereo_mode() {
+pub unsafe fn end_vr_stereo_mode() {
     unsafe {
         sys::EndVrStereoMode();
     }
@@ -788,7 +788,7 @@ pub fn end_vr_stereo_mode() {
 
 /// Load VR stereo config for VR simulator device parameters
 #[inline]
-pub fn load_vr_stereo_config(
+pub unsafe fn load_vr_stereo_config(
     device: sys::VrDeviceInfo,
 ) -> sys::VrStereoConfig {
     unsafe {
@@ -800,7 +800,7 @@ pub fn load_vr_stereo_config(
 
 /// Unload VR stereo config
 #[inline]
-pub fn unload_vr_stereo_config(
+pub unsafe fn unload_vr_stereo_config(
     config: sys::VrStereoConfig,
 ) {
     unsafe {
@@ -815,7 +815,7 @@ pub fn unload_vr_stereo_config(
 
 /// Load shader from files and bind default locations
 #[inline]
-pub fn load_shader(
+pub unsafe fn load_shader(
     vs_file_name: Option<&CStr>,
     fs_file_name: Option<&CStr>,
 ) -> sys::Shader {
@@ -829,7 +829,7 @@ pub fn load_shader(
 
 /// Load shader from code strings and bind default locations
 #[inline]
-pub fn load_shader_from_memory(
+pub unsafe fn load_shader_from_memory(
     vs_code: Option<&CStr>,
     fs_code: Option<&CStr>,
 ) -> sys::Shader {
@@ -843,7 +843,7 @@ pub fn load_shader_from_memory(
 
 /// Check if a shader is valid (loaded on GPU)
 #[inline]
-pub fn is_shader_valid(
+pub unsafe fn is_shader_valid(
     shader: sys::Shader,
 ) -> bool {
     unsafe {
@@ -859,7 +859,7 @@ pub struct UniformLoc(pub c_int);
 
 /// Get shader uniform location
 #[inline]
-pub fn get_shader_location(
+pub unsafe fn get_shader_location(
     shader: sys::Shader,
     uniform_name: &CStr,
 ) -> UniformLoc {
@@ -877,7 +877,7 @@ pub struct AttribLoc(pub c_int);
 
 /// Get shader attribute location
 #[inline]
-pub fn get_shader_location_attrib(
+pub unsafe fn get_shader_location_attrib(
     shader: sys::Shader,
     attrib_name: &CStr,
 ) -> AttribLoc {
@@ -938,7 +938,7 @@ define_uniform_types! {
 
 /// Set shader uniform value
 #[inline]
-pub fn set_shader_value<T: UniformType>(
+pub unsafe fn set_shader_value<T: UniformType>(
     shader: sys::Shader,
     loc: UniformLoc,
     value: &T,
@@ -983,7 +983,7 @@ define_uniform_types! {
 
 /// Set shader uniform value vector
 #[inline]
-pub fn set_shader_value_v<T: UniformVType>(
+pub unsafe fn set_shader_value_v<T: UniformVType>(
     shader: sys::Shader,
     loc: UniformLoc,
     value: &[T],
@@ -1001,7 +1001,7 @@ pub fn set_shader_value_v<T: UniformVType>(
 
 /// Set shader uniform value (matrix 4x4)
 #[inline]
-pub fn set_shader_value_matrix(shader: sys::Shader, loc: UniformLoc, mat: sys::Matrix) {
+pub unsafe fn set_shader_value_matrix(shader: sys::Shader, loc: UniformLoc, mat: sys::Matrix) {
     unsafe {
         sys::SetShaderValueMatrix(
             shader,
@@ -1013,7 +1013,7 @@ pub fn set_shader_value_matrix(shader: sys::Shader, loc: UniformLoc, mat: sys::M
 
 /// Set shader uniform value and bind the texture (sampler2d)
 #[inline]
-pub fn set_shader_value_texture(
+pub unsafe fn set_shader_value_texture(
     shader: sys::Shader,
     loc: UniformLoc,
     texture: sys::Texture2D,
@@ -1029,7 +1029,7 @@ pub fn set_shader_value_texture(
 
 /// Unload shader from GPU memory (VRAM)
 #[inline]
-pub fn unload_shader(shader: sys::Shader) {
+pub unsafe fn unload_shader(shader: sys::Shader) {
     unsafe {
         sys::UnloadShader(
             shader,
@@ -1041,7 +1041,7 @@ pub fn unload_shader(shader: sys::Shader) {
 
 /// Get a ray trace from screen position (i.e mouse)
 #[inline]
-pub fn get_screen_to_world_ray(
+pub unsafe fn get_screen_to_world_ray(
     position: sys::Vector2,
     camera: sys::Camera,
 ) -> sys::Ray {
@@ -1055,7 +1055,7 @@ pub fn get_screen_to_world_ray(
 
 /// Get a ray trace from screen position (i.e mouse) in a viewport
 #[inline]
-pub fn get_screen_to_world_ray_ex(
+pub unsafe fn get_screen_to_world_ray_ex(
     position: sys::Vector2,
     camera: sys::Camera,
     width: i32,
@@ -1073,7 +1073,7 @@ pub fn get_screen_to_world_ray_ex(
 
 /// Get the screen space position for a 3d world space position
 #[inline]
-pub fn get_world_to_screen(
+pub unsafe fn get_world_to_screen(
     position: sys::Vector3,
     camera: sys::Camera,
 ) -> sys::Vector2 {
@@ -1087,7 +1087,7 @@ pub fn get_world_to_screen(
 
 /// Get size position for a 3d world space position
 #[inline]
-pub fn get_world_to_screen_ex(
+pub unsafe fn get_world_to_screen_ex(
     position: sys::Vector3,
     camera: sys::Camera,
     width: i32,
@@ -1106,7 +1106,7 @@ pub fn get_world_to_screen_ex(
 /// Get the screen space position for a 2d camera world space position
 #[allow(non_snake_case)]
 #[inline]
-pub fn get_world_to_screen2D(
+pub unsafe fn get_world_to_screen2D(
     position: sys::Vector2,
     camera: sys::Camera2D,
 ) -> sys::Vector2 {
@@ -1121,7 +1121,7 @@ pub fn get_world_to_screen2D(
 /// Get the world space position for a 2d camera screen space position
 #[allow(non_snake_case)]
 #[inline]
-pub fn get_screen_to_world2D(
+pub unsafe fn get_screen_to_world2D(
     position: sys::Vector2,
     camera: sys::Camera2D,
 ) -> sys::Vector2 {
@@ -1135,7 +1135,7 @@ pub fn get_screen_to_world2D(
 
 /// Get camera transform matrix (view matrix)
 #[inline]
-pub fn get_camera_matrix(
+pub unsafe fn get_camera_matrix(
     camera: sys::Camera,
 ) -> sys::Matrix {
     unsafe {
@@ -1148,7 +1148,7 @@ pub fn get_camera_matrix(
 /// Get camera 2d transform matrix
 #[allow(non_snake_case)]
 #[inline]
-pub fn get_camera_matrix2D(
+pub unsafe fn get_camera_matrix2D(
     camera: sys::Camera2D,
 ) -> sys::Matrix {
     unsafe {
@@ -1162,7 +1162,7 @@ pub fn get_camera_matrix2D(
 
 /// Set target FPS (maximum)
 #[inline]
-pub fn set_target_fps(
+pub unsafe fn set_target_fps(
     fps: u32,
 ) {
     unsafe {
@@ -1174,7 +1174,7 @@ pub fn set_target_fps(
 
 /// Get time in seconds for last frame drawn (delta time)
 #[inline]
-pub fn get_frame_time() -> f32 {
+pub unsafe fn get_frame_time() -> f32 {
     unsafe {
         sys::GetFrameTime()
     }
@@ -1182,13 +1182,13 @@ pub fn get_frame_time() -> f32 {
 
 /// Get duration for last frame drawn (delta time)
 #[inline]
-pub fn get_frame_duration() -> Duration {
-    Duration::from_secs_f32(get_frame_time())
+pub unsafe fn get_frame_duration() -> Duration {
+    Duration::from_secs_f32(unsafe { get_frame_time() })
 }
 
 /// Get elapsed time in seconds since [`init_window()`]
 #[inline]
-pub fn get_time() -> f64 {
+pub unsafe fn get_time() -> f64 {
     unsafe {
         sys::GetTime()
     }
@@ -1196,13 +1196,13 @@ pub fn get_time() -> f64 {
 
 /// Get elapsed duration since [`init_window()`]
 #[inline]
-pub fn get_elapsed() -> Duration {
-    Duration::from_secs_f64(get_time())
+pub unsafe fn get_elapsed() -> Duration {
+    Duration::from_secs_f64(unsafe { get_time() })
 }
 
 /// Get current FPS
 #[inline]
-pub fn get_fps() -> u32 {
+pub unsafe fn get_fps() -> u32 {
     unsafe {
         sys::GetFPS()
     }.try_into().unwrap()
@@ -1218,7 +1218,7 @@ pub mod custom_frame_control {
 
     /// Swap back buffer with front buffer (screen drawing)
     #[inline]
-    pub fn swap_screen_buffer() {
+    pub unsafe fn swap_screen_buffer() {
         unsafe {
             sys::SwapScreenBuffer();
         }
@@ -1226,7 +1226,7 @@ pub mod custom_frame_control {
 
     /// Register all input events
     #[inline]
-    pub fn poll_input_events() {
+    pub unsafe fn poll_input_events() {
         unsafe {
             sys::PollInputEvents();
         }
@@ -1234,7 +1234,7 @@ pub mod custom_frame_control {
 
     /// Wait for some time (halt program execution)
     #[inline]
-    pub fn wait_time(
+    pub unsafe fn wait_time(
         seconds: f64,
     ) {
         unsafe {
@@ -1246,7 +1246,7 @@ pub mod custom_frame_control {
 
     /// Wait for some duration (halt program execution)
     #[inline]
-    pub fn wait_duration(
+    pub unsafe fn wait_duration(
         duration: Duration,
     ) {
         wait_time(duration.as_secs_f64());
@@ -1259,7 +1259,7 @@ pub use custom_frame_control::*;
 
 /// Set the seed for the random number generator
 #[inline]
-pub fn set_random_seed(
+pub unsafe fn set_random_seed(
     seed: u32,
 ) {
     unsafe {
@@ -1271,7 +1271,7 @@ pub fn set_random_seed(
 
 /// Get a random value between min and max (both included)
 #[inline]
-pub fn get_random_value(
+pub unsafe fn get_random_value(
     min: i32,
     max: i32,
 ) -> i32 {
@@ -1326,7 +1326,7 @@ impl DerefMut for RandomSequence {
 
 /// Load random values sequence, no values repeated
 #[inline]
-pub fn load_random_sequence(
+pub unsafe fn load_random_sequence(
     len: usize,
     min: i32,
     max: i32,
@@ -1343,7 +1343,7 @@ pub fn load_random_sequence(
 
 /// Unload random values sequence
 #[inline]
-pub fn unload_random_sequence(
+pub unsafe fn unload_random_sequence(
     mut sequence: RandomSequence,
 ) {
     unsafe {
@@ -1357,7 +1357,7 @@ pub fn unload_random_sequence(
 
 /// Takes a screenshot of current screen (filename extension defines format)
 #[inline]
-pub fn take_screenshot(
+pub unsafe fn take_screenshot(
     file_name: &CStr,
 ) {
     unsafe {
@@ -1369,7 +1369,7 @@ pub fn take_screenshot(
 
 /// Setup init configuration flags (view FLAGS)
 #[inline]
-pub fn set_config_flags(
+pub unsafe fn set_config_flags(
     flags: sys::ConfigFlags,
 ) {
     unsafe {
@@ -1382,7 +1382,7 @@ pub fn set_config_flags(
 
 /// Open URL with default system browser (if available)
 #[inline]
-pub fn open_url(
+pub unsafe fn open_url(
     url: &CStr,
 ) {
     unsafe {
@@ -1407,7 +1407,7 @@ pub use fs::*;
 
 /// Compress data (DEFLATE algorithm), memory must be MemFree()
 #[inline]
-pub fn compress_data(
+pub unsafe fn compress_data(
     data: &[u8],
 ) -> Option<RlBuffer<[u8], MemAllocator>> {
     let mut len = MaybeUninit::uninit();
@@ -1429,7 +1429,7 @@ pub fn compress_data(
 
 /// Decompress data (DEFLATE algorithm), memory must be MemFree()
 #[inline]
-pub fn decompress_data(
+pub unsafe fn decompress_data(
     comp_data: &[u8],
 ) -> Option<RlBuffer<[u8], MemAllocator>> {
     let mut len = MaybeUninit::uninit();
@@ -1451,7 +1451,7 @@ pub fn decompress_data(
 
 /// Encode data to Base64 string (includes NULL terminator), memory must be MemFree()
 #[inline]
-pub fn encode_data_base64(
+pub unsafe fn encode_data_base64(
     data: &[u8],
 ) -> Option<RlCString> {
     let mut len = MaybeUninit::uninit();
@@ -1471,7 +1471,7 @@ pub fn encode_data_base64(
 
 /// Decode Base64 string (expected NULL terminated), memory must be MemFree()
 #[inline]
-pub fn decode_data_base64(
+pub unsafe fn decode_data_base64(
     text: &CStr,
 ) -> Option<RlCString> {
     let mut len = MaybeUninit::uninit();
@@ -1490,7 +1490,7 @@ pub fn decode_data_base64(
 
 /// Compute CRC32 hash code
 #[inline]
-pub fn compute_crc32(
+pub unsafe fn compute_crc32(
     data: &mut [u8],
 ) -> u32 {
     unsafe {
@@ -1506,7 +1506,7 @@ define_buffer_handle!(ComputeMD5Handle);
 impl ComputeMD5Handle {
     /// Compute MD5 hash code, returns static [int; 4] (16 bytes)
     #[inline]
-    pub fn compute_md5<'a>(
+    pub unsafe fn compute_md5<'a>(
         &'a mut self,
         data: &[u8],
     ) -> &'a mut [u32; 4] {
@@ -1526,7 +1526,7 @@ define_buffer_handle!(ComputeSHA1Handle);
 impl ComputeSHA1Handle {
     /// Compute SHA1 hash code, returns static [int; 5] (20 bytes)
     #[inline]
-    pub fn compute_sha1<'a>(
+    pub unsafe fn compute_sha1<'a>(
         &'a mut self,
         data: &[u8],
     ) -> &'a mut [u32; 5] {
@@ -1545,7 +1545,7 @@ impl ComputeSHA1Handle {
 
 /// Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
 #[inline]
-pub fn load_automation_event_list(
+pub unsafe fn load_automation_event_list(
     file_name: &CStr,
 ) -> sys::AutomationEventList {
     unsafe {
@@ -1557,7 +1557,7 @@ pub fn load_automation_event_list(
 
 /// Unload automation events list from file
 #[inline]
-pub fn unload_automation_event_list(
+pub unsafe fn unload_automation_event_list(
     list: sys::AutomationEventList,
 ) {
     unsafe {
@@ -1569,7 +1569,7 @@ pub fn unload_automation_event_list(
 
 /// Export automation events list as text file
 #[inline]
-pub fn export_automation_event_list(
+pub unsafe fn export_automation_event_list(
     list: sys::AutomationEventList,
     file_name: &CStr,
 ) -> bool {
@@ -1583,7 +1583,7 @@ pub fn export_automation_event_list(
 
 /// Set automation event list to record to
 #[inline]
-pub fn set_automation_event_list(
+pub unsafe fn set_automation_event_list(
     list: Option<&mut sys::AutomationEventList>,
 ) {
     unsafe {
@@ -1595,7 +1595,7 @@ pub fn set_automation_event_list(
 
 /// Set automation event internal base frame to start recording
 #[inline]
-pub fn set_automation_event_base_frame(
+pub unsafe fn set_automation_event_base_frame(
     frame: i32,
 ) {
     unsafe {
@@ -1607,7 +1607,7 @@ pub fn set_automation_event_base_frame(
 
 /// Start recording automation events ([`sys::AutomationEventList`] must be set)
 #[inline]
-pub fn start_automation_event_recording() {
+pub unsafe fn start_automation_event_recording() {
     unsafe {
         sys::StartAutomationEventRecording();
     }
@@ -1615,7 +1615,7 @@ pub fn start_automation_event_recording() {
 
 /// Stop recording automation events
 #[inline]
-pub fn stop_automation_event_recording() {
+pub unsafe fn stop_automation_event_recording() {
     unsafe {
         sys::StopAutomationEventRecording();
     }
@@ -1623,7 +1623,7 @@ pub fn stop_automation_event_recording() {
 
 /// Play a recorded automation event
 #[inline]
-pub fn play_automation_event(
+pub unsafe fn play_automation_event(
     event: sys::AutomationEvent,
 ) {
     unsafe {

@@ -16,7 +16,7 @@ macro_rules! define_buffer_handle {
             ///
             /// Returns [`None`] if the handle has already been obtained
             #[inline]
-            pub fn get() -> Option<Self> {
+            pub unsafe fn get() -> Option<Self> {
                 static SINGLETON: Once = Once::new();
 
                 let mut result = None;
