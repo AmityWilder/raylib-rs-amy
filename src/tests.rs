@@ -53,8 +53,8 @@ fn test0() {
 fn test1() {
     use crate::low::text::TextToSnakeHandle;
     let mut handle = TextToSnakeHandle::get().unwrap();
-    let result = handle.text_to_snake(c"HelloWorld");
+    let result = unsafe { handle.text_to_snake(c"HelloWorld") };
     assert_eq!(result, c"hello_world");
-    assert_eq!(handle.text_to_snake(c"AppleOrangeBanana"), c"apple_orange_banana");
+    assert_eq!(unsafe { handle.text_to_snake(c"AppleOrangeBanana") }, c"apple_orange_banana");
     // assert_eq!(result, c"hello_world"); // Uncommenting this line should result in E0499 error
 }

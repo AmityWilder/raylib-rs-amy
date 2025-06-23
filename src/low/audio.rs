@@ -443,10 +443,14 @@ pub unsafe fn unload_wave_samples(
 // Music management functions
 
 /// Load music stream from file
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn load_music_stream(
     file_name: &CStr,
 ) -> sys::Music {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::LoadMusicStream(
             file_name.as_ptr()
@@ -457,11 +461,15 @@ pub unsafe fn load_music_stream(
 /// Load music stream from memory buffer, `file_type` refers to extension: i.e. ".wav"
 ///
 /// WARNING: File extension must be provided in lower-case
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn load_music_stream_from_memory(
     file_type: &CStr,
     data: &[u8],
 ) -> sys::Music {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::LoadMusicStreamFromMemory(
             file_type.as_ptr(),
@@ -473,21 +481,27 @@ pub unsafe fn load_music_stream_from_memory(
 
 /// Checks if a music stream is valid (context and buffers initialized)
 #[inline]
-pub unsafe fn is_music_valid(
+pub const fn is_music_valid(
     music: sys::Music,
 ) -> bool {
-    unsafe {
-        sys::IsMusicValid(
-            music,
-        )
-    }
+    // Please keep this up to date with `IsMusicValid()`
+
+    return  (!music.ctxData.is_null()) &&       // Validate context loaded
+            (music.frameCount > 0) &&           // Validate audio frame count
+            (music.stream.sampleRate > 0) &&    // Validate sample rate is supported
+            (music.stream.sampleSize > 0) &&    // Validate sample size is supported
+            (music.stream.channels > 0);        // Validate number of channels supported
 }
 
 /// Unload music stream
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn unload_music_stream(
     music: sys::Music,
 ) {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::UnloadMusicStream(
             music,
@@ -496,10 +510,14 @@ pub unsafe fn unload_music_stream(
 }
 
 /// Start music playing (open stream) from beginning
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn play_music_stream(
     music: sys::Music,
 ) {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::PlayMusicStream(
             music,
@@ -508,10 +526,14 @@ pub unsafe fn play_music_stream(
 }
 
 /// Check if music is playing
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn is_music_stream_playing(
     music: sys::Music,
 ) -> bool {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::IsMusicStreamPlaying(
             music
@@ -522,10 +544,14 @@ pub unsafe fn is_music_stream_playing(
 /// Updates buffers for music streaming
 ///
 /// Update (re-fill) music buffers if data already processed
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn update_music_stream(
     music: sys::Music,
 ) {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::UpdateMusicStream(
             music,
@@ -534,10 +560,16 @@ pub unsafe fn update_music_stream(
 }
 
 /// Stop music playing (close stream)
+///
+/// # Safety
+/// - Raylib audio module must be initialized
+/// - Music must be [valid](is_music_valid)
 #[inline]
 pub unsafe fn stop_music_stream(
     music: sys::Music,
 ) {
+    debug_assert!(is_music_valid(music), "`stop_music_stream` expects music to be valid");
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::StopMusicStream(
             music,
@@ -546,10 +578,14 @@ pub unsafe fn stop_music_stream(
 }
 
 /// Pause music playing
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn pause_music_stream(
     music: sys::Music,
 ) {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::PauseMusicStream(
             music,
@@ -558,10 +594,14 @@ pub unsafe fn pause_music_stream(
 }
 
 /// Resume playing paused music
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn resume_music_stream(
     music: sys::Music,
 ) {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::ResumeMusicStream(
             music,
@@ -570,11 +610,17 @@ pub unsafe fn resume_music_stream(
 }
 
 /// Seek music to a position (in seconds)
+///
+/// # Safety
+/// - Raylib audio module must be initialized
+/// - Music must be [valid](is_music_valid)
 #[inline]
 pub unsafe fn seek_music_stream(
     music: sys::Music,
     position: f32,
 ) {
+    debug_assert!(is_music_valid(music), "`seek_music_stream` expects music to be valid");
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::SeekMusicStream(
             music,
@@ -584,11 +630,15 @@ pub unsafe fn seek_music_stream(
 }
 
 /// Set volume for music (1.0 is max level)
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn set_music_volume(
     music: sys::Music,
     volume: f32,
 ) {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::SetMusicVolume(
             music,
@@ -598,11 +648,17 @@ pub unsafe fn set_music_volume(
 }
 
 /// Set pitch for a music (1.0 is base level)
+///
+///
+///
+/// # Safety
+/// - Raylib audio module must be initialized
 #[inline]
 pub unsafe fn set_music_pitch(
     music: sys::Music,
     pitch: f32,
 ) {
+    // SAFETY: Responsibility of caller
     unsafe {
         sys::SetMusicPitch(
             music,

@@ -217,10 +217,6 @@ macro_rules! sys_enum_wrapper {
     };
 }
 
-macro_rules! sys_pod_wrapper {
-
-}
-
 /// Vector2, 2 components
 #[repr(C)]
 #[derive(Debug, Clone, Copy, PartialEq)]

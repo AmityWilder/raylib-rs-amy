@@ -22,6 +22,7 @@
 ///
 /// - [`low::textures::get_pixel_data_size()`]
 /// - [`low::textures::is_image_valid()`]
+/// - [`low::audio::is_music_valid()`]
 pub mod low;
 
 /// High-level code for covering edge cases and best practice

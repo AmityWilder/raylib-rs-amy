@@ -16,7 +16,7 @@ macro_rules! define_buffer_handle {
             ///
             /// Returns [`None`] if the handle has already been obtained
             #[inline]
-            pub unsafe fn get() -> Option<Self> {
+            pub fn get() -> Option<Self> {
                 static SINGLETON: Once = Once::new();
 
                 let mut result = None;
@@ -39,7 +39,7 @@ pub trait RlAllocator<T: ?Sized>: Sized {
     unsafe fn unload(&mut self, data: NonNull<T>);
 }
 
-/// Unload using [`utils::mem_free`]
+/// Uses [`utils::mem_free`] to unload memory
 pub struct MemAllocator;
 
 /// An owned buffer of memory managed by Raylib
