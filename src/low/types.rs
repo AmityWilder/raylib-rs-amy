@@ -291,7 +291,7 @@ pub enum KeyboardKey: i32 {
     Z as KEY_Z = 90,
     /// Key: [
     LeftBracket as KEY_LEFT_BRACKET = 91,
-    /// Key: '\'
+    /// Key: \\
     Backslash as KEY_BACKSLASH = 92,
     /// Key: ]
     RightBracket as KEY_RIGHT_BRACKET = 93,
