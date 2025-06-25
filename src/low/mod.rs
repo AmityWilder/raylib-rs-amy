@@ -11,8 +11,11 @@ use std::time::Duration;
 pub mod buffer;
 pub(crate) use buffer::*;
 
+type SysEnumRepr = u32;
+
 /// Direct bindings to Raylib C
 pub mod sys;
+pub mod types;
 
 // Window-related functions
 

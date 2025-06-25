@@ -231,7 +231,7 @@ fn main() {
             "raylib/src/utils.h",
         ])
         .default_macro_constant_type(bindgen::MacroTypeVariation::Signed)
-        .blocklist_item("FP_(?:INFINITE|NAN|NORMAL|SUBNORMAL|ZERO)|IPPORT_RESERVED")
+        .blocklist_item("_.*|FP_(?:INFINITE|NAN|NORMAL|SUBNORMAL|ZERO)|IPPORT_RESERVED|ConfigFlags") // MAX_MATERIAL_MAPS on mac
         .fit_macro_constants(true)
         .no_convert_floats()
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })

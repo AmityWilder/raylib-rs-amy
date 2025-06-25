@@ -16,8 +16,9 @@ opengl_es_20 = []
 opengl_es_30 = []
 sdl = []
 
-[dependencies]
-
 [build-dependencies]
 bindgen = "0.72.0"
 cmake = "0.1.54"
+
+[dependencies]
+bitflags = "2.9.1"
