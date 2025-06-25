@@ -14,7 +14,7 @@ macro_rules! define_rl_enum {
         $(#[$m:meta])*
         $vis:vis struct $Struct:ident: $ReprTy:ty {
             $(
-                $(#[$fm:meta])*
+                $(#[$inner:ident $($args:tt)*])*
                 const $FLAG:ident as $ALIAS:ident = $value:expr;
             )*
         }
@@ -23,7 +23,7 @@ macro_rules! define_rl_enum {
             $(#[$m])*
             $vis struct $Struct: $ReprTy {
                 $(
-                    $(#[$fm])*
+                    $(#[$inner $($args)*])*
                     const $FLAG = $value;
                 )*
             }
@@ -129,154 +129,300 @@ macro_rules! define_rl_enum {
 }
 
 define_rl_enum! {
+/// System/Window config flags
+///
+/// NOTE: Every bit registers one state (use it with bit masks)
+/// By default all flags are set to 0
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ConfigFlags: i32 {
+    /// Set to try enabling V-Sync on GPU
     const VSYNC_HINT as FLAG_VSYNC_HINT = 64;
+    /// Set to run program in fullscreen
     const FULLSCREEN_MODE as FLAG_FULLSCREEN_MODE = 2;
+    /// Set to allow resizable window
     const WINDOW_RESIZABLE as FLAG_WINDOW_RESIZABLE = 4;
+    /// Set to disable window decoration (frame and buttons)
     const WINDOW_UNDECORATED as FLAG_WINDOW_UNDECORATED = 8;
+    /// Set to hide window
     const WINDOW_HIDDEN as FLAG_WINDOW_HIDDEN = 128;
+    /// Set to minimize window (iconify)
     const WINDOW_MINIMIZED as FLAG_WINDOW_MINIMIZED = 512;
+    /// Set to maximize window (expanded to monitor)
     const WINDOW_MAXIMIZED as FLAG_WINDOW_MAXIMIZED = 1024;
+    /// Set to window non focused
     const WINDOW_UNFOCUSED as FLAG_WINDOW_UNFOCUSED = 2048;
+    /// Set to window always on top
     const WINDOW_TOPMOST as FLAG_WINDOW_TOPMOST = 4096;
+    /// Set to allow windows running while minimized
     const WINDOW_ALWAYS_RUN as FLAG_WINDOW_ALWAYS_RUN = 256;
+    /// Set to allow transparent framebuffer
     const WINDOW_TRANSPARENT as FLAG_WINDOW_TRANSPARENT = 16;
+    /// Set to support HighDPI
     const WINDOW_HIGHDPI as FLAG_WINDOW_HIGHDPI = 8192;
+    /// Set to support mouse passthrough, only supported when FLAG_WINDOW_UNDECORATED
     const WINDOW_MOUSE_PASSTHROUGH as FLAG_WINDOW_MOUSE_PASSTHROUGH = 16384;
+    /// Set to run program in borderless windowed mode
     const BORDERLESS_WINDOWED_MODE as FLAG_BORDERLESS_WINDOWED_MODE = 32768;
+    /// Set to try enabling MSAA 4X
     const MSAA_4X_HINT as FLAG_MSAA_4X_HINT = 32;
+    /// Set to try enabling interlaced video format (for V3D)
     const INTERLACED_HINT as FLAG_INTERLACED_HINT = 65536;
 }
 }
 
 define_rl_enum!{
+/// Trace log level
+/// NOTE: Organized by priority level
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum TraceLogLevel: i32 {
+    /// Display all logs
     All as LOG_ALL = 0,
+    /// Trace logging, intended for internal use only
     Trace as LOG_TRACE = 1,
+    /// Debug logging, used for internal debugging, it should be disabled on release builds
     Debug as LOG_DEBUG = 2,
+    /// Info logging, used for program execution info
     Info as LOG_INFO = 3,
+    /// Warning logging, used on recoverable failures
     Warning as LOG_WARNING = 4,
+    /// Error logging, used on unrecoverable failures
     Error as LOG_ERROR = 5,
+    /// Fatal logging, used to abort program: exit(EXIT_FAILURE)
     Fatal as LOG_FATAL = 6,
+    /// Disable logging
     None as LOG_NONE = 7,
 }
 }
 
 define_rl_enum!{
+/// Keyboard keys (US keyboard layout)
+/// NOTE: Use GetKeyPressed() to allow redefining
+/// required keys for alternative layouts
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub enum KeyboardKey: i32 {
     #[default]
     Null as KEY_NULL = 0,
+    // Alphanumeric keys
+    /// Key: '
     Apostrophe as KEY_APOSTROPHE = 39,
+    /// Key: ,
     Comma as KEY_COMMA = 44,
+    /// Key: -
     Minus as KEY_MINUS = 45,
+    /// Key: .
     Period as KEY_PERIOD = 46,
+    /// Key: /
     Slash as KEY_SLASH = 47,
+    /// Key: 0
     Zero as KEY_ZERO = 48,
+    /// Key: 1
     One as KEY_ONE = 49,
+    /// Key: 2
     Two as KEY_TWO = 50,
+    /// Key: 3
     Three as KEY_THREE = 51,
+    /// Key: 4
     Four as KEY_FOUR = 52,
+    /// Key: 5
     Five as KEY_FIVE = 53,
+    /// Key: 6
     Six as KEY_SIX = 54,
+    /// Key: 7
     Seven as KEY_SEVEN = 55,
+    /// Key: 8
     Eight as KEY_EIGHT = 56,
+    /// Key: 9
     Nine as KEY_NINE = 57,
+    /// Key: ;
     Semicolon as KEY_SEMICOLON = 59,
+    /// Key: =
     Equal as KEY_EQUAL = 61,
+    /// Key: A | a
     A as KEY_A = 65,
+    /// Key: B | b
     B as KEY_B = 66,
+    /// Key: C | c
     C as KEY_C = 67,
+    /// Key: D | d
     D as KEY_D = 68,
+    /// Key: E | e
     E as KEY_E = 69,
+    /// Key: F | f
     F as KEY_F = 70,
+    /// Key: G | g
     G as KEY_G = 71,
+    /// Key: H | h
     H as KEY_H = 72,
+    /// Key: I | i
     I as KEY_I = 73,
+    /// Key: J | j
     J as KEY_J = 74,
+    /// Key: K | k
     K as KEY_K = 75,
+    /// Key: L | l
     L as KEY_L = 76,
+    /// Key: M | m
     M as KEY_M = 77,
+    /// Key: N | n
     N as KEY_N = 78,
+    /// Key: O | o
     O as KEY_O = 79,
+    /// Key: P | p
     P as KEY_P = 80,
+    /// Key: Q | q
     Q as KEY_Q = 81,
+    /// Key: R | r
     R as KEY_R = 82,
+    /// Key: S | s
     S as KEY_S = 83,
+    /// Key: T | t
     T as KEY_T = 84,
+    /// Key: U | u
     U as KEY_U = 85,
+    /// Key: V | v
     V as KEY_V = 86,
+    /// Key: W | w
     W as KEY_W = 87,
+    /// Key: X | x
     X as KEY_X = 88,
+    /// Key: Y | y
     Y as KEY_Y = 89,
+    /// Key: Z | z
     Z as KEY_Z = 90,
+    /// Key: [
     LeftBracket as KEY_LEFT_BRACKET = 91,
+    /// Key: '\'
     Backslash as KEY_BACKSLASH = 92,
+    /// Key: ]
     RightBracket as KEY_RIGHT_BRACKET = 93,
+    /// Key: `
     Grave as KEY_GRAVE = 96,
+    // Function keys
+    /// Key: Space
     Space as KEY_SPACE = 32,
+    /// Key: Esc
     Escape as KEY_ESCAPE = 256,
+    /// Key: Enter
     Enter as KEY_ENTER = 257,
+    /// Key: Tab
     Tab as KEY_TAB = 258,
+    /// Key: Backspace
     Backspace as KEY_BACKSPACE = 259,
+    /// Key: Ins
     Insert as KEY_INSERT = 260,
+    /// Key: Del
     Delete as KEY_DELETE = 261,
+    /// Key: Cursor right
     Right as KEY_RIGHT = 262,
+    /// Key: Cursor left
     Left as KEY_LEFT = 263,
+    /// Key: Cursor down
     Down as KEY_DOWN = 264,
+    /// Key: Cursor up
     Up as KEY_UP = 265,
+    /// Key: Page up
     PageUp as KEY_PAGE_UP = 266,
+    /// Key: Page down
     PageDown as KEY_PAGE_DOWN = 267,
+    /// Key: Home
     Home as KEY_HOME = 268,
+    /// Key: End
     End as KEY_END = 269,
+    /// Key: Caps lock
     CapsLock as KEY_CAPS_LOCK = 280,
+    /// Key: Scroll down
     ScrollLock as KEY_SCROLL_LOCK = 281,
+    /// Key: Num lock
     NumLock as KEY_NUM_LOCK = 282,
+    /// Key: Print screen
     PrintScreen as KEY_PRINT_SCREEN = 283,
+    /// Key: Pause
     Pause as KEY_PAUSE = 284,
+    /// Key: F1
     F1 as KEY_F1 = 290,
+    /// Key: F2
     F2 as KEY_F2 = 291,
+    /// Key: F3
     F3 as KEY_F3 = 292,
+    /// Key: F4
     F4 as KEY_F4 = 293,
+    /// Key: F5
     F5 as KEY_F5 = 294,
+    /// Key: F6
     F6 as KEY_F6 = 295,
+    /// Key: F7
     F7 as KEY_F7 = 296,
+    /// Key: F8
     F8 as KEY_F8 = 297,
+    /// Key: F9
     F9 as KEY_F9 = 298,
+    /// Key: F10
     F10 as KEY_F10 = 299,
+    /// Key: F11
     F11 as KEY_F11 = 300,
+    /// Key: F12
     F12 as KEY_F12 = 301,
+    /// Key: Shift left
     LeftShift as KEY_LEFT_SHIFT = 340,
+    /// Key: Control left
     LeftControl as KEY_LEFT_CONTROL = 341,
+    /// Key: Alt left
     LeftAlt as KEY_LEFT_ALT = 342,
+    /// Key: Super left
     LeftSuper as KEY_LEFT_SUPER = 343,
+    /// Key: Shift right
     RightShift as KEY_RIGHT_SHIFT = 344,
+    /// Key: Control right
     RightControl as KEY_RIGHT_CONTROL = 345,
+    /// Key: Alt right
     RightAlt as KEY_RIGHT_ALT = 346,
+    /// Key: Super right
     RightSuper as KEY_RIGHT_SUPER = 347,
+    /// Key: KB menu
     KbMenu as KEY_KB_MENU = 348,
+    // Keypad keys
+    /// Key: Keypad 0
     Kp0 as KEY_KP_0 = 320,
+    /// Key: Keypad 1
     Kp1 as KEY_KP_1 = 321,
+    /// Key: Keypad 2
     Kp2 as KEY_KP_2 = 322,
+    /// Key: Keypad 3
     Kp3 as KEY_KP_3 = 323,
+    /// Key: Keypad 4
     Kp4 as KEY_KP_4 = 324,
+    /// Key: Keypad 5
     Kp5 as KEY_KP_5 = 325,
+    /// Key: Keypad 6
     Kp6 as KEY_KP_6 = 326,
+    /// Key: Keypad 7
     Kp7 as KEY_KP_7 = 327,
+    /// Key: Keypad 8
     Kp8 as KEY_KP_8 = 328,
+    /// Key: Keypad 9
     Kp9 as KEY_KP_9 = 329,
+    /// Key: Keypad .
     KpDecimal as KEY_KP_DECIMAL = 330,
+    /// Key: Keypad /
     KpDivide as KEY_KP_DIVIDE = 331,
+    /// Key: Keypad *
     KpMultiply as KEY_KP_MULTIPLY = 332,
+    /// Key: Keypad -
     KpSubtract as KEY_KP_SUBTRACT = 333,
+    /// Key: Keypad +
     KpAdd as KEY_KP_ADD = 334,
+    /// Key: Keypad Enter
     KpEnter as KEY_KP_ENTER = 335,
+    /// Key: Keypad =
     KpEqual as KEY_KP_EQUAL = 336,
+    // Android key buttons
+    /// Key: Android back button// Key: Android back button
     Back as KEY_BACK = 4,
+    /// Key: Android menu button// Key: Android menu button
     Menu as KEY_MENU = 5,
+    /// Key: Android volume up button// Key: Android volume up button
     VolumeUp as KEY_VOLUME_UP = 24,
+    /// Key: Android volume down button// Key: Android volume down button
     VolumeDown as KEY_VOLUME_DOWN = 25,
 }
 }
